@@ -1,0 +1,168 @@
+.ornekler-hero {
+  text-align: center;
+  padding: 5rem 1.5rem 2.5rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d1b69 100%);
+  color: #fff;
+}
+
+.ornekler-hero h1 {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.ornekler-hero p {
+  color: rgba(255,255,255,0.7);
+  font-size: 1.05rem;
+}
+
+/* Filtre butonları */
+.ornekler-filters {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem 1.5rem 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.5rem 1.2rem;
+  border: 1.5px solid #ddd;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #555;
+  font-family: inherit;
+}
+
+.filter-btn:hover {
+  border-color: #c9a84c;
+  color: #c9a84c;
+}
+
+.filter-btn.active {
+  background: #c9a84c;
+  border-color: #c9a84c;
+  color: #fff;
+}
+
+/* Grid */
+.ornekler-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 3rem;
+}
+
+@media (max-width: 600px) {
+  .ornekler-grid { grid-template-columns: 1fr; }
+}
+
+/* Kart */
+.ornek-kart {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.07);
+  border: 1px solid #ececec;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.ornek-kart:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+/* Canva iframe önizleme */
+.ornek-preview {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #f0ede8;
+  overflow: hidden;
+  position: relative;
+}
+
+.ornek-iframe-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  pointer-events: none;
+}
+
+.ornek-video-icon,
+.ornek-pdf-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: #c9a84c;
+}
+
+/* Kart alt bilgi */
+.ornek-bilgi {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.ornek-etiket {
+  font-size: 0.75rem;
+  color: #c9a84c;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ornek-bilgi h3 {
+  font-size: 1rem;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.ornek-bilgi p {
+  color: #666;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.ornek-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: #c9a84c;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.ornek-link:hover { text-decoration: underline; }
+
+/* Durum mesajları */
+.ornekler-loading,
+.ornekler-bos {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+}
+
+/* CTA */
+.ornekler-cta {
+  text-align: center;
+  padding: 2.5rem 1.5rem 4rem;
+  background: #faf9f7;
+}
+
+.ornekler-cta p {
+  color: #555;
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+}

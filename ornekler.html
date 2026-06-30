@@ -7,17 +7,10 @@
 <meta name="description" content="Düğün web sitesi, animasyonlu davetiye ve tek sayfa davetiye örnekleri. En şık dijital davetiye tasarımlarını incele, beğendiğini seç.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://digitalbohem.com.tr/ornekler.html">
-
-<!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://digitalbohem.com.tr/ornekler.html">
 <meta property="og:title" content="Dijital Davetiye Örnekleri | Digital Bohem">
 <meta property="og:description" content="Düğün web sitesi, animasyonlu davetiye ve tek sayfa davetiye örnekleri. En şık dijital davetiye tasarımlarını incele.">
-<meta property="og:image" content="https://digitalbohem.com.tr/assets/img/og-image.jpg">
-<meta property="og:locale" content="tr_TR">
-<meta property="og:site_name" content="Digital Bohem">
-
-<!-- Schema.org BreadcrumbList -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -28,8 +21,8 @@
   ]
 }
 </script>
-
 <link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/ornekler.css">
 </head>
 <body>
 
@@ -38,17 +31,17 @@
   <a href="#" class="close-menu">×</a>
   <a href="index.html">Ana Sayfa</a>
   <a href="ornekler.html">Örnekler</a>
-  <a href="borsa/index.html">Borsa</a>
-  <a href="admin/index.html">Admin</a>
+  <a href="blog/index.html">Blog</a>
+  <a href="hakkimizda.html">Hakkımızda</a>
 </nav>
 
 <header class="site-header">
-  <div class="logo">Digital Bohem</div>
+  <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit">Digital Bohem</a></div>
   <nav class="desktop-nav">
     <a href="index.html">Ana Sayfa</a>
-    <a href="ornekler.html">Örnekler</a>
-    <a href="borsa/index.html">Borsa</a>
-    <a href="admin/index.html" class="admin-link">Admin</a>
+    <a href="ornekler.html" class="active">Örnekler</a>
+    <a href="blog/index.html">Blog</a>
+    <a href="hakkimizda.html">Hakkımızda</a>
   </nav>
 </header>
 
@@ -57,36 +50,106 @@
   <p>Size en uygun tarzı seçin</p>
 </section>
 
-<div class="category-grid">
-  <a href="ornekler/dugun-web-sitesi.html" class="category-card">
-    <div class="category-img">🌐</div>
-    <div class="category-info">
-      <h3>Düğün Web Sitesi</h3>
-      <p>Canva entegrasyonlu, tam özelleştirilebilir web siteleri</p>
-    </div>
-  </a>
-
-  <a href="ornekler/animasyonlu.html" class="category-card">
-    <div class="category-img">🎬</div>
-    <div class="category-info">
-      <h3>Animasyonlu Davetiye</h3>
-      <p>Video ve animasyonlu modern davetiyeler</p>
-    </div>
-  </a>
-
-  <a href="ornekler/tek-sayfa.html" class="category-card">
-    <div class="category-img">📄</div>
-    <div class="category-info">
-      <h3>Tek Sayfa Davetiye</h3>
-      <p>Sade, şık ve hızlı yüklenen tek sayfalık davetiyeler</p>
-    </div>
-  </a>
+<div class="ornekler-filters">
+  <button class="filter-btn active" data-filter="tumu">Tümü</button>
+  <button class="filter-btn" data-filter="web">🌐 Web Sitesi</button>
+  <button class="filter-btn" data-filter="video">🎬 Video</button>
+  <button class="filter-btn" data-filter="pdf">📄 PDF</button>
 </div>
+
+<main class="ornekler-grid" id="ornekler-grid">
+  <div class="ornekler-loading">Yükleniyor…</div>
+</main>
+
+<section class="ornekler-cta">
+  <p>Beğendiğiniz bir tarz mı var? Hemen sipariş verin.</p>
+  <a href="index.html#iletisim" class="btn-gold">Sipariş Ver</a>
+</section>
 
 <footer class="site-footer">
   <p>© 2026 Digital Bohem. Tüm hakları saklıdır.</p>
+  <div class="social-links">
+    <a href="https://instagram.com/digital.davet" target="_blank">Instagram</a>
+    <a href="blog/index.html">Blog</a>
+  </div>
 </footer>
 
 <script src="assets/js/main.js"></script>
+<script>
+(function () {
+  const grid = document.getElementById('ornekler-grid');
+  let tumOrnekler = [];
+  let aktifFilter = 'tumu';
+
+  function embedUrl(canvaUrl) {
+    if (!canvaUrl) return null;
+    const u = canvaUrl.replace(/\?.*$/, '');
+    return u.endsWith('/view') ? u + '?embed' : u + '/view?embed';
+  }
+
+  function kategoriLabel(k) {
+    return { web: '🌐 Web', video: '🎬 Video', pdf: '📄 PDF' }[k] || k;
+  }
+
+  function renderKart(o) {
+    const embed = embedUrl(o.canva_url);
+    let preview = '';
+    if (o.kategori === 'video' && o.canva_url) {
+      preview = `<div class="ornek-preview ornek-video-icon">🎬</div>`;
+    } else if (o.kategori === 'pdf' && o.canva_url) {
+      preview = `<div class="ornek-preview ornek-pdf-icon">📄</div>`;
+    } else if (embed) {
+      preview = `<div class="ornek-preview ornek-iframe-wrap">
+        <iframe src="${embed}" loading="lazy" allowfullscreen scrolling="no" frameborder="0"></iframe>
+      </div>`;
+    }
+
+    const link = o.canva_url
+      ? `<a href="${o.canva_url}" target="_blank" rel="noopener" class="ornek-link">Görüntüle →</a>`
+      : '';
+
+    return `<div class="ornek-kart" data-kategori="${o.kategori}">
+      ${preview}
+      <div class="ornek-bilgi">
+        <span class="ornek-etiket">${kategoriLabel(o.kategori)}</span>
+        <h3>${o.baslik}</h3>
+        <p>${o.aciklama || ''}</p>
+        ${link}
+      </div>
+    </div>`;
+  }
+
+  function render(filter) {
+    const liste = filter === 'tumu'
+      ? tumOrnekler
+      : tumOrnekler.filter(o => o.kategori === filter);
+
+    if (!liste.length) {
+      grid.innerHTML = '<div class="ornekler-bos">Yakında örnekler eklenecek.</div>';
+      return;
+    }
+    grid.innerHTML = liste.map(renderKart).join('');
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      aktifFilter = this.dataset.filter;
+      render(aktifFilter);
+    });
+  });
+
+  fetch('ornekler-data.json')
+    .then(r => r.json())
+    .then(data => {
+      tumOrnekler = data;
+      render(aktifFilter);
+    })
+    .catch(() => {
+      grid.innerHTML = '<div class="ornekler-bos">Örnekler yüklenemedi.</div>';
+    });
+})();
+</script>
 </body>
 </html>
