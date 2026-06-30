@@ -52,9 +52,9 @@
 
 <div class="ornekler-filters">
   <button class="filter-btn active" data-filter="tumu">Tümü</button>
-  <button class="filter-btn" data-filter="web">🌐 Web Sitesi</button>
-  <button class="filter-btn" data-filter="video">🎬 Video</button>
-  <button class="filter-btn" data-filter="pdf">📄 PDF</button>
+  <button class="filter-btn" data-filter="web">🌐 Dijital Düğün Web Sitesi</button>
+  <button class="filter-btn" data-filter="video">🎬 Animasyonlu Düğün Davetiyesi</button>
+  <button class="filter-btn" data-filter="pdf">📄 Karekodlu Tek Sayfa Davetiye</button>
 </div>
 
 <main class="ornekler-grid" id="ornekler-grid">
@@ -88,7 +88,7 @@
   }
 
   function kategoriLabel(k) {
-    return { web: '🌐 Web', video: '🎬 Video', pdf: '📄 PDF' }[k] || k;
+    return { web: '🌐 Dijital Düğün Web Sitesi', video: '🎬 Animasyonlu Düğün Davetiyesi', pdf: '📄 Karekodlu Tek Sayfa Davetiye' }[k] || k;
   }
 
   function renderKart(o) {
