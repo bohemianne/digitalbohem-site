@@ -12,18 +12,22 @@ Dijital düğün davetiyesi satış sitesi. Türkçe, tek dilli. Üç paket: Tem
 
 ## Deployment
 
-**Git → cPanel otodeploy.**  
-`git push origin main` yaptığında cPanel `.cpanel.yml` dosyasını çalıştırır ve repo kökündeki dosyaları `/home/digi7586/public_html/`'e kopyalar.
+**Git → cPanel manuel deploy.**  
+Push sonrası cPanel'e giriş yapılıp "Git Version Control → Manage → Deploy HEAD Commit" tıklanması gerekir (webhook kurulu değil).
 
 ```bash
 cd ~/Masaüstü/digitalbohem-site
 git add .
 git commit -m "mesaj"
-git push origin main   # canlıya otomatik gider
+git push origin main
+# Ardından cPanel'den Deploy HEAD Commit tıkla
 ```
 
+**DNS notu:** `github.com` DNS çözümlenemiyor, SSH config'de IP ile gidiyoruz:  
+`~/.ssh/config` → `HostName 140.82.121.4` (GitHub IP). IP değişirse güncellenecek.
+
 Remote: `git@github-digitalbohem:bohemianne/digitalbohem-site.git`  
-SSH alias `github-digitalbohem` → `~/.ssh/config`'de tanımlı.
+SSH key: `~/.ssh/digitalbohem-github`
 
 ---
 
@@ -31,23 +35,31 @@ SSH alias `github-digitalbohem` → `~/.ssh/config`'de tanımlı.
 
 ```
 digitalbohem-site/
-├── index.html              # Ana sayfa (paketler + referanslar + form modal)
-├── ornekler.html           # Örnek davetiye galerisi (JSON'dan dinamik)
+├── index.html              # Ana sayfa
+├── ornekler.html           # Örnek davetiye galerisi
 ├── hakkimizda.html         # Hakkımızda sayfası
-├── blog/index.html         # Blog listesi
-├── admin.php               # Admin paneli giriş + yönetim (şifreli)
-├── form-handler.php        # Sipariş formu → Telegram bot + e-posta
-├── ornekler-data.json      # Örnek davetiye verileri (admin'den düzenlenir)
-├── sitemap.xml
-├── robots.txt
-├── .cpanel.yml             # cPanel otodeploy görevleri
+├── blog/index.html         # Blog listesi sayfası
+├── form-handler.php        # Sipariş formu → Telegram + e-posta
+├── sitemap.xml / robots.txt
+├── .cpanel.yml             # Deploy görevleri
+│
+├── public_html/            # ← Sunucuya deploy edilen asıl dosyalar
+│   ├── admin/
+│   │   ├── index.html      # Admin giriş sayfası (şifre: digital2026)
+│   │   └── panel.html      # Admin paneli
+│   ├── api/
+│   │   ├── data.php        # Genel CRUD API (JSON dosyaları okur/yazar)
+│   │   ├── blog.php        # Blog önerileri + onay API
+│   │   └── telegram.php    # Telegram mesaj gönderici
+│   ├── assets/
+│   │   ├── css/style.css   # Admin panel stilleri
+│   │   └── js/admin.js     # Admin panel JS
+│   └── data/
+│       ├── blog_oneriler.json  # Haftalık blog konu önerileri (ajan yazar)
+│       └── blog_yazilar.json   # Yayımlanan yazıların listesi
 │
 └── assets/css/
-    ├── style.css           # Ana tema (header, hero, paketler, footer)
-    ├── form.css            # Referans şeridi + sipariş form modali
-    ├── ornekler.css        # Örnekler sayfası stilleri
-    ├── blog.css            # Blog sayfası stilleri
-    └── hakkimizda.css      # Hakkımızda sayfası stilleri
+    ├── style.css / form.css / ornekler.css / blog.css / hakkimizda.css
 ```
 
 ---
@@ -58,47 +70,96 @@ Buz mavisi + fuşya pembe + beyaz (Haziran 2026'da güncellendi).
 
 | Değişken | Değer | Kullanım |
 |---|---|---|
-| `--fuchsia` | `#e91e8c` | Logo, butonlar, fiyatlar, featured kart |
+| `--fuchsia` | `#e91e8c` | Logo, butonlar, fiyatlar |
 | `--fuchsia-light` | `#ff6db7` | Hover efektleri |
 | `--ice` | `#4bbfe3` | Border, onay tikleri |
-| `--ice-light` | `#a8dff5` | Header border, ayırıcılar |
+| `--ice-light` | `#a8dff5` | Header border |
 | `--ice-pale` | `#e8f7fd` | Bölüm arka planları |
 | `--text` | `#1e2a38` | Ana metin |
 | `--text-muted` | `#6b7e94` | İkincil metin |
 
-Hero banner: `linear-gradient(135deg, #4bbfe3 → #9ad8f0 → #f8f0ff → #ffb3de → #e91e8c)`
+---
+
+## Admin Paneli
+
+**URL:** `https://digitalbohem.com.tr/admin/`  
+**Şifre:** `digital2026`
+
+### Sekmeler
+
+| Sekme | Ne yapar |
+|---|---|
+| Davetiyeler | Müşteri listesi, durum takibi (localStorage) |
+| Örnekler | Site galeri örnekleri ekle/sil |
+| Fiyatlar | Paket fiyatlarını güncelle (API'ye kaydeder) |
+| **Blog** | Blog konu önerilerini gör/onayla + yazılmış yazıları önizle |
+| Telegram | Bot token ve chat ID ayarla |
+
+---
+
+## Blog Sistemi — Tam Akış
+
+Haftada 2 blog yazısı otomatik üretilir. Akış:
+
+```
+Pazartesi 09:30  →  blog-oneri-ajan.sh
+                    Claude 2 konu önerir
+                    → ~/.digitalbohem-agents/blog-oneriler-TARIH.md (local yedek)
+                    → https://digitalbohem.com.tr/api/blog.php?action=oneriler-kaydet (canlıya)
+
+Sen              →  Admin paneli → Blog → "Bu Haftanın Konuları"
+                    ✅ Onayla veya ✕ Reddet
+
+Perşembe 19:30   →  blog-yaz-ajan.sh 1   (Konu 1 onaylıysa yazar)
+Cumartesi 10:30  →  blog-yaz-ajan.sh 2   (Konu 2 onaylıysa yazar)
+                    → HTML dosya ~/Masaüstü/digitalbohem-site/blog/ dizinine
+                    → Git commit + push → cPanel deploy
+```
+
+### Blog API Endpoint'leri
+
+| Endpoint | Açıklama |
+|---|---|
+| `GET /api/blog.php?action=oneriler` | Bu haftanın öneri konularını getir |
+| `POST /api/blog.php?action=oneriler-kaydet` | Ajan yeni önerileri gönderir |
+| `POST /api/blog.php?action=onayla` `{"konu":1,"karar":"EVET"}` | Konu onayla/reddet |
+| `GET /api/blog.php?action=yazilar` | Yayımlanan yazı listesi |
+| `POST /api/blog.php?action=yazi-kaydet` | Blog yazı ajanı yazıyı kaydeder |
+
+---
+
+## Otomasyon Ajanları (Cron)
+
+Tüm ajanlar `~/.digitalbohem-agents/` altında, `bohem` kullanıcısının crontab'ında kayıtlı.
+
+| Zaman | Ajan | Görev |
+|---|---|---|
+| Pazartesi 09:07 | `icerik-ajan.sh` | Haftalık içerik planı |
+| Pazartesi 09:30 | `blog-oneri-ajan.sh` | Blog konu önerileri üret → API'ye gönder |
+| Çarşamba 09:13 | `seo-ajan.sh` | SEO & rakip takip raporu |
+| 1. ve 15. günü 09:17 | `trend-ajan.sh` | Trend araştırması |
+| Cuma 09:23 | `teknik-seo-ajan.sh` | Teknik SEO kontrol |
+| Cuma 10:00 | `site-updater.sh` | SEO raporundan site güncellemesi |
+| Perşembe 19:30 | `blog-yaz-ajan.sh 1` | Onaylanan Konu 1'i yaz |
+| Cumartesi 10:30 | `blog-yaz-ajan.sh 2` | Onaylanan Konu 2'yi yaz |
+
+Log dosyası: `~/.digitalbohem-agents/logs/cron.log`
 
 ---
 
 ## Sipariş Formu
 
 `form-handler.php` iki şey yapar:
-1. **Telegram:** Bot token + chat ID'ye mesaj gönderir
+1. **Telegram:** Bot token + chat ID'ye sipariş bildirimi gönderir
 2. **E-posta:** `mail()` ile bildirim
 
-Telegram ayarları `form-handler.php` içinde tanımlı. Değiştirmek için dosyayı düzenle → push et.
-
----
-
-## Admin Paneli
-
-`/admin.php` adresinden erişilir. Şifre `admin.php` içinde hash olarak saklanıyor.  
-Oturum açınca örnek davetiye ekle/sil yapılabilir; değişiklikler `ornekler-data.json`'a yazılır.
-
-> Not: `ornekler-data.json` deploy sırasında **üzerine yazılmaz** (`.cpanel.yml`'de koşullu kopyalama: `test -f ... || cp ...`). Canlıdaki JSON korunur.
-
----
-
-## Örnekler Galerisi
-
-`ornekler.html` → `ornekler-data.json`'u fetch ederek kartları oluşturur.  
-Her kart: `{ "baslik", "aciklama", "emoji", "kategori", "canvaUrl" }` alanlarına sahip.  
-Canva URL varsa iframe embed gösterilir.
+Telegram ayarları `form-handler.php` içinde tanımlı. Değiştirmek için düzenle → push et.
 
 ---
 
 ## Notlar
 
-- `public_html/` klasörü repoda var ama deploy'a dahil değil. Eski referans kopyası, silinebilir.
-- `borsa.html` aktif değil / menüde yok, eski bir test sayfası.
-- Blog şu an tek sayfa (`blog/index.html`), tek yazı şablonu yok — genişletilebilir.
+- `ornekler-data.json` deploy sırasında üzerine yazılmaz (`.cpanel.yml`'de koşullu kopyalama).
+- `data/blog_oneriler.json` ve `data/blog_yazilar.json` deploy sırasında sadece yoksa oluşturulur — canlıdaki veriler korunur.
+- `borsa.html` aktif değil, eski test sayfası.
+- GitHub IP (`140.82.121.4`) değişirse `~/.ssh/config`'i güncelle.
