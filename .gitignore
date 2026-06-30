@@ -1,0 +1,16 @@
+# Sistem dosyaları
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Yedekler
+*.backup-*
+*.bak
+*.orig
+
+# Log dosyaları
+*.log
+
+# Editor
+.vscode/
+.idea/
