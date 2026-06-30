@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Düğün Web Sitesi | Digital Bohem</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<button id="menu-toggle" class="menu-toggle">☰</button>
+<nav id="mobile-menu" class="mobile-menu">
+  <a href="#" class="close-menu">×</a>
+  <a href="../index.html">Ana Sayfa</a>
+  <a href="../ornekler.html">Örnekler</a>
+  <a href="../borsa/index.html">Borsa</a>
+  <a href="../admin/index.html">Admin</a>
+</nav>
+
+<header class="site-header">
+  <div class="logo">Digital Bohem</div>
+  <nav class="desktop-nav">
+    <a href="../index.html">Ana Sayfa</a>
+    <a href="../ornekler.html">Örnekler</a>
+    <a href="../borsa/index.html">Borsa</a>
+    <a href="../admin/index.html" class="admin-link">Admin</a>
+  </nav>
+</header>
+
+<section class="ornekler-hero">
+  <h1>Düğün Web Sitesi Örnekleri</h1>
+  <p>Canva ile tasarlanmış, tam özelleştirilebilir web siteleri</p>
+</section>
+
+<div class="canva-section" id="ornek-container">
+  <p style="color:#9ca3af; text-align:center; padding:3rem;">Henüz örnek eklenmemiş. Admin panelinden ekleyebilirsiniz.</p>
+</div>
+
+<footer class="site-footer">
+  <p>© 2026 Digital Bohem. Tüm hakları saklıdır.</p>
+</footer>
+
+<script src="../assets/js/main.js"></script>
+<script>
+  (function() {
+    const ornekler = JSON.parse(localStorage.getItem('db_ornekler') || '[]');
+    const items = ornekler.filter(o => o.kategori === 'dugun');
+    const container = document.getElementById('ornek-container');
+    if (items.length === 0) return;
+    container.innerHTML = items.map(o => {
+      const isCanva = o.url.includes('canva.com/design');
+      const media = isCanva
+        ? `<div class="canva-embed"><iframe src="${o.url}" title="${o.baslik}" allowfullscreen loading="lazy"></iframe></div>`
+        : `<div class="canva-embed"><img src="${o.url}" alt="${o.baslik}" style="width:100%; border-radius:12px; object-fit:cover;"></div>`;
+      return `<h2>${o.baslik}</h2>${media}`;
+    }).join('');
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Bohem | Dijital Düğün Davetiyeleri</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- Mobile Menu Toggle -->
+<button id="menu-toggle" class="menu-toggle">☰</button>
+
+<!-- Mobile Menu -->
+<nav id="mobile-menu" class="mobile-menu">
+  <a href="#" class="close-menu">×</a>
+  <a href="index.html">Ana Sayfa</a>
+  <a href="ornekler.html">Örnekler</a>
+  <a href="borsa/index.html">Borsa</a>
+  <a href="admin/index.html">Admin</a>
+</nav>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="logo">Digital Bohem</div>
+  <nav class="desktop-nav">
+    <a href="index.html">Ana Sayfa</a>
+    <a href="ornekler.html">Örnekler</a>
+    <a href="borsa/index.html">Borsa</a>
+    <a href="admin/index.html" class="admin-link">Admin</a>
+  </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Dijital Düğün Davetiyeniz</h1>
+    <p>Modern, şık ve çevre dostu davetiyeler. Hayalinizdeki düğünü dijital dünyaya taşıyın.</p>
+    <a href="ornekler.html" class="btn-gold">Örnekleri İncele</a>
+  </div>
+</section>
+
+<!-- Packages Section -->
+<section class="packages">
+  <h2>Paketlerimiz</h2>
+  <div class="package-cards">
+
+    <div class="package-card">
+      <div class="card-header">
+        <h3>Temel Paket</h3>
+        <div class="price" id="price-basic">₺499</div>
+      </div>
+      <ul>
+        <li>Tek Sayfa Davetiye</li>
+        <li>Mobil Uyumlu</li>
+        <li>Temel Animasyon</li>
+        <li>1 Ay Hosting</li>
+      </ul>
+      <button class="btn-gold" onclick="openModal('Temel Paket')">Sipariş Ver</button>
+    </div>
+
+    <div class="package-card featured">
+      <div class="card-header">
+        <h3>Premium Paket</h3>
+        <div class="price" id="price-premium">₺899</div>
+      </div>
+      <ul>
+        <li>Çok Sayfalı Web Sitesi</li>
+        <li>Canva Entegrasyonu</li>
+        <li>Gelişmiş Animasyon</li>
+        <li>3 Ay Hosting</li>
+        <li>RSVP Formu</li>
+      </ul>
+      <button class="btn-gold" onclick="openModal('Premium Paket')">Sipariş Ver</button>
+    </div>
+
+    <div class="package-card">
+      <div class="card-header">
+        <h3>Elite Paket</h3>
+        <div class="price" id="price-elite">₺1,499</div>
+      </div>
+      <ul>
+        <li>Tam Özelleştirme</li>
+        <li>Video Davetiye</li>
+        <li>Animasyonlu Hikaye</li>
+        <li>6 Ay Hosting</li>
+        <li>RSVP + Konum Haritası</li>
+        <li>Fotoğraf Galerisi</li>
+      </ul>
+      <button class="btn-gold" onclick="openModal('Elite Paket')">Sipariş Ver</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- Instagram Modal -->
+<div id="instagram-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">×</span>
+    <h2>Sipariş İçin Instagram'dan Ulaşın</h2>
+    <p>Paket: <strong id="modal-package-name"></strong></p>
+    <a href="https://instagram.com/digital.davet" target="_blank" class="btn-instagram">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      @digitalbohem
+    </a>
+    <p class="modal-note">DM üzerinden detayları konuşalım!</p>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <p>© 2026 Digital Bohem. Tüm hakları saklıdır.</p>
+  <div class="social-links">
+    <a href="https://instagram.com/digital.davet" target="_blank">Instagram</a>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

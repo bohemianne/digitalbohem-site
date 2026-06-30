@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Telegram Test</title>
+<style>
+  body { font-family: monospace; padding: 20px; background: #111; color: #0f0; }
+  pre { background: #222; padding: 15px; border-radius: 8px; white-space: pre-wrap; word-break: break-all; }
+  button { padding: 10px 20px; background: #0070f3; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<h2>Telegram Debug Test</h2>
+
+<h3>1. localStorage Degerleri:</h3>
+<pre id="storage"></pre>
+
+<h3>2. API Test Sonucu:</h3>
+<pre id="result">Butona bas...</pre>
+<button onclick="runTest()">Test Et</button>
+
+<script>
+  const tg = JSON.parse(localStorage.getItem('db_telegram') || '{}');
+  document.getElementById('storage').textContent =
+    'token : ' + (tg.token || '(BOŞ)') + '\n' +
+    'chat  : ' + (tg.chat  || '(BOŞ)');
+
+  function runTest() {
+    const out = document.getElementById('result');
+    if (!tg.token || !tg.chat) {
+      out.textContent = 'HATA: token veya chat_id bos! Admin panelinden kaydedin.';
+      return;
+    }
+    out.textContent = 'Gonderiliyor...';
+    fetch('/api/telegram.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: tg.token, chat_id: tg.chat, text: 'DigitalBohem test mesaji' })
+    })
+    .then(r => r.json())
+    .then(d => { out.textContent = JSON.stringify(d, null, 2); })
+    .catch(e => { out.textContent = 'FETCH HATASI: ' + e; });
+  }
+</script>
+</body>
+</html>

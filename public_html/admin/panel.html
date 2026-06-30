@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel | Digital Bohem</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="admin-body">
+
+<div class="admin-panel">
+  <aside class="admin-sidebar">
+    <h2>Digital Bohem</h2>
+    <a href="#" class="active" onclick="showSection('davetiyeler')">📋 Davetiyeler</a>
+    <a href="#" onclick="showSection('ornekler')">🖼️ Örnekler</a>
+    <a href="#" onclick="showSection('fiyatlar')">💰 Fiyatlar</a>
+    <a href="#" onclick="showSection('blog')">📝 Blog</a>
+    <a href="#" onclick="showSection('telegram')">📱 Telegram</a>
+    <a href="#" onclick="showSection('sifre')">🔑 Şifre Değiştir</a>
+    <a href="index.html" style="margin-top:auto; color:#ef4444;">🚪 Çıkış</a>
+  </aside>
+
+  <main class="admin-main">
+
+    <!-- Davetiyeler Section -->
+    <div id="sec-davetiyeler" class="admin-section">
+      <h3>Davetiye Yönetimi</h3>
+      <table class="admin-table" id="davetiye-table">
+        <thead>
+          <tr><th>ID</th><th>Müşteri</th><th>Paket</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div style="margin-top:1rem;">
+        <input type="text" id="new-musteri" placeholder="Müşteri Adı" style="padding:0.5rem; margin-right:0.5rem;">
+        <select id="new-paket" style="padding:0.5rem; margin-right:0.5rem;">
+          <option value="Temel">Temel</option>
+          <option value="Premium">Premium</option>
+          <option value="Elite">Elite</option>
+        </select>
+        <button class="btn-admin" onclick="addDavetiye()">Ekle</button>
+      </div>
+    </div>
+
+    <!-- Örnekler Section -->
+    <div id="sec-ornekler" class="admin-section hidden">
+      <h3>Örnek Yönetimi</h3>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; align-items:center;">
+        <select id="ornek-kategori" style="padding:0.5rem; border:1px solid #ddd; border-radius:8px;">
+          <option value="dugun">Düğün Web Sitesi</option>
+          <option value="animasyonlu">Animasyonlu Davetiye</option>
+          <option value="tek-sayfa">Tek Sayfa Davetiye</option>
+        </select>
+        <input type="text" id="ornek-baslik" placeholder="Başlık (ör: Klasik Düğün)" style="padding:0.5rem; flex:1; min-width:150px; border:1px solid #ddd; border-radius:8px;">
+        <input type="text" id="ornek-url" placeholder="Canva embed linki veya resim URL'si" style="padding:0.5rem; flex:2; min-width:220px; border:1px solid #ddd; border-radius:8px;">
+        <button class="btn-admin" onclick="addOrnek()">Ekle</button>
+      </div>
+      <div id="ornek-list"></div>
+    </div>
+
+    <!-- Fiyatlar Section -->
+    <div id="sec-fiyatlar" class="admin-section hidden">
+      <h3>Fiyat Yönetimi</h3>
+      <table class="admin-table" id="fiyat-table">
+        <thead>
+          <tr><th>Paket</th><th>Fiyat</th><th>İşlem</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Blog Section -->
+    <div id="sec-blog" class="admin-section hidden">
+      <h3>Blog Yönetimi</h3>
+
+      <!-- Sekmeler -->
+      <div style="display:flex; border-bottom:2px solid #e5e7eb; margin-bottom:1.5rem;">
+        <button id="btab-oneriler" onclick="blogTab('oneriler')" style="padding:0.6rem 1.2rem; border:none; background:none; cursor:pointer; font-weight:600; color:#3b82f6; border-bottom:2px solid #3b82f6; margin-bottom:-2px;">Bu Haftanın Konuları</button>
+        <button id="btab-yazilar" onclick="blogTab('yazilar')" style="padding:0.6rem 1.2rem; border:none; background:none; cursor:pointer; font-weight:600; color:#6b7280;">Yazılmış Yazılar</button>
+      </div>
+
+      <!-- Onay Bölümü -->
+      <div id="blog-tab-oneriler">
+        <p style="color:#6b7280; font-size:0.9rem; margin-bottom:1rem;">Her Pazartesi 09:30'da ajan 2 konu önerir. Onayladıklarınız Perşembe ve Cumartesi otomatik yazılır.</p>
+        <span id="blog-oneri-yukleniyor" style="color:#9ca3af; font-size:0.9rem;"></span>
+        <div id="blog-oneriler-list"></div>
+      </div>
+
+      <!-- Yazılmış Yazılar Bölümü -->
+      <div id="blog-tab-yazilar" style="display:none;">
+        <span id="blog-yazi-yukleniyor" style="color:#9ca3af; font-size:0.9rem;"></span>
+        <div id="blog-yazilar-list"></div>
+      </div>
+    </div>
+
+    <!-- Blog Yazısı Önizleme Modal -->
+    <div id="blog-onizleme-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; overflow-y:auto;">
+      <div style="background:#fff; max-width:860px; margin:2rem auto; border-radius:12px; overflow:hidden; position:relative;">
+        <div style="padding:1rem 1.5rem; background:#f9fafb; border-bottom:1px solid #e5e7eb; display:flex; justify-content:space-between; align-items:center;">
+          <strong id="onizleme-baslik" style="color:#1f2937;"></strong>
+          <button onclick="closeOnizleme()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#6b7280; line-height:1;">✕</button>
+        </div>
+        <iframe id="onizleme-frame" style="width:100%; height:75vh; border:none;"></iframe>
+      </div>
+    </div>
+
+    <!-- Telegram Section -->
+    <div id="sec-telegram" class="admin-section hidden">
+      <h3>Telegram Bot Ayarları</h3>
+      <div style="max-width:500px;">
+        <label style="display:block; margin-bottom:0.5rem; color:#666;">Bot Token:</label>
+        <input type="text" id="admin-tg-token" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #ddd; border-radius:8px;">
+        <label style="display:block; margin-bottom:0.5rem; color:#666;">Chat ID:</label>
+        <input type="text" id="admin-tg-chat" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #ddd; border-radius:8px;">
+        <button class="btn-admin" onclick="saveAdminTelegram()">Kaydet</button>
+        <button class="btn-admin" onclick="testTelegram()">Test Mesajı Gönder</button>
+      </div>
+    </div>
+
+    <!-- Şifre Section -->
+    <div id="sec-sifre" class="admin-section hidden">
+      <h3>Admin Şifresini Değiştir</h3>
+      <div style="max-width:400px;">
+        <input type="password" id="old-pass" placeholder="Mevcut Şifre" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #ddd; border-radius:8px;">
+        <input type="password" id="new-pass" placeholder="Yeni Şifre" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #ddd; border-radius:8px;">
+        <input type="password" id="new-pass-confirm" placeholder="Yeni Şifre (Tekrar)" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #ddd; border-radius:8px;">
+        <button class="btn-admin" onclick="changePassword()">Değiştir</button>
+        <div id="sifre-msg" style="margin-top:1rem; color:#ef4444;"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="../assets/js/admin.js"></script>
+</body>
+</html>

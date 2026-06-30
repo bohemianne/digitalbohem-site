@@ -1,0 +1,339 @@
+// ===== ADMIN PANEL =====
+let davetiyeler = JSON.parse(localStorage.getItem('db_davetiyeler') || '[]');
+let fiyatlar = JSON.parse(localStorage.getItem('db_fiyatlar') || '[{"paket":"basic","fiyat":"₺499"},{"paket":"premium","fiyat":"₺899"},{"paket":"elite","fiyat":"₺1,499"}]');
+let ornekler = JSON.parse(localStorage.getItem('db_ornekler') || '[]');
+
+// Check login
+document.addEventListener('DOMContentLoaded', () => {
+  if (!localStorage.getItem('db_admin') && !window.location.href.includes('index.html')) {
+    window.location.href = 'index.html';
+    return;
+  }
+  renderDavetiyeler();
+  renderFiyatlar();
+  renderOrnekler();
+  loadTelegramSettings();
+});
+
+function showSection(id) {
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+  document.getElementById('sec-' + id).classList.remove('hidden');
+  document.querySelectorAll('.admin-sidebar a').forEach(a => a.classList.remove('active'));
+  event.target.classList.add('active');
+  if (id === 'blog') loadBloglar();
+}
+
+// ===== DAVETIYE CRUD =====
+function renderDavetiyeler() {
+  const tbody = document.querySelector('#davetiye-table tbody');
+  if (!tbody) return;
+
+  if (davetiyeler.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999;">Henüz davetiye yok.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = davetiyeler.map(d => `
+    <tr>
+      <td>${d.id}</td>
+      <td>${d.musteri}</td>
+      <td>${d.paket}</td>
+      <td>${d.tarih}</td>
+      <td><span style="color:${d.durum === 'Aktif' ? '#10b981' : '#ef4444'}">${d.durum}</span></td>
+      <td>
+        <button class="btn-admin" onclick="toggleDurum(${d.id})">${d.durum === 'Aktif' ? 'Pasif' : 'Aktif'}</button>
+        <button class="btn-admin btn-danger" onclick="deleteDavetiye(${d.id})">Sil</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function addDavetiye() {
+  const musteri = document.getElementById('new-musteri').value;
+  const paket = document.getElementById('new-paket').value;
+  if (!musteri) { alert('Müşteri adı girin!'); return; }
+
+  davetiyeler.push({
+    id: Date.now(),
+    musteri,
+    paket,
+    tarih: new Date().toLocaleDateString('tr-TR'),
+    durum: 'Aktif'
+  });
+  localStorage.setItem('db_davetiyeler', JSON.stringify(davetiyeler));
+  renderDavetiyeler();
+  document.getElementById('new-musteri').value = '';
+}
+
+function toggleDurum(id) {
+  const d = davetiyeler.find(x => x.id === id);
+  if (d) { d.durum = d.durum === 'Aktif' ? 'Pasif' : 'Aktif'; }
+  localStorage.setItem('db_davetiyeler', JSON.stringify(davetiyeler));
+  renderDavetiyeler();
+}
+
+function deleteDavetiye(id) {
+  if (!confirm('Silmek istediğinize emin misiniz?')) return;
+  davetiyeler = davetiyeler.filter(d => d.id !== id);
+  localStorage.setItem('db_davetiyeler', JSON.stringify(davetiyeler));
+  renderDavetiyeler();
+}
+
+// ===== FIYAT CRUD =====
+function renderFiyatlar() {
+  const tbody = document.querySelector('#fiyat-table tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = fiyatlar.map((f, i) => `
+    <tr>
+      <td>${f.paket}</td>
+      <td><input type="text" value="${f.fiyat}" onchange="updateFiyat(${i}, this.value)" style="width:100px;"></td>
+      <td><button class="btn-admin" onclick="saveFiyatlar()">Kaydet</button></td>
+    </tr>
+  `).join('');
+}
+
+function updateFiyat(index, value) {
+  fiyatlar[index].fiyat = value;
+}
+
+function saveFiyatlar() {
+  localStorage.setItem('db_fiyatlar', JSON.stringify(fiyatlar));
+  // Also save as simple prices for main page
+  const prices = {};
+  fiyatlar.forEach(f => { prices[f.paket] = f.fiyat; });
+  localStorage.setItem('db_prices', JSON.stringify(prices));
+  alert('Fiyatlar kaydedildi!');
+
+  // Sync to API
+  fetch('../api/data.php?table=fiyatlar', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save', data: fiyatlar })
+  }).catch(() => {});
+}
+
+// ===== ÖRNEKLER =====
+const KATEGORILER = [
+  { key: 'dugun', label: 'Düğün Web Sitesi' },
+  { key: 'animasyonlu', label: 'Animasyonlu Davetiye' },
+  { key: 'tek-sayfa', label: 'Tek Sayfa Davetiye' }
+];
+
+function renderOrnekler() {
+  const list = document.getElementById('ornek-list');
+  if (!list) return;
+
+  list.innerHTML = KATEGORILER.map(kat => {
+    const items = ornekler.filter(o => o.kategori === kat.key);
+    const rows = items.length === 0
+      ? '<p style="color:#9ca3af; margin:0.5rem 0;">Henüz örnek eklenmemiş.</p>'
+      : items.map(o => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.7rem 1rem; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; margin-top:0.5rem; gap:1rem;">
+          <div style="flex:1; overflow:hidden;">
+            <strong>${o.baslik}</strong><br>
+            <small style="color:#9ca3af; word-break:break-all;">${o.url}</small>
+          </div>
+          <button class="btn-admin btn-danger" onclick="removeOrnek(${o.id})">Sil</button>
+        </div>`).join('');
+    return `<h4 style="color:#6b7280; margin:1.5rem 0 0.5rem; border-bottom:1px solid #e5e7eb; padding-bottom:0.4rem;">${kat.label}</h4>${rows}`;
+  }).join('');
+}
+
+function addOrnek() {
+  const kategori = document.getElementById('ornek-kategori').value;
+  const baslik = document.getElementById('ornek-baslik').value.trim();
+  const url = document.getElementById('ornek-url').value.trim();
+  if (!baslik || !url) { alert('Başlık ve URL gerekli!'); return; }
+
+  ornekler.push({ id: Date.now(), kategori, baslik, url });
+  localStorage.setItem('db_ornekler', JSON.stringify(ornekler));
+  renderOrnekler();
+  document.getElementById('ornek-baslik').value = '';
+  document.getElementById('ornek-url').value = '';
+}
+
+function removeOrnek(id) {
+  if (!confirm('Bu örneği silmek istiyor musunuz?')) return;
+  ornekler = ornekler.filter(o => o.id !== id);
+  localStorage.setItem('db_ornekler', JSON.stringify(ornekler));
+  renderOrnekler();
+}
+
+// ===== TELEGRAM =====
+function loadTelegramSettings() {
+  const tg = JSON.parse(localStorage.getItem('db_telegram') || '{}');
+  if (document.getElementById('admin-tg-token')) document.getElementById('admin-tg-token').value = tg.token || '';
+  if (document.getElementById('admin-tg-chat')) document.getElementById('admin-tg-chat').value = tg.chat || '';
+}
+
+function saveAdminTelegram() {
+  const token = document.getElementById('admin-tg-token').value;
+  const chat = document.getElementById('admin-tg-chat').value;
+  localStorage.setItem('db_telegram', JSON.stringify({ token, chat }));
+  alert('Telegram ayarları kaydedildi!');
+}
+
+function testTelegram() {
+  const tg = JSON.parse(localStorage.getItem('db_telegram') || '{}');
+  if (!tg.token || !tg.chat) { alert('Önce ayarları kaydedin!'); return; }
+
+  fetch('/api/telegram.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: tg.token, chat_id: tg.chat, text: '✅ DigitalBohem test mesajı başarılı!' })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) alert('✅ Test mesajı gönderildi!');
+      else alert('❌ Hata: ' + data.description);
+    })
+    .catch(() => alert('❌ Sunucu hatası. PHP dosyasını kontrol edin.'));
+}
+
+// ===== BLOG =====
+const BLOG_API = '../api/blog.php';
+
+function blogTab(sekme) {
+  ['oneriler', 'yazilar'].forEach(s => {
+    document.getElementById('blog-tab-' + s).style.display = s === sekme ? '' : 'none';
+    const btn = document.getElementById('btab-' + s);
+    if (btn) {
+      btn.style.color = s === sekme ? '#3b82f6' : '#6b7280';
+      btn.style.borderBottom = s === sekme ? '2px solid #3b82f6' : 'none';
+    }
+  });
+  if (sekme === 'oneriler') loadOneriler();
+  else loadYazilar();
+}
+
+function loadBloglar() {
+  blogTab('oneriler');
+}
+
+// ── Onay Bölümü ──────────────────────────────────────────────────────────────
+async function loadOneriler() {
+  const el = document.getElementById('blog-oneri-yukleniyor');
+  const list = document.getElementById('blog-oneriler-list');
+  if (el) el.textContent = 'Yükleniyor...';
+
+  try {
+    const res  = await fetch(BLOG_API + '?action=oneriler');
+    const json = await res.json();
+    if (el) el.textContent = '';
+
+    if (!json.success) {
+      list.innerHTML = `<div style="text-align:center; padding:2rem; color:#9ca3af;">${json.mesaj}</div>`;
+      return;
+    }
+
+    const RENK = { 'BEKLIYOR': ['#fef3c7','#92400e'], 'EVET': ['#d1fae5','#065f46'], 'HAYIR': ['#fee2e2','#991b1b'], 'YAYINLANDI': ['#ede9fe','#4c1d95'] };
+    list.innerHTML = '<p style="color:#9ca3af; font-size:0.85rem; margin-bottom:1rem;">Öneri dosyası: <code>' + json.dosya + '</code></p>' +
+      json.konular.map(k => {
+        const renk = RENK[k.onay?.split(' ')[0]] || RENK['BEKLIYOR'];
+        const bekliyor = k.onay === 'BEKLIYOR';
+        return `
+        <div style="border:1px solid #e5e7eb; border-radius:10px; padding:1.5rem; margin-bottom:1rem; background:#fff;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+            <div>
+              <span style="background:${renk[0]}; color:${renk[1]}; padding:0.2rem 0.7rem; border-radius:20px; font-size:0.8rem; font-weight:700;">Konu ${k.no} — ${k.onay || '?'}</span>
+              <h4 style="margin:0.6rem 0 0.2rem; color:#1f2937;">${k.baslik || '(Başlık yok)'}</h4>
+              <small style="color:#6b7280;">Hedef Kelime: <strong>${k.hedef || '—'}</strong> · Hacim: ${k.hacim || '—'}</small>
+            </div>
+            ${bekliyor ? `
+            <div style="display:flex; gap:0.5rem; flex-shrink:0;">
+              <button class="btn-admin" onclick="onaylaKonu(${k.no},'EVET')" style="background:#10b981; padding:0.45rem 1rem;">✅ Onayla</button>
+              <button class="btn-admin btn-danger" onclick="onaylaKonu(${k.no},'HAYIR')" style="padding:0.45rem 1rem;">✕ Reddet</button>
+            </div>` : ''}
+          </div>
+          <p style="color:#6b7280; font-size:0.88rem; margin:0 0 0.75rem;"><em>${k.neden || ''}</em></p>
+          ${k.h2ler?.length ? '<details style="cursor:pointer;"><summary style="color:#3b82f6; font-size:0.9rem;">H2 Başlıkları (' + k.h2ler.length + ' adet)</summary><ul style="margin:0.5rem 0 0 1rem; color:#374151; font-size:0.9rem;">' + k.h2ler.map(h => '<li>' + h + '</li>').join('') + '</ul></details>' : ''}
+        </div>`;
+      }).join('');
+  } catch(e) {
+    if (el) el.textContent = '';
+    list.innerHTML = '<p style="color:#ef4444;">Bağlantı hatası. blog.php erişilemedi.</p>';
+  }
+}
+
+async function onaylaKonu(no, karar) {
+  const res  = await fetch(BLOG_API + '?action=onayla', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ konu: no, karar })
+  });
+  const json = await res.json();
+  alert(json.mesaj);
+  loadOneriler();
+}
+
+// ── Yazılmış Yazılar Bölümü ──────────────────────────────────────────────────
+async function loadYazilar() {
+  const el   = document.getElementById('blog-yazi-yukleniyor');
+  const list = document.getElementById('blog-yazilar-list');
+  if (el) el.textContent = 'Yükleniyor...';
+
+  try {
+    const res  = await fetch(BLOG_API + '?action=yazilar');
+    const json = await res.json();
+    if (el) el.textContent = '';
+
+    if (!json.success) {
+      list.innerHTML = `<div style="text-align:center; padding:2rem; color:#9ca3af;">${json.mesaj}</div>`;
+      return;
+    }
+    if (!json.yazilar.length) {
+      list.innerHTML = '<p style="color:#9ca3af; text-align:center; padding:2rem 0;">Henüz yazılmış blog yok.</p>';
+      return;
+    }
+
+    list.innerHTML = json.yazilar.map(y => `
+      <div style="border:1px solid #e5e7eb; border-radius:10px; padding:1.2rem 1.5rem; margin-bottom:0.75rem; background:#fff; display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+        <div>
+          <h4 style="margin:0 0 0.25rem; color:#1f2937; font-size:0.95rem;">${y.baslik}</h4>
+          <small style="color:#9ca3af;">${y.tarih} · ${(y.boyut/1024).toFixed(1)} KB · <code>${y.slug}.html</code></small>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn-admin" onclick="onizleYazi('${y.slug}','${y.baslik.replace(/'/g,"\\'")}') " style="background:#3b82f6; padding:0.4rem 0.9rem;">Önizle</button>
+          <a class="btn-admin" href="https://digitalbohem.com.tr/blog/${y.slug}.html" target="_blank" style="text-decoration:none; padding:0.4rem 0.9rem;">Canlı</a>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    if (el) el.textContent = '';
+    list.innerHTML = '<p style="color:#ef4444;">Bağlantı hatası.</p>';
+  }
+}
+
+async function onizleYazi(slug, baslik) {
+  const res  = await fetch(BLOG_API + '?action=yazi&slug=' + slug);
+  const json = await res.json();
+  if (!json.success) { alert(json.mesaj); return; }
+
+  document.getElementById('onizleme-baslik').textContent = baslik;
+  const frame = document.getElementById('onizleme-frame');
+  frame.srcdoc = json.html;
+  document.getElementById('blog-onizleme-modal').style.display = 'block';
+}
+
+function closeOnizleme() {
+  document.getElementById('blog-onizleme-modal').style.display = 'none';
+  document.getElementById('onizleme-frame').srcdoc = '';
+}
+
+// ===== PASSWORD =====
+function changePassword() {
+  const oldPass = document.getElementById('old-pass').value;
+  const newPass = document.getElementById('new-pass').value;
+  const confirmPass = document.getElementById('new-pass-confirm').value;
+  const msg = document.getElementById('sifre-msg');
+
+  if (oldPass !== 'digital2026') { msg.textContent = 'Mevcut şifre hatalı!'; return; }
+  if (newPass.length < 6) { msg.textContent = 'Yeni şifre en az 6 karakter olmalı!'; return; }
+  if (newPass !== confirmPass) { msg.textContent = 'Şifreler eşleşmiyor!'; return; }
+
+  msg.style.color = '#10b981';
+  msg.textContent = 'Şifre başarıyla değiştirildi! (Not: Gerçek uygulamada sunucu tarafında güncellenmelidir)';
+  document.getElementById('old-pass').value = '';
+  document.getElementById('new-pass').value = '';
+  document.getElementById('new-pass-confirm').value = '';
+}
