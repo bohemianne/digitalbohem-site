@@ -62,6 +62,7 @@
 </script>
 
 <link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/form.css">
 </head>
 <body>
 
@@ -150,17 +151,51 @@
   </div>
 </section>
 
-<!-- Instagram Modal -->
-<div id="instagram-modal" class="modal">
-  <div class="modal-content">
+<!-- İletişim Formu Modal -->
+<div id="contact-modal" class="modal">
+  <div class="modal-content modal-form">
     <span class="close-modal">×</span>
-    <h2>Sipariş İçin Instagram'dan Ulaşın</h2>
-    <p>Paket: <strong id="modal-package-name"></strong></p>
-    <a href="https://instagram.com/digitalbohem" target="_blank" class="btn-instagram">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-      @digitalbohem
-    </a>
-    <p class="modal-note">DM üzerinden detayları konuşalım!</p>
+    <h2>Sipariş Ver</h2>
+    <p class="modal-subtitle">Paket: <strong id="modal-package-name"></strong></p>
+
+    <form id="contact-form" novalidate>
+      <input type="hidden" name="paket" id="form-paket">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="ad_soyad">Ad Soyad *</label>
+          <input type="text" id="ad_soyad" name="ad_soyad" placeholder="Ayşe Yılmaz" required>
+        </div>
+        <div class="form-group">
+          <label for="telefon">WhatsApp / Telefon *</label>
+          <input type="tel" id="telefon" name="telefon" placeholder="05XX XXX XX XX" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="email">E-posta</label>
+          <input type="email" id="email" name="email" placeholder="ornek@email.com">
+        </div>
+        <div class="form-group">
+          <label for="dugun_tarihi">Düğün Tarihi</label>
+          <input type="date" id="dugun_tarihi" name="dugun_tarihi">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="mesaj">Notlar / İstekler</label>
+        <textarea id="mesaj" name="mesaj" rows="3" placeholder="Renk tercihi, tema, özel istek..."></textarea>
+      </div>
+
+      <button type="submit" class="btn-gold btn-full" id="form-submit">Sipariş Gönder</button>
+
+      <div id="form-result" class="form-result" style="display:none"></div>
+
+      <p class="form-alt">Veya direkt WhatsApp:
+        <a href="https://wa.me/90XXXXXXXXXX" target="_blank" id="wa-link">Mesaj Gönder</a>
+      </p>
+    </form>
   </div>
 </div>
 
@@ -173,5 +208,61 @@
 </footer>
 
 <script src="assets/js/main.js"></script>
+<script>
+// Form modal kontrolü
+function openModal(paket) {
+  document.getElementById('modal-package-name').textContent = paket;
+  document.getElementById('form-paket').value = paket;
+  document.getElementById('contact-modal').style.display = 'flex';
+  document.getElementById('form-result').style.display = 'none';
+  document.getElementById('contact-form').reset();
+  document.getElementById('form-paket').value = paket;
+  document.getElementById('modal-package-name').textContent = paket;
+}
+
+document.querySelector('.close-modal').addEventListener('click', function() {
+  document.getElementById('contact-modal').style.display = 'none';
+});
+
+window.addEventListener('click', function(e) {
+  const modal = document.getElementById('contact-modal');
+  if (e.target === modal) modal.style.display = 'none';
+});
+
+// Form gönderimi
+document.getElementById('contact-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('form-submit');
+  const result = document.getElementById('form-result');
+
+  btn.textContent = 'Gönderiliyor...';
+  btn.disabled = true;
+
+  const data = new FormData(this);
+
+  fetch('form-handler.php', { method: 'POST', body: data })
+    .then(r => r.json())
+    .then(res => {
+      result.style.display = 'block';
+      if (res.ok) {
+        result.className = 'form-result success';
+        result.textContent = 'Siparişiniz alındı! En kısa sürede WhatsApp\'tan ulaşacağız.';
+        this.reset();
+      } else {
+        result.className = 'form-result error';
+        result.textContent = res.msg || 'Bir hata oluştu, lütfen WhatsApp\'tan yazın.';
+      }
+    })
+    .catch(() => {
+      result.style.display = 'block';
+      result.className = 'form-result error';
+      result.textContent = 'Bağlantı hatası. Lütfen WhatsApp\'tan ulaşın.';
+    })
+    .finally(() => {
+      btn.textContent = 'Sipariş Gönder';
+      btn.disabled = false;
+    });
+});
+</script>
 </body>
 </html>
