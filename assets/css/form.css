@@ -59,6 +59,8 @@
   letter-spacing: 2px;
 }
 
+.star-empty { color: #ddd; }
+
 .quote {
   color: #444;
   font-size: 0.92rem;
