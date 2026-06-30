@@ -1,9 +1,10 @@
-/* Referanslar */
+/* Referanslar — Kayan Şerit */
 
 .testimonials {
-  padding: 4rem 1.5rem;
+  padding: 4rem 0 4rem;
   background: #faf9f7;
   text-align: center;
+  overflow: hidden;
 }
 
 .testimonials h2 {
@@ -18,52 +19,53 @@
   margin-bottom: 2.5rem;
 }
 
-.testimonial-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  max-width: 1000px;
-  margin: 0 auto;
+.testimonial-track-wrapper {
+  overflow: hidden;
+  /* Kenar soluklaştırma */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
 
-@media (max-width: 768px) {
-  .testimonial-grid { grid-template-columns: 1fr; }
+.testimonial-track {
+  display: flex;
+  gap: 1.25rem;
+  width: max-content;
+  animation: testimonial-scroll 40s linear infinite;
+  padding: 0.5rem 0 1rem;
+}
+
+.testimonial-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes testimonial-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 .testimonial-card {
   background: #fff;
   border-radius: 12px;
-  padding: 1.75rem;
+  padding: 1.5rem 1.75rem;
   text-align: left;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   border: 1px solid #ececec;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.testimonial-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-}
-
-.testimonial-card.featured-review {
-  border-color: #c9a84c;
-  box-shadow: 0 4px 16px rgba(201,168,76,0.15);
+  gap: 0.75rem;
+  width: 300px;
+  flex-shrink: 0;
 }
 
 .stars {
   color: #c9a84c;
-  font-size: 1rem;
-  letter-spacing: 2px;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
 }
-
-.star-empty { color: #ddd; }
 
 .quote {
   color: #444;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   line-height: 1.65;
   flex: 1;
   margin: 0;
@@ -74,27 +76,23 @@
 
 .reviewer {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  border-top: 1px solid #f0f0f0;
-  padding-top: 0.85rem;
-}
-
-.reviewer-info {
-  display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 0.75rem;
 }
 
 .reviewer-name {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #1a1a1a;
+  display: block;
 }
 
 .reviewer-detail {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: #aaa;
+  display: block;
 }
 
 /* İletişim Formu Stilleri */
