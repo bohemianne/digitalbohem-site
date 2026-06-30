@@ -1,8 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/digi7586/public_html/
-    - /bin/cp -f $REPOSITORY_WEBROOT/index.html $DEPLOYPATH
-    - /bin/cp -f $REPOSITORY_WEBROOT/ornekler.html $DEPLOYPATH
-    - /bin/cp -f $REPOSITORY_WEBROOT/sitemap.xml $DEPLOYPATH
-    - /bin/cp -f $REPOSITORY_WEBROOT/robots.txt $DEPLOYPATH
+    - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/index.html /home/digi7586/public_html/index.html
+    - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/ornekler.html /home/digi7586/public_html/ornekler.html
+    - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/sitemap.xml /home/digi7586/public_html/sitemap.xml
+    - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/robots.txt /home/digi7586/public_html/robots.txt
