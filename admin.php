@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-$SIFRE = 'digitalbohem2026';
-$JSON_DOSYA = dirname(__DIR__) . '/ornekler-data.json';
+$SIFRE = 'digital2026';
+$JSON_DOSYA = __DIR__ . '/ornekler-data.json';
 
 // Giriş
 if (isset($_POST['sifre'])) {
