@@ -1,0 +1,177 @@
+/* ===== Blog Liste Sayfası ===== */
+
+.blog-hero {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: #fff;
+  text-align: center;
+  padding: 3.5rem 1.5rem 2.5rem;
+}
+
+.blog-hero h1 {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  color: #c9a84c;
+}
+
+.blog-hero p {
+  color: #ccc;
+  font-size: 1rem;
+}
+
+.blog-main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 640px) {
+  .blog-grid { grid-template-columns: 1fr; }
+}
+
+.blog-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #ececec;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.blog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.blog-card-body {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.blog-card-date {
+  font-size: 0.78rem;
+  color: #aaa;
+  font-weight: 500;
+}
+
+.blog-card h2 {
+  font-size: 1.05rem;
+  color: #1a1a1a;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.blog-card p {
+  font-size: 0.88rem;
+  color: #666;
+  line-height: 1.6;
+  flex: 1;
+  margin: 0;
+}
+
+.blog-card-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #c9a84c;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.blog-card-link:hover { text-decoration: underline; }
+
+.blog-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+/* ===== Blog Yazı Sayfası ===== */
+
+.blog-post {
+  padding: 3rem 1.5rem;
+}
+
+.blog-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.post-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #ececec;
+}
+
+.post-header h1 {
+  font-size: 1.9rem;
+  color: #1a1a1a;
+  line-height: 1.3;
+  margin-bottom: 0.75rem;
+}
+
+.post-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.82rem;
+  color: #aaa;
+}
+
+.post-content {
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.post-content h2 {
+  font-size: 1.25rem;
+  color: #1a1a1a;
+  margin: 2rem 0 0.75rem;
+}
+
+.post-content p {
+  margin-bottom: 1.1rem;
+}
+
+.post-content ul, .post-content ol {
+  margin: 0.75rem 0 1.1rem 1.5rem;
+}
+
+.post-content li {
+  margin-bottom: 0.4rem;
+}
+
+.post-cta {
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  margin-top: 3rem;
+  color: #fff;
+}
+
+.post-cta h3 {
+  color: #c9a84c;
+  margin-bottom: 0.5rem;
+}
+
+.post-cta p {
+  color: #ccc;
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+.nav-active,
+a.active { color: #c9a84c !important; }

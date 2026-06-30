@@ -8,3 +8,6 @@ deployment:
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/form-handler.php /home/digi7586/public_html/form-handler.php
     - /bin/mkdir -p /home/digi7586/public_html/assets/css
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/assets/css/form.css /home/digi7586/public_html/assets/css/form.css
+    - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/assets/css/blog.css /home/digi7586/public_html/assets/css/blog.css
+    - /bin/mkdir -p /home/digi7586/public_html/blog
+    - /bin/cp -rf /home/digi7586/repositories/digitalbohem-site/blog/. /home/digi7586/public_html/blog/
