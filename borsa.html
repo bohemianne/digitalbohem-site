@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Borsa Takip | Digital Bohem</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="borsa-body">
+
+<header class="borsa-header">
+  <div class="borsa-logo">📈 Digital Bohem Borsa</div>
+  <nav class="borsa-nav">
+    <a href="../index.html">Ana Sayfa</a>
+    <a href="../ornekler.html">Örnekler</a>
+    <a href="../admin/index.html">Admin</a>
+  </nav>
+</header>
+
+<div class="borsa-container">
+
+  <!-- Market Overview -->
+  <div class="market-grid">
+    <div class="market-card">
+      <h3>BIST 100</h3>
+      <div class="market-value" id="bist-val">—</div>
+      <div class="market-change" id="bist-change">—</div>
+    </div>
+    <div class="market-card">
+      <h3>NASDAQ</h3>
+      <div class="market-value" id="nasdaq-val">—</div>
+      <div class="market-change" id="nasdaq-change">—</div>
+    </div>
+    <div class="market-card">
+      <h3>NYSE (DJI)</h3>
+      <div class="market-value" id="nyse-val">—</div>
+      <div class="market-change" id="nyse-change">—</div>
+    </div>
+    <div class="market-card">
+      <h3>EURO STOXX 50</h3>
+      <div class="market-value" id="euro-val">—</div>
+      <div class="market-change" id="euro-change">—</div>
+    </div>
+  </div>
+
+  <!-- Stock Table -->
+  <table class="borsa-table">
+    <thead>
+      <tr>
+        <th>Sembol</th>
+        <th>İsim</th>
+        <th>Piyasa</th>
+        <th>Fiyat</th>
+        <th>Değişim</th>
+        <th>Hacim</th>
+      </tr>
+    </thead>
+    <tbody id="stock-tbody">
+      <tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:2rem;">Veriler yükleniyor...</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Hisse Listesi Yönetimi -->
+  <div class="alarm-section">
+    <h3>📋 Hisse Listemi Yönet</h3>
+    <div class="form-row">
+      <div class="symbol-ac">
+        <input type="text" id="stock-symbol" placeholder="Sembol veya şirket adı ara..." autocomplete="off">
+        <ul id="symbol-dropdown"></ul>
+      </div>
+      <input type="text" id="stock-name" placeholder="Şirket Adı" style="flex:2;">
+      <select id="stock-market">
+        <option value="BIST">BIST</option>
+        <option value="NASDAQ">NASDAQ</option>
+        <option value="NYSE">NYSE</option>
+        <option value="EURO">EURO</option>
+      </select>
+      <button class="btn-borsa" onclick="addStock()">Ekle</button>
+    </div>
+    <p style="color:#9ca3af;font-size:0.82rem;margin-top:0.4rem;">
+      Listede yoksa sembolü kendiniz yazıp ekleyebilirsiniz.
+      EURO hisseleri için Yahoo Finance formatı gerekli (SAP.DE, ASML.AS…).
+    </p>
+    <div id="stock-manage-list"></div>
+  </div>
+
+  <!-- Alarms -->
+  <div class="alarm-section">
+    <h3>🔔 Fiyat Alarmı Ekle</h3>
+    <div class="form-row">
+      <select id="alarm-symbol"></select>
+      <select id="alarm-type">
+        <option value="above">Yukarı Kırarsa</option>
+        <option value="below">Aşağı Kırarsa</option>
+      </select>
+      <input type="number" id="alarm-price" placeholder="Hedef Fiyat" step="0.01">
+      <button class="btn-borsa" onclick="addAlarm()">Alarm Ekle</button>
+    </div>
+    <div id="alarm-list"></div>
+  </div>
+
+  <!-- Telegram -->
+  <div class="alarm-section" style="display:none;">
+    <h3>📱 Telegram Bildirimleri</h3>
+    <a id="tg-deeplink" href="https://t.me/" target="_blank" rel="noopener"
+       style="display:inline-flex;align-items:center;gap:0.5rem;background:#229ED9;color:#fff;padding:0.65rem 1.4rem;border-radius:8px;font-weight:600;text-decoration:none;font-size:1rem;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.26 13.947l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.888.612z"/>
+      </svg>
+      Telegram Bildirimleri Al
+    </a>
+    <p style="color:#9ca3af;font-size:0.82rem;margin-top:0.6rem;">
+      Butona tıklayarak Telegram botunu açın. Fiyat alarmları tetiklenince otomatik bildirim alırsınız.
+    </p>
+  </div>
+
+  <!-- Export -->
+  <div class="alarm-section">
+    <h3>📊 Veri İşlemleri</h3>
+    <button class="btn-borsa" onclick="exportToExcel()">Excel'e Aktar</button>
+    <button class="btn-borsa" onclick="refreshData()">Verileri Yenile</button>
+    <span id="fetch-status" style="margin-left:1rem;font-size:0.85rem;"></span>
+    <span id="last-update" style="color:#9ca3af;margin-left:1rem;font-size:0.85rem;"></span>
+  </div>
+
+</div>
+
+<script src="../assets/js/borsa.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /borsa/
+
+Sitemap: https://digitalbohem.com.tr/sitemap.xml
