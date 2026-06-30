@@ -2,4 +2,7 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/digi7586/public_html/
-    - /usr/bin/rsync -av --delete --exclude='.git' --exclude='.gitignore' --exclude='.cpanel.yml' --exclude='KURULUM-REHBERI.md' $REPOSITORY_WEBROOT/ $DEPLOYPATH
+    - /bin/cp -f $REPOSITORY_WEBROOT/index.html $DEPLOYPATH
+    - /bin/cp -f $REPOSITORY_WEBROOT/ornekler.html $DEPLOYPATH
+    - /bin/cp -f $REPOSITORY_WEBROOT/sitemap.xml $DEPLOYPATH
+    - /bin/cp -f $REPOSITORY_WEBROOT/robots.txt $DEPLOYPATH
