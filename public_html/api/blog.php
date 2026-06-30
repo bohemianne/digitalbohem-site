@@ -3,139 +3,97 @@ header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
 
-$AGENTS_DIR = '/home/bohem/.digitalbohem-agents';
-$SITE_BLOG  = '/home/bohem/Masaüstü/digitalbohem-site/blog';
+$DATA_DIR    = __DIR__ . '/../data/';
+$ONERILER_F  = $DATA_DIR . 'blog_oneriler.json';
+$YAZILAR_F   = $DATA_DIR . 'blog_yazilar.json';
 
-$action = $_GET['action'] ?? 'oneriler';
-
-// ── Son öneri dosyasını bul ──────────────────────────────────────────────────
-function sonOneriDosyasi($dir) {
-    $dosyalar = glob($dir . '/blog-oneriler-*.md');
-    if (!$dosyalar) return null;
-    usort($dosyalar, fn($a,$b) => filemtime($b) - filemtime($a));
-    return $dosyalar[0];
+function readJson($path) {
+    if (!file_exists($path)) return null;
+    return json_decode(file_get_contents($path), true);
+}
+function writeJson($path, $data) {
+    file_put_contents($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
-// ── Öneri dosyasını parse et ─────────────────────────────────────────────────
-function parseOneriler($dosya) {
-    $icerik  = file_get_contents($dosya);
-    $konular = [];
-    // Her ## Konu N bloğunu ayır
-    preg_match_all('/## Konu (\d+)(.*?)(?=## Konu \d+|$)/s', $icerik, $m, PREG_SET_ORDER);
-    foreach ($m as $blok) {
-        $no   = (int)$blok[1];
-        $metin = trim($blok[2]);
-        $data  = ['no' => $no, 'ham' => $metin];
-        foreach ([
-            'ONAY'           => 'onay',
-            'Başlık'         => 'baslik',
-            'Hedef Kelime'   => 'hedef',
-            'Neden Şimdi'    => 'neden',
-            'Tahmini Hacim'  => 'hacim',
-            'İlk Paragraf'   => 'giris',
-        ] as $etiket => $anahtar) {
-            if (preg_match('/^' . preg_quote($etiket, '/') . ':\s*(.+)$/m', $metin, $mm)) {
-                $data[$anahtar] = trim($mm[1]);
-            }
-        }
-        // H2 başlıkları
-        if (preg_match('/H2 Başlıkları:\s*((?:\n- .+)+)/s', $metin, $hm)) {
-            $data['h2ler'] = array_values(array_filter(
-                array_map(fn($l) => ltrim(trim($l), '- '),
-                explode("\n", trim($hm[1])))
-            ));
-        }
-        $konular[] = $data;
-    }
-    return $konular;
-}
+$action = $_GET['action'] ?? '';
+$method = $_SERVER['REQUEST_METHOD'];
 
 // ── GET: oneriler ────────────────────────────────────────────────────────────
 if ($action === 'oneriler') {
-    $dosya = sonOneriDosyasi($AGENTS_DIR);
-    if (!$dosya) {
-        echo json_encode(['success' => false, 'mesaj' => 'Henüz öneri dosyası yok. Pazartesi 09:30\'da otomatik oluşur.']);
+    $data = readJson($ONERILER_F);
+    if (!$data) {
+        echo json_encode(['success' => false, 'mesaj' => "Henüz öneri yok. Pazartesi 09:30'da otomatik oluşur."]);
         exit;
     }
-    echo json_encode([
-        'success' => true,
-        'dosya'   => basename($dosya),
-        'tarih'   => date('Y-m-d', filemtime($dosya)),
-        'konular' => parseOneriler($dosya)
+    echo json_encode(['success' => true] + $data);
+    exit;
+}
+
+// ── POST: oneriler-kaydet — ajan tarafından çağrılır ─────────────────────────
+if ($action === 'oneriler-kaydet' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!isset($input['konular'])) {
+        echo json_encode(['success' => false, 'mesaj' => 'konular alanı zorunlu.']);
+        exit;
+    }
+    writeJson($ONERILER_F, [
+        'tarih'   => $input['tarih'] ?? date('Y-m-d'),
+        'dosya'   => $input['dosya'] ?? '',
+        'konular' => $input['konular'],
     ]);
+    echo json_encode(['success' => true, 'mesaj' => 'Öneriler kaydedildi.']);
     exit;
 }
 
 // ── POST: onayla ─────────────────────────────────────────────────────────────
-if ($action === 'onayla' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input  = json_decode(file_get_contents('php://input'), true);
-    $konu   = (int)($input['konu'] ?? 0);
-    $karar  = strtoupper(trim($input['karar'] ?? ''));  // EVET / HAYIR
+if ($action === 'onayla' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $konu  = (int)($input['konu'] ?? 0);
+    $karar = strtoupper(trim($input['karar'] ?? ''));
 
     if (!in_array($karar, ['EVET', 'HAYIR'])) {
         echo json_encode(['success' => false, 'mesaj' => 'Geçersiz karar.']);
         exit;
     }
-
-    $dosya = sonOneriDosyasi($AGENTS_DIR);
-    if (!$dosya) {
-        echo json_encode(['success' => false, 'mesaj' => 'Öneri dosyası bulunamadı.']);
+    $data = readJson($ONERILER_F);
+    if (!$data) {
+        echo json_encode(['success' => false, 'mesaj' => 'Öneri bulunamadı.']);
         exit;
     }
-
-    $icerik  = file_get_contents($dosya);
-    $pattern = '/(## Konu ' . $konu . '\s*\nONAY:) [^\n]+/';
-    $yeni    = '${1} ' . $karar;
-    $sonuc   = preg_replace($pattern, $yeni, $icerik, 1, $degisti);
-
+    $degisti = false;
+    foreach ($data['konular'] as &$k) {
+        if ($k['no'] === $konu) { $k['onay'] = $karar; $degisti = true; break; }
+    }
     if (!$degisti) {
-        echo json_encode(['success' => false, 'mesaj' => 'Konu ' . $konu . ' bulunamadı veya zaten değiştirilmiş.']);
+        echo json_encode(['success' => false, 'mesaj' => 'Konu ' . $konu . ' bulunamadı.']);
         exit;
     }
-
-    file_put_contents($dosya, $sonuc);
-    echo json_encode(['success' => true, 'mesaj' => 'Konu ' . $konu . ' için karar: ' . $karar]);
+    writeJson($ONERILER_F, $data);
+    echo json_encode(['success' => true, 'mesaj' => 'Konu ' . $konu . ' → ' . $karar]);
     exit;
 }
 
-// ── GET: yazilar — üretilmiş HTML blog yazıları ──────────────────────────────
+// ── GET: yazilar ─────────────────────────────────────────────────────────────
 if ($action === 'yazilar') {
-    if (!is_dir($SITE_BLOG)) {
-        echo json_encode(['success' => false, 'mesaj' => 'Blog dizini bulunamadı: ' . $SITE_BLOG]);
-        exit;
-    }
-    $dosyalar = glob($SITE_BLOG . '/*.html');
-    $liste    = [];
-    foreach ($dosyalar as $d) {
-        if (basename($d) === 'index.html') continue;
-        $html  = file_get_contents($d);
-        $baslik = '';
-        $tarih  = '';
-        if (preg_match('/<title>([^<|]+)/', $html, $tm)) $baslik = trim(explode('|', $tm[1])[0]);
-        if (preg_match('/<time[^>]*>([^<]+)<\/time>/', $html, $dt)) $tarih = trim($dt[1]);
-        $liste[] = [
-            'slug'   => basename($d, '.html'),
-            'baslik' => $baslik,
-            'tarih'  => $tarih,
-            'boyut'  => filesize($d),
-        ];
-    }
-    usort($liste, fn($a,$b) => strcmp($b['tarih'], $a['tarih']));
-    echo json_encode(['success' => true, 'yazilar' => $liste]);
+    $data = readJson($YAZILAR_F) ?? [];
+    echo json_encode(['success' => true, 'yazilar' => $data]);
     exit;
 }
 
-// ── GET: yazi?slug=... — tek yazı içeriği ────────────────────────────────────
-if ($action === 'yazi') {
-    $slug = preg_replace('/[^a-z0-9\-]/', '', $_GET['slug'] ?? '');
-    $dosya = $SITE_BLOG . '/' . $slug . '.html';
-    if (!file_exists($dosya)) {
-        echo json_encode(['success' => false, 'mesaj' => 'Yazı bulunamadı.']);
-        exit;
-    }
-    echo json_encode(['success' => true, 'html' => file_get_contents($dosya)]);
+// ── POST: yazi-kaydet — blog yazı ajanı tarafından çağrılır ──────────────────
+if ($action === 'yazi-kaydet' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $yazilar = readJson($YAZILAR_F) ?? [];
+    $yazilar[] = [
+        'slug'   => $input['slug']   ?? '',
+        'baslik' => $input['baslik'] ?? '',
+        'tarih'  => $input['tarih']  ?? date('Y-m-d'),
+        'url'    => 'https://digitalbohem.com.tr/blog/' . ($input['slug'] ?? '') . '.html',
+    ];
+    writeJson($YAZILAR_F, $yazilar);
+    echo json_encode(['success' => true, 'mesaj' => 'Yazı kaydedildi.']);
     exit;
 }
 
-echo json_encode(['success' => false, 'mesaj' => 'Bilinmeyen action.']);
+echo json_encode(['success' => false, 'mesaj' => 'Bilinmeyen action: ' . htmlspecialchars($action)]);
 ?>
