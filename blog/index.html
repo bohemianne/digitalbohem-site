@@ -37,31 +37,52 @@
 </section>
 
 <main class="blog-main">
-  <div class="blog-grid">
-
-    <!-- BLOG_POSTS_START -->
-    <!-- BLOG_POSTS_END -->
-
-    <div class="blog-empty" id="blog-empty">
+  <div class="blog-grid" id="blog-grid">
+    <div class="blog-empty" id="blog-empty" style="display:none;">
       <p>İlk yazı bu hafta yayınlanıyor.</p>
     </div>
-
   </div>
 </main>
 
 <footer class="site-footer">
-  <p>© 2026 Digital Bohem. Tüm hakları saklıdır.</p>
+  <p>© 2026 POLARİS. Tüm hakları saklıdır.</p>
   <div class="social-links">
-    <a href="https://instagram.com/digital.davet" target="_blank">Instagram</a>
+    <a href="https://instagram.com/digitalbohem" target="_blank">Instagram</a>
     <a href="index.html">Blog</a>
   </div>
 </footer>
 
 <script src="../assets/js/main.js"></script>
 <script>
-  if (document.querySelectorAll('.blog-card').length > 0) {
-    document.getElementById('blog-empty').style.display = 'none';
-  }
+fetch('../api/blog.php?action=yazilar')
+  .then(r => r.json())
+  .then(data => {
+    const grid = document.getElementById('blog-grid');
+    const empty = document.getElementById('blog-empty');
+    if (!data.success || !data.yazilar.length) {
+      empty.style.display = '';
+      return;
+    }
+    [...data.yazilar].reverse().forEach(y => {
+      const tarih = y.tarih ? new Date(y.tarih).toLocaleDateString('tr-TR', {day:'2-digit',month:'long',year:'numeric'}) : '';
+      const kart = document.createElement('article');
+      kart.className = 'blog-card';
+      kart.innerHTML = `
+        <div class="blog-card-thumb">
+          <svg width="36" height="36" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="22" cy="32" r="14" stroke="white" stroke-width="4" fill="none"/>
+            <circle cx="42" cy="32" r="14" stroke="rgba(255,255,255,0.7)" stroke-width="4" fill="none"/>
+          </svg>
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-card-date">${tarih}</span>
+          <h2>${y.baslik}</h2>
+          <a href="${y.slug}.html" class="blog-card-link">Devamını Oku →</a>
+        </div>`;
+      grid.insertBefore(kart, empty);
+    });
+  })
+  .catch(() => { document.getElementById('blog-empty').style.display = ''; });
 </script>
 </body>
 </html>

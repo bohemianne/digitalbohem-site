@@ -45,6 +45,15 @@
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
+.blog-card-thumb {
+  height: 160px;
+  background: linear-gradient(135deg, #e91e8c 0%, #b03a9e 40%, #4bbfe3 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .blog-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(72,180,220,0.15);

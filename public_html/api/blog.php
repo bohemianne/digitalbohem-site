@@ -183,6 +183,12 @@ if ($action === 'taslak-yayinla' && $method === 'POST') {
     if (file_exists($index_path)) {
         $kart = <<<KART
     <article class="blog-card">
+      <div class="blog-card-thumb">
+        <svg width="36" height="36" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="22" cy="32" r="14" stroke="white" stroke-width="4" fill="none"/>
+          <circle cx="42" cy="32" r="14" stroke="rgba(255,255,255,0.7)" stroke-width="4" fill="none"/>
+        </svg>
+      </div>
       <div class="blog-card-body">
         <span class="blog-card-date">$tarih</span>
         <h2>$baslik</h2>
@@ -280,6 +286,12 @@ if ($action === 'yayinla' && $method === 'POST') {
     if (file_exists($index_path)) {
         $kart = <<<KART
     <article class="blog-card">
+      <div class="blog-card-thumb">
+        <svg width="36" height="36" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="22" cy="32" r="14" stroke="white" stroke-width="4" fill="none"/>
+          <circle cx="42" cy="32" r="14" stroke="rgba(255,255,255,0.7)" stroke-width="4" fill="none"/>
+        </svg>
+      </div>
       <div class="blog-card-body">
         <span class="blog-card-date">$tarih</span>
         <h2>$baslik</h2>
