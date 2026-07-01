@@ -242,12 +242,19 @@ body {
   color: var(--text-muted);
 }
 .package-card ul li:before {
-  content: "✓";
-  color: var(--ice);
-  font-weight: bold;
-  margin-right: 0.5rem;
+  content: "";
 }
-.package-card.featured ul li:before { color: var(--fuchsia); }
+.package-card.featured ul li:before { content: ""; }
+
+.package-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--ice-light);
+  text-align: left;
+}
 
 /* ===== MODAL ===== */
 .modal {
