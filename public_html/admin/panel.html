@@ -15,7 +15,6 @@
     <a href="#" onclick="showSection('ornekler')">🖼️ Örnekler</a>
     <a href="#" onclick="showSection('fiyatlar')">💰 Fiyatlar</a>
     <a href="#" onclick="showSection('blog')">📝 Blog</a>
-    <a href="#" onclick="showSection('telegram')">📱 Telegram</a>
     <a href="#" onclick="showSection('sifre')">🔑 Şifre Değiştir</a>
     <a href="index.html" style="margin-top:auto; color:#ef4444;">🚪 Çıkış</a>
   </aside>
@@ -155,18 +154,6 @@
       </div>
     </div>
 
-    <!-- Telegram Section -->
-    <div id="sec-telegram" class="admin-section hidden">
-      <h3>Telegram Bot Ayarları</h3>
-      <div style="max-width:500px;">
-        <label style="display:block; margin-bottom:0.5rem; color:#666;">Bot Token:</label>
-        <input type="text" id="admin-tg-token" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #ddd; border-radius:8px;">
-        <label style="display:block; margin-bottom:0.5rem; color:#666;">Chat ID:</label>
-        <input type="text" id="admin-tg-chat" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #ddd; border-radius:8px;">
-        <button class="btn-admin" onclick="saveAdminTelegram()">Kaydet</button>
-        <button class="btn-admin" onclick="testTelegram()">Test Mesajı Gönder</button>
-      </div>
-    </div>
 
     <!-- Şifre Section -->
     <div id="sec-sifre" class="admin-section hidden">
