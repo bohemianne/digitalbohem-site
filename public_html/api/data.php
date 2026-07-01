@@ -5,18 +5,21 @@ header('Access-Control-Allow-Methods: GET, POST');
 
 $dataDir = __DIR__ . '/../data/';
 
-function readJson($file) {
+function jsonPath($file) {
     global $dataDir;
-    $path = $dataDir . $file . '.json';
+    // ornekler tablosu kök dizindeki ornekler-data.json'a yönlendirilir
+    if ($file === 'ornekler') return __DIR__ . '/../ornekler-data.json';
+    return $dataDir . $file . '.json';
+}
+
+function readJson($file) {
+    $path = jsonPath($file);
     if (!file_exists($path)) return [];
-    $content = file_get_contents($path);
-    return json_decode($content, true) ?: [];
+    return json_decode(file_get_contents($path), true) ?: [];
 }
 
 function writeJson($file, $data) {
-    global $dataDir;
-    $path = $dataDir . $file . '.json';
-    file_put_contents($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    file_put_contents(jsonPath($file), json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
 $method = $_SERVER['REQUEST_METHOD'];

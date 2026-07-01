@@ -45,16 +45,29 @@
     <!-- Örnekler Section -->
     <div id="sec-ornekler" class="admin-section hidden">
       <h3>Örnek Yönetimi</h3>
-      <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; align-items:center;">
-        <select id="ornek-kategori" style="padding:0.5rem; border:1px solid #ddd; border-radius:8px;">
-          <option value="dugun">Düğün Web Sitesi</option>
-          <option value="animasyonlu">Animasyonlu Davetiye</option>
-          <option value="tek-sayfa">Tek Sayfa Davetiye</option>
-        </select>
-        <input type="text" id="ornek-baslik" placeholder="Başlık (ör: Klasik Düğün)" style="padding:0.5rem; flex:1; min-width:150px; border:1px solid #ddd; border-radius:8px;">
-        <input type="text" id="ornek-url" placeholder="Canva embed linki veya resim URL'si" style="padding:0.5rem; flex:2; min-width:220px; border:1px solid #ddd; border-radius:8px;">
-        <button class="btn-admin" onclick="addOrnek()">Ekle</button>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; max-width:700px; margin-bottom:0.5rem;">
+        <div>
+          <label style="font-size:0.8rem; color:#6b7280; display:block; margin-bottom:0.25rem;">Kategori</label>
+          <select id="ornek-kategori" style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:8px;">
+            <option value="web">Dijital Düğün Web Sitesi</option>
+            <option value="video">Animasyonlu Düğün Davetiyesi</option>
+            <option value="pdf">Karekodlu Tek Sayfa Davetiye</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.8rem; color:#6b7280; display:block; margin-bottom:0.25rem;">Başlık (çift isim, ör: Aysel & Ahmet)</label>
+          <input type="text" id="ornek-baslik" placeholder="Aysel & Ahmet" style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+        </div>
+        <div style="grid-column:1/-1;">
+          <label style="font-size:0.8rem; color:#6b7280; display:block; margin-bottom:0.25rem;">Canva URL</label>
+          <input type="text" id="ornek-canva-url" placeholder="https://www.canva.com/design/..." style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+        </div>
+        <div style="grid-column:1/-1;">
+          <label style="font-size:0.8rem; color:#6b7280; display:block; margin-bottom:0.25rem;">Açıklama</label>
+          <input type="text" id="ornek-aciklama" placeholder="Krem tonlarında zarif animasyonlu düğün davetiyesi" style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+        </div>
       </div>
+      <button class="btn-admin" onclick="addOrnek()" style="margin-bottom:1.5rem;">Ekle</button>
       <div id="ornek-list"></div>
     </div>
 

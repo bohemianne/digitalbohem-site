@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   renderDavetiyeler();
   renderFiyatlar();
-  renderOrnekler();
   loadTelegramSettings();
 });
 
@@ -21,6 +20,7 @@ function showSection(id) {
   document.querySelectorAll('.admin-sidebar a').forEach(a => a.classList.remove('active'));
   event.target.classList.add('active');
   if (id === 'blog') loadBloglar();
+  if (id === 'ornekler') loadOrnekler();
 }
 
 // ===== DAVETIYE CRUD =====
@@ -114,50 +114,69 @@ function saveFiyatlar() {
 }
 
 // ===== ÖRNEKLER =====
-const KATEGORILER = [
-  { key: 'dugun', label: 'Düğün Web Sitesi' },
-  { key: 'animasyonlu', label: 'Animasyonlu Davetiye' },
-  { key: 'tek-sayfa', label: 'Tek Sayfa Davetiye' }
-];
+const KAT_LABEL = { web: 'Dijital Düğün Web Sitesi', video: 'Animasyonlu Düğün Davetiyesi', pdf: 'Karekodlu Tek Sayfa Davetiye' };
 
-function renderOrnekler() {
+async function loadOrnekler() {
   const list = document.getElementById('ornek-list');
   if (!list) return;
+  list.innerHTML = '<p style="color:#9ca3af;">Yükleniyor...</p>';
+  const res  = await fetch('../api/data.php?table=ornekler');
+  const json = await res.json();
+  renderOrnekler(json.data || []);
+}
 
-  list.innerHTML = KATEGORILER.map(kat => {
-    const items = ornekler.filter(o => o.kategori === kat.key);
+function renderOrnekler(ornekler) {
+  const list = document.getElementById('ornek-list');
+  if (!list) return;
+  if (!ornekler.length) {
+    list.innerHTML = '<p style="color:#9ca3af;">Henüz örnek yok.</p>';
+    return;
+  }
+  const gruplar = {};
+  ornekler.forEach(o => { (gruplar[o.kategori] = gruplar[o.kategori] || []).push(o); });
+  list.innerHTML = Object.entries(KAT_LABEL).map(([key, label]) => {
+    const items = gruplar[key] || [];
     const rows = items.length === 0
-      ? '<p style="color:#9ca3af; margin:0.5rem 0;">Henüz örnek eklenmemiş.</p>'
+      ? '<p style="color:#9ca3af; margin:0.5rem 0; font-size:0.88rem;">Henüz örnek eklenmemiş.</p>'
       : items.map(o => `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:0.7rem 1rem; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; margin-top:0.5rem; gap:1rem;">
           <div style="flex:1; overflow:hidden;">
-            <strong>${o.baslik}</strong><br>
-            <small style="color:#9ca3af; word-break:break-all;">${o.url}</small>
+            <strong>${o.baslik}</strong>
+            <p style="margin:0.2rem 0 0; color:#6b7280; font-size:0.85rem;">${o.aciklama || ''}</p>
+            <small style="color:#9ca3af; word-break:break-all;">${o.canva_url || ''}</small>
           </div>
-          <button class="btn-admin btn-danger" onclick="removeOrnek(${o.id})">Sil</button>
+          <button class="btn-admin btn-danger" onclick="removeOrnek('${o.id}')">Sil</button>
         </div>`).join('');
-    return `<h4 style="color:#6b7280; margin:1.5rem 0 0.5rem; border-bottom:1px solid #e5e7eb; padding-bottom:0.4rem;">${kat.label}</h4>${rows}`;
+    return `<h4 style="color:#6b7280; margin:1.5rem 0 0.5rem; border-bottom:1px solid #e5e7eb; padding-bottom:0.4rem;">${label}</h4>${rows}`;
   }).join('');
 }
 
-function addOrnek() {
-  const kategori = document.getElementById('ornek-kategori').value;
-  const baslik = document.getElementById('ornek-baslik').value.trim();
-  const url = document.getElementById('ornek-url').value.trim();
-  if (!baslik || !url) { alert('Başlık ve URL gerekli!'); return; }
+async function addOrnek() {
+  const kategori  = document.getElementById('ornek-kategori').value;
+  const baslik    = document.getElementById('ornek-baslik').value.trim();
+  const canva_url = document.getElementById('ornek-canva-url').value.trim();
+  const aciklama  = document.getElementById('ornek-aciklama').value.trim();
+  if (!baslik) { alert('Başlık gerekli!'); return; }
 
-  ornekler.push({ id: Date.now(), kategori, baslik, url });
-  localStorage.setItem('db_ornekler', JSON.stringify(ornekler));
-  renderOrnekler();
+  await fetch('../api/data.php?table=ornekler', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'add', data: { id: 'ornek-' + Date.now(), kategori, baslik, canva_url, aciklama } })
+  });
   document.getElementById('ornek-baslik').value = '';
-  document.getElementById('ornek-url').value = '';
+  document.getElementById('ornek-canva-url').value = '';
+  document.getElementById('ornek-aciklama').value = '';
+  loadOrnekler();
 }
 
-function removeOrnek(id) {
+async function removeOrnek(id) {
   if (!confirm('Bu örneği silmek istiyor musunuz?')) return;
-  ornekler = ornekler.filter(o => o.id !== id);
-  localStorage.setItem('db_ornekler', JSON.stringify(ornekler));
-  renderOrnekler();
+  await fetch('../api/data.php?table=ornekler', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete', id })
+  });
+  loadOrnekler();
 }
 
 // ===== TELEGRAM =====
