@@ -214,7 +214,7 @@ function testTelegram() {
 const BLOG_API = '../api/blog.php';
 
 function blogTab(sekme) {
-  ['oneriler', 'yazilar'].forEach(s => {
+  ['oneriler', 'taslaklar', 'yazilar'].forEach(s => {
     document.getElementById('blog-tab-' + s).style.display = s === sekme ? '' : 'none';
     const btn = document.getElementById('btab-' + s);
     if (btn) {
@@ -223,6 +223,7 @@ function blogTab(sekme) {
     }
   });
   if (sekme === 'oneriler') loadOneriler();
+  else if (sekme === 'taslaklar') loadTaslaklar();
   else loadYazilar();
 }
 
@@ -328,11 +329,74 @@ async function onizleYazi(slug, baslik) {
   const res  = await fetch(BLOG_API + '?action=yazi&slug=' + slug);
   const json = await res.json();
   if (!json.success) { alert(json.mesaj); return; }
-
   document.getElementById('onizleme-baslik').textContent = baslik;
-  const frame = document.getElementById('onizleme-frame');
-  frame.srcdoc = json.html;
+  document.getElementById('onizleme-frame').srcdoc = json.html;
   document.getElementById('blog-onizleme-modal').style.display = 'block';
+}
+
+async function onizleTaslak(slug, baslik) {
+  const res  = await fetch(BLOG_API + '?action=taslak&slug=' + slug);
+  const json = await res.json();
+  if (!json.success) { alert(json.mesaj); return; }
+  document.getElementById('onizleme-baslik').textContent = baslik + ' (TASLAK)';
+  document.getElementById('onizleme-frame').srcdoc = json.html;
+  document.getElementById('blog-onizleme-modal').style.display = 'block';
+}
+
+async function loadTaslaklar() {
+  const el   = document.getElementById('blog-taslak-yukleniyor');
+  const list = document.getElementById('blog-taslaklar-list');
+  if (el) el.textContent = 'Yükleniyor...';
+  try {
+    const res  = await fetch(BLOG_API + '?action=taslaklar');
+    const json = await res.json();
+    if (el) el.textContent = '';
+    if (!json.taslaklar || !json.taslaklar.length) {
+      list.innerHTML = '<p style="color:#9ca3af; text-align:center; padding:2rem 0;">Bekleyen taslak yok.</p>';
+      return;
+    }
+    list.innerHTML = json.taslaklar.map(t => `
+      <div style="border:2px solid #f59e0b; border-radius:10px; padding:1.2rem 1.5rem; margin-bottom:0.75rem; background:#fffbeb; display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+        <div>
+          <h4 style="margin:0 0 0.25rem; color:#1f2937; font-size:0.95rem;">${t.baslik}</h4>
+          <small style="color:#9ca3af;">${t.tarih} · Onay bekliyor · <code>${t.slug}.html</code></small>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn-admin" onclick="onizleTaslak('${t.slug}','${t.baslik.replace(/'/g,"\\'")}') " style="background:#3b82f6; padding:0.4rem 0.9rem;">Önizle</button>
+          <button class="btn-admin" onclick="taslakYayinla('${t.slug}')" style="background:#10b981; padding:0.4rem 0.9rem;">✓ Yayınla</button>
+          <button class="btn-admin" onclick="taslakSil('${t.slug}')" style="background:#ef4444; padding:0.4rem 0.9rem;">Sil</button>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    if (el) el.textContent = '';
+    list.innerHTML = '<p style="color:#ef4444;">Bağlantı hatası.</p>';
+  }
+}
+
+async function taslakYayinla(slug) {
+  if (!confirm('Bu taslağı yayınlamak istediğine emin misin?')) return;
+  try {
+    const res  = await fetch(BLOG_API + '?action=taslak-yayinla', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ slug })
+    });
+    const json = await res.json();
+    if (json.success) { alert('Yazı yayınlandı!'); loadTaslaklar(); }
+    else alert('Hata: ' + json.mesaj);
+  } catch(e) { alert('Bağlantı hatası.'); }
+}
+
+async function taslakSil(slug) {
+  if (!confirm('Taslağı silmek istediğine emin misin? Bu işlem geri alınamaz.')) return;
+  try {
+    const res  = await fetch(BLOG_API + '?action=taslak-sil', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ slug })
+    });
+    const json = await res.json();
+    if (json.success) { alert('Taslak silindi.'); loadTaslaklar(); }
+    else alert('Hata: ' + json.mesaj);
+  } catch(e) { alert('Bağlantı hatası.'); }
 }
 
 async function yaziSil(slug, baslik) {

@@ -89,6 +89,7 @@
       <!-- Sekmeler -->
       <div style="display:flex; border-bottom:2px solid #e5e7eb; margin-bottom:1.5rem;">
         <button id="btab-oneriler" onclick="blogTab('oneriler')" style="padding:0.6rem 1.2rem; border:none; background:none; cursor:pointer; font-weight:600; color:#3b82f6; border-bottom:2px solid #3b82f6; margin-bottom:-2px;">Bu Haftanın Konuları</button>
+        <button id="btab-taslaklar" onclick="blogTab('taslaklar')" style="padding:0.6rem 1.2rem; border:none; background:none; cursor:pointer; font-weight:600; color:#6b7280;">📋 Taslaklar</button>
         <button id="btab-yazilar" onclick="blogTab('yazilar')" style="padding:0.6rem 1.2rem; border:none; background:none; cursor:pointer; font-weight:600; color:#6b7280;">Yazılmış Yazılar</button>
       </div>
 
@@ -97,6 +98,13 @@
         <p style="color:#6b7280; font-size:0.9rem; margin-bottom:1rem;">Her Pazartesi 09:30'da ajan 2 konu önerir. Onayladıklarınız Perşembe ve Cumartesi otomatik yazılır.</p>
         <span id="blog-oneri-yukleniyor" style="color:#9ca3af; font-size:0.9rem;"></span>
         <div id="blog-oneriler-list"></div>
+      </div>
+
+      <!-- Taslaklar Bölümü -->
+      <div id="blog-tab-taslaklar" style="display:none;">
+        <p style="color:#6b7280; font-size:0.9rem; margin-bottom:1rem;">Ajan tarafından yazılıp senin onayını bekleyen taslaklar. Önizleyip beğenirsen Yayınla'ya bas.</p>
+        <span id="blog-taslak-yukleniyor" style="color:#9ca3af; font-size:0.9rem;"></span>
+        <div id="blog-taslaklar-list"></div>
       </div>
 
       <!-- Yazılmış Yazılar Bölümü -->

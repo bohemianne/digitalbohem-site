@@ -95,6 +95,142 @@ if ($action === 'yazi-kaydet' && $method === 'POST') {
     exit;
 }
 
+// ── GET: yazi — tek yazının HTML'ini döndürür (önizleme için) ────────────────
+if ($action === 'yazi') {
+    $slug = preg_replace('/[^a-z0-9\-]/', '', $_GET['slug'] ?? '');
+    $file = __DIR__ . '/../blog/' . $slug . '.html';
+    if (!$slug || !file_exists($file)) {
+        echo json_encode(['success' => false, 'mesaj' => 'Yazı bulunamadı.']);
+        exit;
+    }
+    echo json_encode(['success' => true, 'html' => file_get_contents($file)]);
+    exit;
+}
+
+// ── POST: taslak-kaydet — ajan taslağı kaydeder, henüz yayınlamaz ────────────
+if ($action === 'taslak-kaydet' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (($input['secret'] ?? '') !== 'polaris2026') {
+        http_response_code(403); echo json_encode(['success' => false, 'mesaj' => 'Yetkisiz.']); exit;
+    }
+    $slug = preg_replace('/[^a-z0-9\-]/', '', $input['slug'] ?? '');
+    $html = $input['html'] ?? '';
+    if (!$slug || !$html) { echo json_encode(['success' => false, 'mesaj' => 'slug ve html zorunlu.']); exit; }
+
+    $DRAFT_DIR = __DIR__ . '/../blog/taslaklar';
+    if (!is_dir($DRAFT_DIR)) mkdir($DRAFT_DIR, 0755, true);
+    file_put_contents("$DRAFT_DIR/$slug.html", $html);
+
+    $taslaklar_f = $DATA_DIR . 'blog_taslaklar.json';
+    $taslaklar = readJson($taslaklar_f) ?? [];
+    $taslaklar = array_values(array_filter($taslaklar, fn($t) => $t['slug'] !== $slug));
+    $taslaklar[] = [
+        'slug'     => $slug,
+        'baslik'   => $input['baslik'] ?? '',
+        'tarih'    => date('Y-m-d'),
+        'excerpt'  => $input['excerpt'] ?? '',
+        'konu_no'  => (int)($input['konu_no'] ?? 0),
+    ];
+    writeJson($taslaklar_f, $taslaklar);
+    echo json_encode(['success' => true, 'mesaj' => "Taslak kaydedildi: $slug"]);
+    exit;
+}
+
+// ── GET: taslaklar ───────────────────────────────────────────────────────────
+if ($action === 'taslaklar') {
+    $taslaklar_f = $DATA_DIR . 'blog_taslaklar.json';
+    $taslaklar = readJson($taslaklar_f) ?? [];
+    echo json_encode(['success' => true, 'taslaklar' => $taslaklar]);
+    exit;
+}
+
+// ── GET: taslak — tek taslağın HTML'ini döndürür ─────────────────────────────
+if ($action === 'taslak') {
+    $slug = preg_replace('/[^a-z0-9\-]/', '', $_GET['slug'] ?? '');
+    $file = __DIR__ . '/../blog/taslaklar/' . $slug . '.html';
+    if (!$slug || !file_exists($file)) { echo json_encode(['success' => false, 'mesaj' => 'Taslak bulunamadı.']); exit; }
+    echo json_encode(['success' => true, 'html' => file_get_contents($file)]);
+    exit;
+}
+
+// ── POST: taslak-yayinla — taslağı onaylayıp canlıya al ─────────────────────
+if ($action === 'taslak-yayinla' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $slug  = preg_replace('/[^a-z0-9\-]/', '', $input['slug'] ?? '');
+    if (!$slug) { echo json_encode(['success' => false, 'mesaj' => 'slug zorunlu.']); exit; }
+
+    $DRAFT_DIR = __DIR__ . '/../blog/taslaklar';
+    $BLOG_DIR  = __DIR__ . '/../blog';
+    $draft_file = "$DRAFT_DIR/$slug.html";
+    if (!file_exists($draft_file)) { echo json_encode(['success' => false, 'mesaj' => 'Taslak bulunamadı.']); exit; }
+
+    $html = file_get_contents($draft_file);
+    file_put_contents("$BLOG_DIR/$slug.html", $html);
+    unlink($draft_file);
+
+    $taslaklar_f = $DATA_DIR . 'blog_taslaklar.json';
+    $taslaklar = readJson($taslaklar_f) ?? [];
+    $meta = null;
+    foreach ($taslaklar as $t) { if ($t['slug'] === $slug) { $meta = $t; break; } }
+    $taslaklar = array_values(array_filter($taslaklar, fn($t) => $t['slug'] !== $slug));
+    writeJson($taslaklar_f, $taslaklar);
+
+    // blog/index.html'e kart ekle
+    $baslik  = $meta['baslik'] ?? $slug;
+    $excerpt = $meta['excerpt'] ?? '';
+    $tarih   = date('d.m.Y');
+    $index_path = "$BLOG_DIR/index.html";
+    if (file_exists($index_path)) {
+        $kart = <<<KART
+    <article class="blog-card">
+      <div class="blog-card-body">
+        <span class="blog-card-date">$tarih</span>
+        <h2>$baslik</h2>
+        <p>$excerpt...</p>
+        <a href="$slug.html" class="blog-card-link">Devamını Oku →</a>
+      </div>
+    </article>
+KART;
+        $index = file_get_contents($index_path);
+        $index = str_replace('<!-- BLOG_POSTS_START -->', "<!-- BLOG_POSTS_START -->\n$kart", $index);
+        file_put_contents($index_path, $index);
+    }
+
+    // yazilar listesine ekle
+    $yazilar = readJson($YAZILAR_F) ?? [];
+    $yazilar[] = ['slug' => $slug, 'baslik' => $baslik, 'tarih' => date('Y-m-d'),
+                  'url' => "https://digitalbohem.com.tr/blog/$slug.html"];
+    writeJson($YAZILAR_F, $yazilar);
+
+    // öneri durumunu güncelle
+    if ($meta && $meta['konu_no'] > 0) {
+        $data = readJson($ONERILER_F);
+        if ($data) {
+            foreach ($data['konular'] as &$k) {
+                if ($k['no'] === (int)$meta['konu_no']) { $k['onay'] = 'YAYINLANDI'; break; }
+            }
+            writeJson($ONERILER_F, $data);
+        }
+    }
+
+    echo json_encode(['success' => true, 'mesaj' => "Yayınlandı: $slug.html"]);
+    exit;
+}
+
+// ── POST: taslak-sil ─────────────────────────────────────────────────────────
+if ($action === 'taslak-sil' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $slug  = preg_replace('/[^a-z0-9\-]/', '', $input['slug'] ?? '');
+    $file  = __DIR__ . '/../blog/taslaklar/' . $slug . '.html';
+    if (file_exists($file)) unlink($file);
+    $taslaklar_f = $DATA_DIR . 'blog_taslaklar.json';
+    $taslaklar = readJson($taslaklar_f) ?? [];
+    $taslaklar = array_values(array_filter($taslaklar, fn($t) => $t['slug'] !== $slug));
+    writeJson($taslaklar_f, $taslaklar);
+    echo json_encode(['success' => true, 'mesaj' => "Taslak silindi: $slug"]);
+    exit;
+}
+
 // ── POST: yayinla — ajan HTML'i doğrudan sunucuya yazar ─────────────────────
 if ($action === 'yayinla' && $method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
