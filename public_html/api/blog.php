@@ -118,7 +118,7 @@ if ($action === 'yayinla' && $method === 'POST') {
         exit;
     }
 
-    $BLOG_DIR = __DIR__ . '/../../blog';
+    $BLOG_DIR = __DIR__ . '/../blog';
 
     // HTML dosyasını yaz
     file_put_contents("$BLOG_DIR/$slug.html", $html);
