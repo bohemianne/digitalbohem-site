@@ -202,8 +202,9 @@ KART;
         file_put_contents($index_path, $index);
     }
 
-    // yazilar listesine ekle
+    // yazilar listesine ekle (duplicate önle)
     $yazilar = readJson($YAZILAR_F) ?? [];
+    $yazilar = array_values(array_filter($yazilar, fn($y) => $y['slug'] !== $slug));
     $yazilar[] = ['slug' => $slug, 'baslik' => $baslik, 'tarih' => date('Y-m-d'),
                   'url' => "https://digitalbohem.com.tr/blog/$slug.html"];
     writeJson($YAZILAR_F, $yazilar);
@@ -316,8 +317,9 @@ KART;
         }
     }
 
-    // Yazılar listesine ekle
+    // Yazılar listesine ekle (duplicate önle)
     $yazilar = readJson($YAZILAR_F) ?? [];
+    $yazilar = array_values(array_filter($yazilar, fn($y) => $y['slug'] !== $slug));
     $yazilar[] = [
         'slug'   => $slug,
         'baslik' => $baslik,
