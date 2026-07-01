@@ -217,6 +217,22 @@ KART;
     exit;
 }
 
+// ── POST: taslak-guncelle — düzenlenmiş HTML'i kaydet ────────────────────────
+if ($action === 'taslak-guncelle' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (($input['secret'] ?? '') !== 'polaris2026') {
+        http_response_code(403); echo json_encode(['success' => false, 'mesaj' => 'Yetkisiz.']); exit;
+    }
+    $slug = preg_replace('/[^a-z0-9\-]/', '', $input['slug'] ?? '');
+    $html = $input['html'] ?? '';
+    if (!$slug || !$html) { echo json_encode(['success' => false, 'mesaj' => 'slug ve html zorunlu.']); exit; }
+    $file = __DIR__ . '/../blog/taslaklar/' . $slug . '.html';
+    if (!file_exists($file)) { echo json_encode(['success' => false, 'mesaj' => 'Taslak bulunamadı.']); exit; }
+    file_put_contents($file, $html);
+    echo json_encode(['success' => true, 'mesaj' => 'Taslak güncellendi.']);
+    exit;
+}
+
 // ── POST: taslak-sil ─────────────────────────────────────────────────────────
 if ($action === 'taslak-sil' && $method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);

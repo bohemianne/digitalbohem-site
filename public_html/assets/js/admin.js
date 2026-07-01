@@ -382,6 +382,7 @@ async function loadTaslaklar() {
         </div>
         <div style="display:flex; gap:0.5rem;">
           <button class="btn-admin" onclick="onizleTaslak('${t.slug}','${t.baslik.replace(/'/g,"\\'")}') " style="background:#3b82f6; padding:0.4rem 0.9rem;">Önizle</button>
+          <button class="btn-admin" onclick="taslakDuzenle('${t.slug}','${t.baslik.replace(/'/g,"\\'")}') " style="background:#f59e0b; padding:0.4rem 0.9rem;">Düzenle</button>
           <button class="btn-admin" onclick="taslakYayinla('${t.slug}')" style="background:#10b981; padding:0.4rem 0.9rem;">✓ Yayınla</button>
           <button class="btn-admin" onclick="taslakSil('${t.slug}')" style="background:#ef4444; padding:0.4rem 0.9rem;">Sil</button>
         </div>
@@ -390,6 +391,39 @@ async function loadTaslaklar() {
     if (el) el.textContent = '';
     list.innerHTML = '<p style="color:#ef4444;">Bağlantı hatası.</p>';
   }
+}
+
+let _duzenleSlug = '';
+
+async function taslakDuzenle(slug, baslik) {
+  const res  = await fetch(BLOG_API + '?action=taslak&slug=' + slug);
+  const json = await res.json();
+  if (!json.success) { alert(json.mesaj); return; }
+  _duzenleSlug = slug;
+  document.getElementById('duzenle-baslik').textContent = baslik + ' — Düzenle';
+  document.getElementById('duzenle-html').value = json.html;
+  document.getElementById('taslak-duzenle-modal').style.display = 'block';
+}
+
+function closeDuzenle() {
+  document.getElementById('taslak-duzenle-modal').style.display = 'none';
+  document.getElementById('duzenle-html').value = '';
+  _duzenleSlug = '';
+}
+
+async function taslakKaydet() {
+  const html = document.getElementById('duzenle-html').value;
+  if (!html.trim()) { alert('İçerik boş olamaz.'); return; }
+  try {
+    const res  = await fetch(BLOG_API + '?action=taslak-guncelle', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ secret: 'polaris2026', slug: _duzenleSlug, html })
+    });
+    const json = await res.json();
+    if (json.success) { alert('Taslak güncellendi.'); closeDuzenle(); }
+    else alert('Hata: ' + json.mesaj);
+  } catch(e) { alert('Bağlantı hatası.'); }
 }
 
 async function taslakYayinla(slug) {
