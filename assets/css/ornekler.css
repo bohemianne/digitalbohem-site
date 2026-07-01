@@ -79,29 +79,61 @@
   box-shadow: 0 8px 24px rgba(72,180,220,0.18);
 }
 
-/* Canva iframe önizleme */
-.ornek-preview {
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: var(--ice-pale);
-  overflow: hidden;
+/* Thumbnail önizleme */
+.ornek-thumb-link {
+  display: block;
   position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: var(--ice-pale);
+  text-decoration: none;
 }
 
-.ornek-iframe-wrap iframe {
+.ornek-thumb {
   width: 100%;
   height: 100%;
-  border: none;
-  pointer-events: none;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
 }
 
-.ornek-video-icon,
-.ornek-pdf-icon {
+.ornek-thumb-link:hover .ornek-thumb {
+  transform: scale(1.04);
+}
+
+.ornek-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(233,30,140,0.72);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ornek-thumb-link:hover .ornek-thumb-overlay {
+  opacity: 1;
+}
+
+.ornek-thumb-placeholder {
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, var(--ice-pale), #f0e8fd);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   color: var(--fuchsia);
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.ornek-thumb-placeholder:hover {
+  background: linear-gradient(135deg, #d8f0fc, #e8d8fc);
 }
 
 /* Kart alt bilgi */

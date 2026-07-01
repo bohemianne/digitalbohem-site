@@ -151,21 +151,50 @@ function renderOrnekler(ornekler) {
   }).join('');
 }
 
+// Thumbnail önizleme
+document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('change', e => {
+    if (e.target.id !== 'ornek-thumbnail') return;
+    const file = e.target.files[0];
+    const prev = document.getElementById('ornek-thumb-preview');
+    if (!prev) return;
+    if (file) {
+      const url = URL.createObjectURL(file);
+      prev.innerHTML = `<img src="${url}" style="max-width:200px;max-height:120px;border-radius:8px;border:1px solid #e5e7eb;">`;
+    } else {
+      prev.innerHTML = '';
+    }
+  });
+});
+
 async function addOrnek() {
   const kategori  = document.getElementById('ornek-kategori').value;
   const baslik    = document.getElementById('ornek-baslik').value.trim();
   const canva_url = document.getElementById('ornek-canva-url').value.trim();
   const aciklama  = document.getElementById('ornek-aciklama').value.trim();
+  const thumbFile = document.getElementById('ornek-thumbnail')?.files[0];
   if (!baslik) { alert('Başlık gerekli!'); return; }
+
+  let thumbnail = '';
+  if (thumbFile) {
+    const fd = new FormData();
+    fd.append('thumbnail', thumbFile);
+    const upRes = await fetch('../api/thumbnail-upload.php', { method: 'POST', body: fd });
+    const upJson = await upRes.json();
+    if (upJson.success) thumbnail = upJson.path;
+    else { alert('Resim yüklenemedi: ' + upJson.mesaj); return; }
+  }
 
   await fetch('../api/data.php?table=ornekler', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'add', data: { id: 'ornek-' + Date.now(), kategori, baslik, canva_url, aciklama } })
+    body: JSON.stringify({ action: 'add', data: { id: 'ornek-' + Date.now(), kategori, baslik, canva_url, aciklama, thumbnail } })
   });
   document.getElementById('ornek-baslik').value = '';
   document.getElementById('ornek-canva-url').value = '';
   document.getElementById('ornek-aciklama').value = '';
+  if (document.getElementById('ornek-thumbnail')) document.getElementById('ornek-thumbnail').value = '';
+  if (document.getElementById('ornek-thumb-preview')) document.getElementById('ornek-thumb-preview').innerHTML = '';
   loadOrnekler();
 }
 

@@ -65,6 +65,11 @@
           <label style="font-size:0.8rem; color:#6b7280; display:block; margin-bottom:0.25rem;">Açıklama</label>
           <input type="text" id="ornek-aciklama" placeholder="Krem tonlarında zarif animasyonlu düğün davetiyesi" style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
         </div>
+        <div style="grid-column:1/-1;">
+          <label style="font-size:0.8rem; color:#6b7280; display:block; margin-bottom:0.25rem;">Önizleme Resmi (PNG/JPG) <span style="color:#9ca3af;">— Canva'dan export edin</span></label>
+          <input type="file" id="ornek-thumbnail" accept="image/png,image/jpeg,image/webp" style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; background:#fafafa;">
+          <div id="ornek-thumb-preview" style="margin-top:0.5rem;"></div>
+        </div>
       </div>
       <button class="btn-admin" onclick="addOrnek()" style="margin-bottom:1.5rem;">Ekle</button>
       <div id="ornek-list"></div>
