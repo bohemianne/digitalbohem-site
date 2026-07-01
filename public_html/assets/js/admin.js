@@ -247,29 +247,48 @@ async function loadOneriler() {
       return;
     }
 
+    const bekleyenler = json.konular.filter(k => k.onay === 'BEKLIYOR' || k.onay === 'EVET');
+    const tamamlananlar = json.konular.filter(k => k.onay !== 'BEKLIYOR' && k.onay !== 'EVET');
+
+    if (!json.konular.length) {
+      list.innerHTML = '<p style="color:#9ca3af; text-align:center; padding:2rem 0;">Bu hafta henüz öneri yok. Pazartesi 09:30\'da ajan otomatik önerir.</p>';
+      return;
+    }
+
     const RENK = { 'BEKLIYOR': ['#fef3c7','#92400e'], 'EVET': ['#d1fae5','#065f46'], 'HAYIR': ['#fee2e2','#991b1b'], 'YAYINLANDI': ['#ede9fe','#4c1d95'] };
-    list.innerHTML = '<p style="color:#9ca3af; font-size:0.85rem; margin-bottom:1rem;">Öneri dosyası: <code>' + json.dosya + '</code></p>' +
-      json.konular.map(k => {
-        const renk = RENK[k.onay?.split(' ')[0]] || RENK['BEKLIYOR'];
-        const bekliyor = k.onay === 'BEKLIYOR';
-        return `
-        <div style="border:1px solid #e5e7eb; border-radius:10px; padding:1.5rem; margin-bottom:1rem; background:#fff;">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
-            <div>
-              <span style="background:${renk[0]}; color:${renk[1]}; padding:0.2rem 0.7rem; border-radius:20px; font-size:0.8rem; font-weight:700;">Konu ${k.no} — ${k.onay || '?'}</span>
-              <h4 style="margin:0.6rem 0 0.2rem; color:#1f2937;">${k.baslik || '(Başlık yok)'}</h4>
-              <small style="color:#6b7280;">Hedef Kelime: <strong>${k.hedef || '—'}</strong> · Hacim: ${k.hacim || '—'}</small>
-            </div>
-            ${bekliyor ? `
-            <div style="display:flex; gap:0.5rem; flex-shrink:0;">
-              <button class="btn-admin" onclick="onaylaKonu(${k.no},'EVET')" style="background:#10b981; padding:0.45rem 1rem;">✅ Onayla</button>
-              <button class="btn-admin btn-danger" onclick="onaylaKonu(${k.no},'HAYIR')" style="padding:0.45rem 1rem;">✕ Reddet</button>
-            </div>` : ''}
+
+    const kartHtml = (k) => {
+      const renk = RENK[k.onay?.split(' ')[0]] || RENK['BEKLIYOR'];
+      const bekliyor = k.onay === 'BEKLIYOR';
+      return `
+      <div style="border:1px solid #e5e7eb; border-radius:10px; padding:1.5rem; margin-bottom:1rem; background:#fff;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+          <div>
+            <span style="background:${renk[0]}; color:${renk[1]}; padding:0.2rem 0.7rem; border-radius:20px; font-size:0.8rem; font-weight:700;">Konu ${k.no} — ${k.onay || '?'}</span>
+            <h4 style="margin:0.6rem 0 0.2rem; color:#1f2937;">${k.baslik || '(Başlık yok)'}</h4>
+            <small style="color:#6b7280;">Hedef Kelime: <strong>${k.hedef || '—'}</strong> · Hacim: ${k.hacim || '—'}</small>
           </div>
-          <p style="color:#6b7280; font-size:0.88rem; margin:0 0 0.75rem;"><em>${k.neden || ''}</em></p>
-          ${k.h2ler?.length ? '<details style="cursor:pointer;"><summary style="color:#3b82f6; font-size:0.9rem;">H2 Başlıkları (' + k.h2ler.length + ' adet)</summary><ul style="margin:0.5rem 0 0 1rem; color:#374151; font-size:0.9rem;">' + k.h2ler.map(h => '<li>' + h + '</li>').join('') + '</ul></details>' : ''}
-        </div>`;
-      }).join('');
+          ${bekliyor ? `
+          <div style="display:flex; gap:0.5rem; flex-shrink:0;">
+            <button class="btn-admin" onclick="onaylaKonu(${k.no},'EVET')" style="background:#10b981; padding:0.45rem 1rem;">✅ Onayla</button>
+            <button class="btn-admin btn-danger" onclick="onaylaKonu(${k.no},'HAYIR')" style="padding:0.45rem 1rem;">✕ Reddet</button>
+          </div>` : ''}
+        </div>
+        <p style="color:#6b7280; font-size:0.88rem; margin:0 0 0.75rem;"><em>${k.neden || ''}</em></p>
+        ${k.h2ler?.length ? '<details style="cursor:pointer;"><summary style="color:#3b82f6; font-size:0.9rem;">H2 Başlıkları (' + k.h2ler.length + ' adet)</summary><ul style="margin:0.5rem 0 0 1rem; color:#374151; font-size:0.9rem;">' + k.h2ler.map(h => '<li>' + h + '</li>').join('') + '</ul></details>' : ''}
+      </div>`;
+    };
+
+    let html = '';
+    if (bekleyenler.length) {
+      html += bekleyenler.map(kartHtml).join('');
+    } else {
+      html += '<p style="color:#9ca3af; text-align:center; padding:1rem 0;">Bu haftanın tüm konuları işlendi.</p>';
+    }
+    if (tamamlananlar.length) {
+      html += `<details style="margin-top:1rem;"><summary style="cursor:pointer; color:#9ca3af; font-size:0.85rem;">Tamamlananları göster (${tamamlananlar.length})</summary><div style="margin-top:0.75rem; opacity:0.6;">${tamamlananlar.map(kartHtml).join('')}</div></details>`;
+    }
+    list.innerHTML = html;
   } catch(e) {
     if (el) el.textContent = '';
     list.innerHTML = '<p style="color:#ef4444;">Bağlantı hatası. blog.php erişilemedi.</p>';
