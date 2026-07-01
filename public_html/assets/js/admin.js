@@ -394,31 +394,55 @@ async function loadTaslaklar() {
 }
 
 let _duzenleSlug = '';
+let _duzenleFullHtml = '';
+
+function fmt(cmd, val) {
+  document.execCommand(cmd, false, val || null);
+  document.getElementById('duzenle-icerik').focus();
+}
 
 async function taslakDuzenle(slug, baslik) {
   const res  = await fetch(BLOG_API + '?action=taslak&slug=' + slug);
   const json = await res.json();
   if (!json.success) { alert(json.mesaj); return; }
   _duzenleSlug = slug;
-  document.getElementById('duzenle-baslik').textContent = baslik + ' — Düzenle';
-  document.getElementById('duzenle-html').value = json.html;
+  _duzenleFullHtml = json.html;
+
+  // Sadece makale içeriğini (post-content div) çıkar
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(json.html, 'text/html');
+  const content = doc.querySelector('.post-content');
+  const icerik = document.getElementById('duzenle-icerik');
+  icerik.innerHTML = content ? content.innerHTML : '<p>İçerik bulunamadı.</p>';
+
+  document.getElementById('duzenle-baslik').textContent = baslik;
   document.getElementById('taslak-duzenle-modal').style.display = 'block';
+  icerik.focus();
 }
 
 function closeDuzenle() {
   document.getElementById('taslak-duzenle-modal').style.display = 'none';
-  document.getElementById('duzenle-html').value = '';
+  document.getElementById('duzenle-icerik').innerHTML = '';
   _duzenleSlug = '';
+  _duzenleFullHtml = '';
 }
 
 async function taslakKaydet() {
-  const html = document.getElementById('duzenle-html').value;
-  if (!html.trim()) { alert('İçerik boş olamaz.'); return; }
+  const editedIcerik = document.getElementById('duzenle-icerik').innerHTML;
+  if (!editedIcerik.trim()) { alert('İçerik boş olamaz.'); return; }
+
+  // Düzenlenen içeriği orijinal HTML'e geri yerleştir
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(_duzenleFullHtml, 'text/html');
+  const content = doc.querySelector('.post-content');
+  if (content) content.innerHTML = editedIcerik;
+  const finalHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+
   try {
     const res  = await fetch(BLOG_API + '?action=taslak-guncelle', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ secret: 'polaris2026', slug: _duzenleSlug, html })
+      body: JSON.stringify({ secret: 'polaris2026', slug: _duzenleSlug, html: finalHtml })
     });
     const json = await res.json();
     if (json.success) { alert('Taslak güncellendi.'); closeDuzenle(); }

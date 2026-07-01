@@ -116,18 +116,30 @@
 
     <!-- Taslak Düzenleme Modal -->
     <div id="taslak-duzenle-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; overflow-y:auto;">
-      <div style="background:#fff; max-width:900px; margin:2rem auto; border-radius:12px; overflow:hidden; position:relative;">
+      <div style="background:#fff; max-width:860px; margin:2rem auto; border-radius:12px; overflow:hidden;">
         <div style="padding:1rem 1.5rem; background:#f9fafb; border-bottom:1px solid #e5e7eb; display:flex; justify-content:space-between; align-items:center;">
           <strong id="duzenle-baslik" style="color:#1f2937;"></strong>
           <button onclick="closeDuzenle()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#6b7280; line-height:1;">✕</button>
         </div>
-        <div style="padding:1.5rem;">
-          <p style="color:#6b7280; font-size:0.85rem; margin-bottom:0.75rem;">HTML içeriğini düzenleyebilirsin. Kaydet'e bastıktan sonra taslak güncellenir.</p>
-          <textarea id="duzenle-html" style="width:100%; height:60vh; font-family:monospace; font-size:0.8rem; padding:1rem; border:1px solid #e5e7eb; border-radius:8px; resize:vertical;"></textarea>
-          <div style="display:flex; gap:0.75rem; margin-top:1rem; justify-content:flex-end;">
-            <button onclick="closeDuzenle()" style="padding:0.6rem 1.5rem; border:1px solid #e5e7eb; border-radius:8px; background:#fff; cursor:pointer;">İptal</button>
-            <button onclick="taslakKaydet()" style="padding:0.6rem 1.5rem; background:#3b82f6; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;">💾 Kaydet</button>
-          </div>
+        <!-- Araç çubuğu -->
+        <div style="padding:0.6rem 1rem; border-bottom:1px solid #e5e7eb; display:flex; gap:0.4rem; flex-wrap:wrap; background:#fafafa;">
+          <button onclick="fmt('bold')" title="Kalın" style="padding:0.3rem 0.7rem; border:1px solid #e5e7eb; border-radius:6px; background:#fff; cursor:pointer; font-weight:700;">B</button>
+          <button onclick="fmt('italic')" title="İtalik" style="padding:0.3rem 0.7rem; border:1px solid #e5e7eb; border-radius:6px; background:#fff; cursor:pointer; font-style:italic;">I</button>
+          <button onclick="fmt('underline')" title="Altı çizgili" style="padding:0.3rem 0.7rem; border:1px solid #e5e7eb; border-radius:6px; background:#fff; cursor:pointer; text-decoration:underline;">U</button>
+          <span style="width:1px; background:#e5e7eb; margin:0 0.2rem;"></span>
+          <button onclick="fmt('formatBlock','h2')" title="Başlık" style="padding:0.3rem 0.7rem; border:1px solid #e5e7eb; border-radius:6px; background:#fff; cursor:pointer; font-weight:700;">H2</button>
+          <button onclick="fmt('formatBlock','p')" title="Paragraf" style="padding:0.3rem 0.7rem; border:1px solid #e5e7eb; border-radius:6px; background:#fff; cursor:pointer;">¶</button>
+          <button onclick="fmt('insertUnorderedList')" title="Madde listesi" style="padding:0.3rem 0.7rem; border:1px solid #e5e7eb; border-radius:6px; background:#fff; cursor:pointer;">• Liste</button>
+          <span style="width:1px; background:#e5e7eb; margin:0 0.2rem;"></span>
+          <button onclick="fmt('removeFormat')" title="Formatı temizle" style="padding:0.3rem 0.7rem; border:1px solid #e5e7eb; border-radius:6px; background:#fff; cursor:pointer; color:#6b7280;">✕ Format</button>
+        </div>
+        <!-- Düzenlenebilir alan -->
+        <div id="duzenle-icerik" contenteditable="true"
+          style="padding:2rem; min-height:55vh; max-height:65vh; overflow-y:auto; outline:none; font-family:'Segoe UI',sans-serif; font-size:1rem; line-height:1.8; color:#1e2a38;">
+        </div>
+        <div style="padding:1rem 1.5rem; border-top:1px solid #e5e7eb; display:flex; gap:0.75rem; justify-content:flex-end; background:#fafafa;">
+          <button onclick="closeDuzenle()" style="padding:0.6rem 1.5rem; border:1px solid #e5e7eb; border-radius:8px; background:#fff; cursor:pointer;">İptal</button>
+          <button onclick="taslakKaydet()" style="padding:0.6rem 1.5rem; background:#3b82f6; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;">💾 Kaydet</button>
         </div>
       </div>
     </div>
