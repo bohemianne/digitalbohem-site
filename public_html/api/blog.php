@@ -95,5 +95,76 @@ if ($action === 'yazi-kaydet' && $method === 'POST') {
     exit;
 }
 
+// ── POST: yayinla — ajan HTML'i doğrudan sunucuya yazar ─────────────────────
+if ($action === 'yayinla' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    // Basit güvenlik anahtarı
+    if (($input['secret'] ?? '') !== 'polaris2026') {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'mesaj' => 'Yetkisiz.']);
+        exit;
+    }
+
+    $slug    = preg_replace('/[^a-z0-9\-]/', '', $input['slug'] ?? '');
+    $html    = $input['html'] ?? '';
+    $baslik  = $input['baslik'] ?? '';
+    $tarih   = $input['tarih'] ?? date('d.m.Y');
+    $excerpt = mb_substr(strip_tags($input['excerpt'] ?? ''), 0, 140);
+    $konu_no = (int)($input['konu_no'] ?? 0);
+
+    if (!$slug || !$html) {
+        echo json_encode(['success' => false, 'mesaj' => 'slug ve html zorunlu.']);
+        exit;
+    }
+
+    $BLOG_DIR = __DIR__ . '/../../blog';
+
+    // HTML dosyasını yaz
+    file_put_contents("$BLOG_DIR/$slug.html", $html);
+
+    // blog/index.html'e kart ekle
+    $index_path = "$BLOG_DIR/index.html";
+    if (file_exists($index_path)) {
+        $kart = <<<KART
+    <article class="blog-card">
+      <div class="blog-card-body">
+        <span class="blog-card-date">$tarih</span>
+        <h2>$baslik</h2>
+        <p>$excerpt...</p>
+        <a href="$slug.html" class="blog-card-link">Devamını Oku →</a>
+      </div>
+    </article>
+KART;
+        $index = file_get_contents($index_path);
+        $index = str_replace('<!-- BLOG_POSTS_START -->', "<!-- BLOG_POSTS_START -->\n$kart", $index);
+        file_put_contents($index_path, $index);
+    }
+
+    // Öneriler dosyasında durumu YAYINLANDI yap
+    if ($konu_no > 0) {
+        $data = readJson($ONERILER_F);
+        if ($data) {
+            foreach ($data['konular'] as &$k) {
+                if ($k['no'] === $konu_no) { $k['onay'] = 'YAYINLANDI'; break; }
+            }
+            writeJson($ONERILER_F, $data);
+        }
+    }
+
+    // Yazılar listesine ekle
+    $yazilar = readJson($YAZILAR_F) ?? [];
+    $yazilar[] = [
+        'slug'   => $slug,
+        'baslik' => $baslik,
+        'tarih'  => date('Y-m-d'),
+        'url'    => "https://digitalbohem.com.tr/blog/$slug.html",
+    ];
+    writeJson($YAZILAR_F, $yazilar);
+
+    echo json_encode(['success' => true, 'mesaj' => "Yayınlandı: $slug.html"]);
+    exit;
+}
+
 echo json_encode(['success' => false, 'mesaj' => 'Bilinmeyen action: ' . htmlspecialchars($action)]);
 ?>
