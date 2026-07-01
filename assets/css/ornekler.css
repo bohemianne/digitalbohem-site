@@ -1,17 +1,18 @@
 .ornekler-hero {
   text-align: center;
   padding: 5rem 1.5rem 2.5rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #2d1b69 100%);
-  color: #fff;
+  background: linear-gradient(135deg, #4bbfe3 0%, #9ad8f0 50%, #e8f7fd 100%);
+  color: var(--text);
 }
 
 .ornekler-hero h1 {
   font-size: 2.2rem;
   margin-bottom: 0.5rem;
+  color: var(--text);
 }
 
 .ornekler-hero p {
-  color: rgba(255,255,255,0.7);
+  color: var(--text-muted);
   font-size: 1.05rem;
 }
 
@@ -26,24 +27,24 @@
 
 .filter-btn {
   padding: 0.5rem 1.2rem;
-  border: 1.5px solid #ddd;
+  border: 1.5px solid var(--ice-light);
   border-radius: 999px;
   background: #fff;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
-  color: #555;
+  color: var(--text-muted);
   font-family: inherit;
 }
 
 .filter-btn:hover {
-  border-color: #c9a84c;
-  color: #c9a84c;
+  border-color: var(--fuchsia);
+  color: var(--fuchsia);
 }
 
 .filter-btn.active {
-  background: #c9a84c;
-  border-color: #c9a84c;
+  background: var(--fuchsia);
+  border-color: var(--fuchsia);
   color: #fff;
 }
 
@@ -65,8 +66,8 @@
 .ornek-kart {
   background: #fff;
   border-radius: 14px;
-  box-shadow: 0 2px 14px rgba(0,0,0,0.07);
-  border: 1px solid #ececec;
+  box-shadow: 0 2px 14px rgba(72,180,220,0.08);
+  border: 1px solid var(--ice-light);
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
@@ -75,14 +76,14 @@
 
 .ornek-kart:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 24px rgba(72,180,220,0.18);
 }
 
 /* Canva iframe önizleme */
 .ornek-preview {
   width: 100%;
   aspect-ratio: 16/9;
-  background: #f0ede8;
+  background: var(--ice-pale);
   overflow: hidden;
   position: relative;
 }
@@ -100,7 +101,7 @@
   align-items: center;
   justify-content: center;
   font-size: 3rem;
-  color: #c9a84c;
+  color: var(--fuchsia);
 }
 
 /* Kart alt bilgi */
@@ -114,7 +115,7 @@
 
 .ornek-etiket {
   font-size: 0.75rem;
-  color: #c9a84c;
+  color: var(--ice);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -122,12 +123,12 @@
 
 .ornek-bilgi h3 {
   font-size: 1rem;
-  color: #1a1a1a;
+  color: var(--text);
   margin: 0;
 }
 
 .ornek-bilgi p {
-  color: #666;
+  color: var(--text-muted);
   font-size: 0.875rem;
   line-height: 1.5;
   margin: 0;
@@ -137,7 +138,7 @@
 .ornek-link {
   display: inline-block;
   margin-top: 0.75rem;
-  color: #c9a84c;
+  color: var(--fuchsia);
   font-size: 0.875rem;
   font-weight: 700;
   text-decoration: none;
@@ -151,18 +152,18 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 3rem;
-  color: #999;
+  color: var(--text-muted);
 }
 
 /* CTA */
 .ornekler-cta {
   text-align: center;
   padding: 2.5rem 1.5rem 4rem;
-  background: #faf9f7;
+  background: var(--ice-pale);
 }
 
 .ornekler-cta p {
-  color: #555;
+  color: var(--text-muted);
   margin-bottom: 1.25rem;
   font-size: 1rem;
 }
