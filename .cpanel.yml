@@ -5,7 +5,6 @@ deployment:
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/ornekler.html /home/digi7586/public_html/ornekler.html
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/sitemap.xml /home/digi7586/public_html/sitemap.xml
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/robots.txt /home/digi7586/public_html/robots.txt
-    - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/form-handler.php /home/digi7586/public_html/form-handler.php
     - /bin/mkdir -p /home/digi7586/public_html/assets/css
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/assets/css/style.css /home/digi7586/public_html/assets/css/style.css
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/assets/css/form.css /home/digi7586/public_html/assets/css/form.css
