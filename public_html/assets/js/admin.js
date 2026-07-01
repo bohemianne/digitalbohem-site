@@ -315,6 +315,7 @@ async function loadYazilar() {
         <div style="display:flex; gap:0.5rem;">
           <button class="btn-admin" onclick="onizleYazi('${y.slug}','${y.baslik.replace(/'/g,"\\'")}') " style="background:#3b82f6; padding:0.4rem 0.9rem;">Önizle</button>
           <a class="btn-admin" href="https://digitalbohem.com.tr/blog/${y.slug}.html" target="_blank" style="text-decoration:none; padding:0.4rem 0.9rem;">Canlı</a>
+          <button class="btn-admin" onclick="yaziSil('${y.slug}','${y.baslik.replace(/'/g,"\\'")}') " style="background:#ef4444; padding:0.4rem 0.9rem;">Sil</button>
         </div>
       </div>`).join('');
   } catch(e) {
@@ -332,6 +333,20 @@ async function onizleYazi(slug, baslik) {
   const frame = document.getElementById('onizleme-frame');
   frame.srcdoc = json.html;
   document.getElementById('blog-onizleme-modal').style.display = 'block';
+}
+
+async function yaziSil(slug, baslik) {
+  if (!confirm(`"${baslik}" yazısını silmek istediğine emin misin?`)) return;
+  try {
+    const res  = await fetch(BLOG_API + '?action=sil', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ secret: 'polaris2026', slug })
+    });
+    const json = await res.json();
+    if (json.success) { alert('Yazı silindi.'); loadYazilar(); }
+    else alert('Hata: ' + json.mesaj);
+  } catch(e) { alert('Bağlantı hatası.'); }
 }
 
 function closeOnizleme() {

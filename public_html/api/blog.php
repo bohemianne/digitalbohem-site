@@ -166,5 +166,43 @@ KART;
     exit;
 }
 
+// ── POST: sil — yazıyı sil ───────────────────────────────────────────────────
+if ($action === 'sil' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (($input['secret'] ?? '') !== 'polaris2026') {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'mesaj' => 'Yetkisiz.']);
+        exit;
+    }
+    $slug = preg_replace('/[^a-z0-9\-]/', '', $input['slug'] ?? '');
+    if (!$slug) {
+        echo json_encode(['success' => false, 'mesaj' => 'slug zorunlu.']);
+        exit;
+    }
+
+    $BLOG_DIR = __DIR__ . '/../blog';
+    $html_file = "$BLOG_DIR/$slug.html";
+
+    // HTML dosyasını sil
+    if (file_exists($html_file)) unlink($html_file);
+
+    // blog/index.html'den kartı kaldır
+    $index_path = "$BLOG_DIR/index.html";
+    if (file_exists($index_path)) {
+        $index = file_get_contents($index_path);
+        // slug içeren article kartını sil
+        $index = preg_replace('/<article class="blog-card">.*?href="' . preg_quote($slug, '/') . '\.html".*?<\/article>/s', '', $index);
+        file_put_contents($index_path, $index);
+    }
+
+    // yazilar.json'dan kaldır
+    $yazilar = readJson($YAZILAR_F) ?? [];
+    $yazilar = array_values(array_filter($yazilar, fn($y) => $y['slug'] !== $slug));
+    writeJson($YAZILAR_F, $yazilar);
+
+    echo json_encode(['success' => true, 'mesaj' => "$slug.html silindi."]);
+    exit;
+}
+
 echo json_encode(['success' => false, 'mesaj' => 'Bilinmeyen action: ' . htmlspecialchars($action)]);
 ?>
