@@ -94,28 +94,19 @@
   const KAT_ICON = { web: '🌐', video: '🎬', pdf: '📄' };
 
   function renderKart(o) {
-    let preview = '';
+    const href = o.canva_url || '#';
+    const pos  = o.thumbnail_position || '50% 50%';
     if (o.thumbnail) {
       const imgSrc = o.thumbnail.startsWith('http') ? o.thumbnail : '/' + o.thumbnail;
-      preview = `<a href="${o.canva_url || '#'}" target="_blank" rel="noopener" class="ornek-thumb-link">
-        <img src="${imgSrc}" alt="${o.baslik}" class="ornek-thumb" loading="lazy">
-        <span class="ornek-thumb-overlay">${KAT_ICON[o.kategori] || ''} Canva'da Görüntüle →</span>
-      </a>`;
-    } else if (o.canva_url) {
-      preview = `<a href="${o.canva_url}" target="_blank" rel="noopener" class="ornek-thumb-link ornek-thumb-placeholder">
-        <span style="font-size:2.5rem;">${KAT_ICON[o.kategori] || '🖼️'}</span>
-        <span style="margin-top:0.5rem;font-size:0.85rem;opacity:0.8;">Canva'da Görüntüle →</span>
+      return `<a href="${href}" target="_blank" rel="noopener" class="ornek-kart" data-kategori="${o.kategori}">
+        <img src="${imgSrc}" alt="${o.baslik}" class="ornek-thumb" style="object-position:${pos}" loading="lazy">
+        <div class="ornek-overlay"><span>${o.baslik}</span></div>
       </a>`;
     }
-
-    return `<div class="ornek-kart" data-kategori="${o.kategori}">
-      ${preview}
-      <div class="ornek-bilgi">
-        <span class="ornek-etiket">${kategoriLabel(o.kategori)}</span>
-        <h3>${o.baslik}</h3>
-        <p>${o.aciklama || ''}</p>
-      </div>
-    </div>`;
+    return `<a href="${href}" target="_blank" rel="noopener" class="ornek-kart ornek-kart-bos" data-kategori="${o.kategori}">
+      <span style="font-size:2.5rem;">${KAT_ICON[o.kategori] || '🖼️'}</span>
+      <div class="ornek-overlay"><span>${o.baslik}</span></div>
+    </a>`;
   }
 
   function render(filter) {

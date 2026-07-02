@@ -157,22 +157,23 @@ function renderOrnekler(ornekler) {
   }).join('');
 }
 
-// Thumbnail önizleme
+// Thumbnail önizleme + position picker
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('change', e => {
     if (e.target.id !== 'ornek-thumbnail') return;
     const file = e.target.files[0];
-    const prev = document.getElementById('ornek-thumb-preview');
     const kaldir = document.getElementById('ornek-thumb-kaldir');
-    if (!prev) return;
-    if (file) {
-      const url = URL.createObjectURL(file);
-      prev.innerHTML = `<img src="${url}" style="max-width:200px;max-height:120px;border-radius:8px;border:1px solid #e5e7eb;">`;
-      if (kaldir) kaldir.style.display = 'inline-block';
-    } else {
-      prev.innerHTML = '';
+    const prev   = document.getElementById('ornek-thumb-preview');
+    if (!file) {
+      if (prev) prev.innerHTML = '';
       if (kaldir) kaldir.style.display = 'none';
+      posPicKapat();
+      return;
     }
+    const url = URL.createObjectURL(file);
+    if (prev) prev.innerHTML = '';
+    if (kaldir) kaldir.style.display = 'inline-block';
+    posPicAc(url);
   });
 });
 
@@ -183,6 +184,96 @@ function thumbnailKaldir() {
   if (input) input.value = '';
   if (prev) prev.innerHTML = '';
   if (kaldir) kaldir.style.display = 'none';
+  posPicKapat();
+}
+
+// ---- Position Picker ----
+let _posOffX = 0, _posOffY = 0;
+let _posDragStartX, _posDragStartY, _posStartOX, _posStartOY;
+let _posMinX = 0, _posMinY = 0;
+const PIC_W = 280, PIC_H = 210;
+
+function posPicAc(url) {
+  const wrap = document.getElementById('pos-picker-wrap');
+  const img  = document.getElementById('pos-img');
+  if (!wrap || !img) return;
+  wrap.style.display = 'block';
+  img.src = url;
+  img.onload = () => {
+    const scale = Math.max(PIC_W / img.naturalWidth, PIC_H / img.naturalHeight);
+    const dw = img.naturalWidth * scale;
+    const dh = img.naturalHeight * scale;
+    img.style.width  = dw + 'px';
+    img.style.height = dh + 'px';
+    _posMinX = PIC_W - dw;
+    _posMinY = PIC_H - dh;
+    _posOffX = (PIC_W - dw) / 2;
+    _posOffY = (PIC_H - dh) / 2;
+    img.style.left = _posOffX + 'px';
+    img.style.top  = _posOffY + 'px';
+    posPicKaydet();
+  };
+  const picker = document.getElementById('pos-picker');
+  picker.addEventListener('mousedown', posDragBasla);
+  picker.addEventListener('touchstart', posDragBasla, { passive: false });
+}
+
+function posPicKapat() {
+  const wrap = document.getElementById('pos-picker-wrap');
+  if (wrap) wrap.style.display = 'none';
+  const pos  = document.getElementById('ornek-thumbnail-position');
+  if (pos) pos.value = '50% 50%';
+  const picker = document.getElementById('pos-picker');
+  if (picker) {
+    picker.removeEventListener('mousedown', posDragBasla);
+    picker.removeEventListener('touchstart', posDragBasla);
+  }
+}
+
+function posDragBasla(e) {
+  e.preventDefault();
+  const touch = e.touches ? e.touches[0] : e;
+  _posDragStartX = touch.clientX;
+  _posDragStartY = touch.clientY;
+  _posStartOX = _posOffX;
+  _posStartOY = _posOffY;
+  const picker = document.getElementById('pos-picker');
+  if (picker) picker.style.cursor = 'grabbing';
+  document.addEventListener('mousemove', posDragHareket);
+  document.addEventListener('touchmove',  posDragHareket, { passive: false });
+  document.addEventListener('mouseup',  posDragBitir);
+  document.addEventListener('touchend', posDragBitir);
+}
+
+function posDragHareket(e) {
+  e.preventDefault();
+  const touch = e.touches ? e.touches[0] : e;
+  const dx = touch.clientX - _posDragStartX;
+  const dy = touch.clientY - _posDragStartY;
+  _posOffX = Math.min(0, Math.max(_posMinX, _posStartOX + dx));
+  _posOffY = Math.min(0, Math.max(_posMinY, _posStartOY + dy));
+  const img = document.getElementById('pos-img');
+  if (img) { img.style.left = _posOffX + 'px'; img.style.top = _posOffY + 'px'; }
+  posPicKaydet();
+}
+
+function posDragBitir() {
+  const picker = document.getElementById('pos-picker');
+  if (picker) picker.style.cursor = 'grab';
+  document.removeEventListener('mousemove', posDragHareket);
+  document.removeEventListener('touchmove',  posDragHareket);
+  document.removeEventListener('mouseup',  posDragBitir);
+  document.removeEventListener('touchend', posDragBitir);
+}
+
+function posPicKaydet() {
+  const posInput = document.getElementById('ornek-thumbnail-position');
+  if (!posInput) return;
+  const rangeX = Math.abs(_posMinX) || 1;
+  const rangeY = Math.abs(_posMinY) || 1;
+  const px = Math.round((-_posOffX / rangeX) * 100);
+  const py = Math.round((-_posOffY / rangeY) * 100);
+  posInput.value = px + '% ' + py + '%';
 }
 
 let _ornekDuzenleData = null;
@@ -200,8 +291,10 @@ function ornekDuzenle(id) {
     const prev  = document.getElementById('ornek-thumb-preview');
     const kaldir = document.getElementById('ornek-thumb-kaldir');
     if (o.thumbnail && prev) {
-      prev.innerHTML = `<img src="../${o.thumbnail}" style="max-width:200px;max-height:120px;border-radius:8px;border:1px solid #e5e7eb;">`;
       if (kaldir) kaldir.style.display = 'inline-block';
+      posPicAc('../' + o.thumbnail);
+      const posInput = document.getElementById('ornek-thumbnail-position');
+      if (posInput && o.thumbnail_position) posInput.value = o.thumbnail_position;
     }
     const btn = document.getElementById('ornek-kaydet-btn');
     const iptal = document.getElementById('ornek-iptal-btn');
@@ -255,10 +348,11 @@ async function ornekKaydet() {
     }
   }
 
+  const thumbnail_position = document.getElementById('ornek-thumbnail-position')?.value || (duzenleId ? (_ornekDuzenleData?.thumbnail_position || '50% 50%') : '50% 50%');
   const action = duzenleId ? 'update' : 'add';
   const data   = duzenleId
-    ? { id: duzenleId, kategori, baslik, canva_url, aciklama, thumbnail }
-    : { id: 'ornek-' + Date.now(), kategori, baslik, canva_url, aciklama, thumbnail };
+    ? { id: duzenleId, kategori, baslik, canva_url, aciklama, thumbnail, thumbnail_position }
+    : { id: 'ornek-' + Date.now(), kategori, baslik, canva_url, aciklama, thumbnail, thumbnail_position };
 
   await fetch('../api/data.php?table=ornekler', {
     method: 'POST',

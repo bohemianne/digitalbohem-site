@@ -70,6 +70,13 @@
           <input type="file" id="ornek-thumbnail" accept="image/png,image/jpeg,image/webp" style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; background:#fafafa;">
           <div id="ornek-thumb-preview" style="margin-top:0.5rem;"></div>
           <button type="button" id="ornek-thumb-kaldir" onclick="thumbnailKaldir()" style="display:none; margin-top:0.4rem; padding:0.25rem 0.75rem; font-size:0.8rem; background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; border-radius:6px; cursor:pointer;">✕ Resmi kaldır</button>
+          <div id="pos-picker-wrap" style="display:none; margin-top:1rem;">
+            <p style="font-size:0.8rem; color:#6b7280; margin:0 0 0.4rem;">Resmi sürükleyerek kutucukta görünecek kısmı seç:</p>
+            <div id="pos-picker" style="width:280px;height:210px;overflow:hidden;position:relative;border-radius:10px;border:2px solid #4bbfe3;cursor:grab;user-select:none;">
+              <img id="pos-img" draggable="false" style="position:absolute;user-select:none;-webkit-user-drag:none;">
+            </div>
+            <input type="hidden" id="ornek-thumbnail-position" value="50% 50%">
+          </div>
         </div>
       </div>
       <input type="hidden" id="ornek-duzenle-id" value="">
