@@ -177,6 +177,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+function canvaUrlTemizle(input) {
+  const val = input.value;
+  if (!val.includes('<iframe')) return;
+  const esles = val.match(/src="([^"]+)"/);
+  if (esles) {
+    input.value = esles[1].replace(/&amp;/g, '&');
+    input.style.borderColor = '#4bbfe3';
+    setTimeout(() => input.style.borderColor = '', 1500);
+  }
+}
+
 function thumbnailKaldir() {
   const input = document.getElementById('ornek-thumbnail');
   const prev  = document.getElementById('ornek-thumb-preview');
