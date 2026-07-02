@@ -1,21 +1,22 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 02.07.2026
+## Son Oturum — 02.07.2026 14:50
 
 **Son commit'ler:**
 ```
+611096b feat: WhatsApp kayan buton tüm sayfalarda + mobil menü main.js'e taşındı
+a9b3965 chore: handoff.md güncelle — örnekler sistemi ve bu oturum değişiklikleri
 7bcb90c feat: admin örnekler listesinde sürükle-bırak sıralama
 e6a2d2f chore: Canva URL alanını Bağlantı URL olarak yeniden adlandır
 952ac18 feat: Canva embed kodu yapıştırınca otomatik URL'ye çevir
-a998624 feat: fuşya-mavi gradyanlı SVG favicon tüm sayfalara eklendi
-3de1840 fix: PHP 7 uyumlu upload + position picker mevcut pozisyon geri yükleme
-c059183 perf: thumbnail GD sıkıştırma — max 1200px, JPEG %82, PNG→JPEG
-eae5c4a feat: örnekler kart tasarımı image+overlay, admin drag-to-position picker
-ce035ed fix: thumbnail-upload.php ve ornekler/thumbnails deploy'a eklendi
+```
+
+**Bekleyen değişiklikler:**
+```
+Tüm değişiklikler commit edilmiş.
 ```
 
 ---
-
 ## Genel Bakış
 
 Dijital düğün davetiyesi satış sitesi. Türkçe, tek dilli. Üç paket: Temel (₺499), Premium (₺899), Elite (₺1.999).
@@ -57,6 +58,7 @@ digitalbohem-site/
 ├── favicon.svg             # Fuşya-mavi gradyanlı yıldız favicon
 ├── blog/index.html         # Blog listesi sayfası
 ├── form-handler.php        # Sipariş formu → Telegram + e-posta
+├── assets/js/main.js      # Mobil menü + WhatsApp kayan buton (tüm sayfalarda)
 ├── sitemap.xml / robots.txt
 ├── .cpanel.yml             # Deploy görevleri
 │
