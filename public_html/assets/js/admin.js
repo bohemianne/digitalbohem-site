@@ -21,6 +21,7 @@ function showSection(id) {
   event.target.classList.add('active');
   if (id === 'blog') loadBloglar();
   if (id === 'ornekler') loadOrnekler();
+  if (id === 'sosyal') loadSosyal();
 }
 
 // ===== DAVETIYE CRUD =====
@@ -756,6 +757,119 @@ async function yaziSil(slug, baslik) {
 function closeOnizleme() {
   document.getElementById('blog-onizleme-modal').style.display = 'none';
   document.getElementById('onizleme-frame').srcdoc = '';
+}
+
+// ===== SOSYAL MEDYA =====
+const SOSYAL_API = '../api/sosyal.php';
+
+const PLATFORM_LABEL = {
+  facebook: { ad: 'Facebook', renk: '#1877f2', emoji: '📘' },
+  linkedin: { ad: 'LinkedIn', renk: '#0a66c2', emoji: '💼' },
+  pinterest: { ad: 'Pinterest', renk: '#e60023', emoji: '📌' },
+  instagram: { ad: 'Instagram', renk: '#c13584', emoji: '📸' },
+  youtube: { ad: 'YouTube', renk: '#ff0000', emoji: '🎬' }
+};
+
+let _sosyalAktifSekme = 'bekliyor';
+
+function sosyalTab(sekme) {
+  _sosyalAktifSekme = sekme;
+  ['bekliyor', 'yayinlandi'].forEach(s => {
+    document.getElementById('sosyal-tab-' + s).style.display = s === sekme ? '' : 'none';
+    const btn = document.getElementById('stab-' + s);
+    if (btn) {
+      btn.style.color = s === sekme ? '#e91e8c' : '#6b7280';
+      btn.style.borderBottom = s === sekme ? '2px solid #e91e8c' : 'none';
+    }
+  });
+  loadSosyal();
+}
+
+async function loadSosyal() {
+  const el = document.getElementById('sosyal-yukleniyor');
+  if (el) el.textContent = 'Yükleniyor...';
+  try {
+    const res  = await fetch(SOSYAL_API);
+    const json = await res.json();
+    if (el) el.textContent = '';
+    if (!json.success) { renderSosyalBos(); return; }
+
+    const bekleyenler   = (json.posts || []).filter(p => p.durum === 'bekliyor');
+    const yayinlananlar = (json.posts || []).filter(p => p.durum === 'yayinlandi');
+
+    renderSosyalListe('sosyal-bekliyor-list', bekleyenler, true);
+    renderSosyalListe('sosyal-yayinlandi-list', yayinlananlar, false);
+  } catch(e) {
+    if (el) el.textContent = '';
+    document.getElementById('sosyal-bekliyor-list').innerHTML = '<p style="color:#ef4444;">Bağlantı hatası. sosyal.php erişilemedi.</p>';
+  }
+}
+
+function renderSosyalBos() {
+  const bosMsg = '<p style="color:#9ca3af; text-align:center; padding:2rem 0;">Henüz içerik yok. Ajan Salı ve Cuma 5 platform için içerik üretir.</p>';
+  document.getElementById('sosyal-bekliyor-list').innerHTML = bosMsg;
+  document.getElementById('sosyal-yayinlandi-list').innerHTML = '<p style="color:#9ca3af; text-align:center; padding:2rem 0;">Henüz yayınlanan post yok.</p>';
+}
+
+function renderSosyalListe(listId, posts, gosterBtn) {
+  const el = document.getElementById(listId);
+  if (!posts.length) {
+    el.innerHTML = listId.includes('bekliyor')
+      ? '<p style="color:#9ca3af; text-align:center; padding:2rem 0;">Bekleyen içerik yok. Ajan Salı ve Cuma içerik üretir.</p>'
+      : '<p style="color:#9ca3af; text-align:center; padding:2rem 0;">Henüz yayınlanan post yok.</p>';
+    return;
+  }
+
+  // Tarihe göre grupla
+  const gruplar = {};
+  posts.forEach(p => {
+    const key = p.tarih + '-' + p.post_no;
+    if (!gruplar[key]) gruplar[key] = { tarih: p.tarih, post_no: p.post_no, platformlar: [] };
+    gruplar[key].platformlar.push(p);
+  });
+
+  el.innerHTML = Object.values(gruplar).sort((a,b) => b.tarih.localeCompare(a.tarih)).map(grup => `
+    <div style="border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; margin-bottom:1.5rem; background:#fff;">
+      <div style="padding:0.8rem 1.2rem; background:#f9fafb; border-bottom:1px solid #e5e7eb; display:flex; justify-content:space-between; align-items:center;">
+        <strong style="color:#1f2937;">${grup.tarih} — ${grup.post_no === 1 ? 'Salı Paylaşımı' : 'Cuma Paylaşımı'}</strong>
+        <span style="font-size:0.8rem; color:#9ca3af;">${grup.platformlar.length} platform</span>
+      </div>
+      ${grup.platformlar.map(p => sosyalKartHtml(p, gosterBtn)).join('')}
+    </div>`).join('');
+}
+
+function sosyalKartHtml(p, gosterBtn) {
+  const pl = PLATFORM_LABEL[p.platform] || { ad: p.platform, renk: '#6b7280', emoji: '📣' };
+  const ozelIcerik = p.platform === 'youtube'
+    ? `<div style="margin-top:0.75rem;"><strong style="font-size:0.85rem; color:#6b7280;">Başlık:</strong><p style="margin:0.25rem 0 0.75rem; font-size:0.9rem;">${p.baslik || ''}</p><strong style="font-size:0.85rem; color:#6b7280;">Senaryo:</strong><pre style="white-space:pre-wrap; font-family:inherit; font-size:0.88rem; color:#374151; margin:0.25rem 0 0;">${escHtml(p.senaryo || '')}</pre></div>`
+    : `<pre style="white-space:pre-wrap; font-family:inherit; font-size:0.88rem; color:#374151; margin:0.5rem 0 0;">${escHtml(p.icerik || '')}</pre>`;
+  const resimNotu = p.resim_onerisi ? `<p style="margin:0.5rem 0 0; font-size:0.82rem; background:#fef9c3; padding:0.4rem 0.8rem; border-radius:6px; color:#92400e;">Görsel: ${escHtml(p.resim_onerisi)}</p>` : '';
+
+  return `
+  <div style="padding:1rem 1.2rem; border-bottom:1px solid #f3f4f6;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+      <span style="background:${pl.renk}18; color:${pl.renk}; padding:0.2rem 0.8rem; border-radius:20px; font-size:0.82rem; font-weight:700;">${pl.emoji} ${pl.ad}</span>
+      ${gosterBtn ? `<button onclick="sosyalYayinla('${escHtml(p.id)}')" style="padding:0.3rem 0.9rem; background:#e91e8c; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600;">✓ Yayınlandı</button>` : `<span style="font-size:0.8rem; color:#10b981; font-weight:600;">✓ Yayınlandı</span>`}
+    </div>
+    ${ozelIcerik}
+    ${resimNotu}
+    ${p.hashtag ? `<p style="margin:0.5rem 0 0; font-size:0.82rem; color:#6b7280;">${escHtml(p.hashtag)}</p>` : ''}
+  </div>`;
+}
+
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function sosyalYayinla(id) {
+  try {
+    await fetch(SOSYAL_API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'durum-guncelle', id, durum: 'yayinlandi' })
+    });
+    loadSosyal();
+  } catch(e) { alert('Bağlantı hatası.'); }
 }
 
 // ===== PASSWORD =====

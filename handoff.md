@@ -1,19 +1,17 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 02.07.2026 14:50
+## Son Oturum — 02.07.2026 15:15
 
 **Son commit'ler:**
 ```
+[bu oturum] feat: sosyal medya otomasyon sistemi — API + admin paneli + ajan + crontab
+cf24d64 chore: handoff.md güncelle — WhatsApp butonu ve main.js notu
 611096b feat: WhatsApp kayan buton tüm sayfalarda + mobil menü main.js'e taşındı
-a9b3965 chore: handoff.md güncelle — örnekler sistemi ve bu oturum değişiklikleri
-7bcb90c feat: admin örnekler listesinde sürükle-bırak sıralama
-e6a2d2f chore: Canva URL alanını Bağlantı URL olarak yeniden adlandır
-952ac18 feat: Canva embed kodu yapıştırınca otomatik URL'ye çevir
 ```
 
 **Bekleyen değişiklikler:**
 ```
-Tüm değişiklikler commit edilmiş.
+ M handoff.md
 ```
 
 ---
@@ -132,6 +130,7 @@ Buz mavisi + fuşya pembe + beyaz (Haziran 2026'da güncellendi).
 | Örnekler | Galeri ekle/düzenle/sil, sürükle-bırak sıralama |
 | Fiyatlar | Paket fiyatlarını güncelle |
 | Blog | Konu önerilerini gör/onayla + yazıları önizle |
+| Sosyal Medya | Ajan tarafından üretilen içerikleri gör, "Yayınlandı" ile işaretle |
 
 ---
 
@@ -161,6 +160,25 @@ Tüm ajanlar `~/.digitalbohem-agents/` altında.
 | Cuma 10:00 | `site-updater.sh` | SEO raporundan site güncellemesi |
 | Perşembe 19:30 | `blog-yaz-ajan.sh 1` | Konu 1'i yaz |
 | Cumartesi 10:30 | `blog-yaz-ajan.sh 2` | Konu 2'yi yaz |
+| **Salı 10:00** | `sosyal-medya-ajan.sh` | 5 platform için sosyal içerik üret |
+| **Cuma 10:30** | `sosyal-medya-ajan.sh` | 5 platform için sosyal içerik üret |
+
+## Sosyal Medya Akışı
+
+```
+Salı 10:00 + Cuma 10:30  →  sosyal-medya-ajan.sh çalışır
+   → Claude WebSearch ile güncel trend arar
+   → Facebook, LinkedIn, Pinterest, Instagram, YouTube için içerik yazar
+   → sosyal.php API'sine kaydeder
+Sen  →  Admin → Sosyal Medya → İçerikleri gör
+   → Facebook/LinkedIn/Pinterest: metni kopyala, kendin paylaş
+   → Instagram: önerilen görsel türü + caption hazır
+   → YouTube: 30-60sn Shorts senaryosu hazır
+   → "Yayınlandı" butonuna bas → arşive taşınır
+```
+
+**API endpoint:** `https://digitalbohem.com.tr/api/sosyal.php`  
+**JSON dosyası:** `/public_html/data/sosyal_posts.json` (son 30 gün görünür)
 
 Log: `~/.digitalbohem-agents/logs/cron.log`
 

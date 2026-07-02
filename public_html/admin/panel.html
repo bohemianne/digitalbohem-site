@@ -15,6 +15,7 @@
     <a href="#" onclick="showSection('ornekler')">🖼️ Örnekler</a>
     <a href="#" onclick="showSection('fiyatlar')">💰 Fiyatlar</a>
     <a href="#" onclick="showSection('blog')">📝 Blog</a>
+    <a href="#" onclick="showSection('sosyal')">📢 Sosyal Medya</a>
     <a href="#" onclick="showSection('sifre')">🔑 Şifre Değiştir</a>
     <a href="index.html" style="margin-top:auto; color:#ef4444;">🚪 Çıkış</a>
   </aside>
@@ -171,6 +172,22 @@
       </div>
     </div>
 
+
+    <!-- Sosyal Medya Section -->
+    <div id="sec-sosyal" class="admin-section hidden">
+      <h3>Sosyal Medya Yönetimi</h3>
+      <p style="color:#6b7280; font-size:0.9rem; margin-bottom:1.5rem;">Ajan her Salı ve Cuma 5 platform için içerik üretir. Onayladıklarınızı Facebook, LinkedIn ve Pinterest'e siz paylaşırsınız; Instagram ve YouTube için görsel+senaryo hazır olur.</p>
+
+      <!-- Sekme başlıkları -->
+      <div style="display:flex; border-bottom:2px solid #e5e7eb; margin-bottom:1.5rem;">
+        <button id="stab-bekliyor" onclick="sosyalTab('bekliyor')" style="padding:0.6rem 1.2rem; border:none; background:none; cursor:pointer; font-weight:600; color:#e91e8c; border-bottom:2px solid #e91e8c; margin-bottom:-2px;">Bekleyen</button>
+        <button id="stab-yayinlandi" onclick="sosyalTab('yayinlandi')" style="padding:0.6rem 1.2rem; border:none; background:none; cursor:pointer; font-weight:600; color:#6b7280;">Yayınlananlar</button>
+      </div>
+
+      <span id="sosyal-yukleniyor" style="color:#9ca3af; font-size:0.9rem;"></span>
+      <div id="sosyal-tab-bekliyor"><div id="sosyal-bekliyor-list"></div></div>
+      <div id="sosyal-tab-yayinlandi" style="display:none;"><div id="sosyal-yayinlandi-list"></div></div>
+    </div>
 
     <!-- Şifre Section -->
     <div id="sec-sifre" class="admin-section hidden">
