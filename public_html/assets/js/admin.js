@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const url = URL.createObjectURL(file);
     if (prev) prev.innerHTML = '';
     if (kaldir) kaldir.style.display = 'inline-block';
-    posPicAc(url);
+    posPicAc(url, '50% 50%');
   });
 });
 
@@ -191,43 +191,65 @@ function thumbnailKaldir() {
 let _posOffX = 0, _posOffY = 0;
 let _posDragStartX, _posDragStartY, _posStartOX, _posStartOY;
 let _posMinX = 0, _posMinY = 0;
+let _posPickerAktif = false;
 const PIC_W = 280, PIC_H = 210;
 
-function posPicAc(url) {
+function posPicAc(url, mevcutPos) {
   const wrap = document.getElementById('pos-picker-wrap');
   const img  = document.getElementById('pos-img');
-  if (!wrap || !img) return;
+  const picker = document.getElementById('pos-picker');
+  if (!wrap || !img || !picker) return;
+
+  // Önceki listener'ı temizle
+  if (_posPickerAktif) {
+    picker.removeEventListener('mousedown', posDragBasla);
+    picker.removeEventListener('touchstart', posDragBasla);
+  }
+
   wrap.style.display = 'block';
   img.src = url;
   img.onload = () => {
     const scale = Math.max(PIC_W / img.naturalWidth, PIC_H / img.naturalHeight);
-    const dw = img.naturalWidth * scale;
-    const dh = img.naturalHeight * scale;
+    const dw = Math.round(img.naturalWidth * scale);
+    const dh = Math.round(img.naturalHeight * scale);
     img.style.width  = dw + 'px';
     img.style.height = dh + 'px';
     _posMinX = PIC_W - dw;
     _posMinY = PIC_H - dh;
-    _posOffX = (PIC_W - dw) / 2;
-    _posOffY = (PIC_H - dh) / 2;
+
+    // Mevcut pozisyonu geri yükle
+    if (mevcutPos && mevcutPos !== '50% 50%') {
+      const parts = mevcutPos.split(' ');
+      const px = parseFloat(parts[0]) / 100;
+      const py = parseFloat(parts[1]) / 100;
+      _posOffX = Math.min(0, Math.max(_posMinX, _posMinX * px));
+      _posOffY = Math.min(0, Math.max(_posMinY, _posMinY * py));
+    } else {
+      _posOffX = (PIC_W - dw) / 2;
+      _posOffY = (PIC_H - dh) / 2;
+    }
+
     img.style.left = _posOffX + 'px';
     img.style.top  = _posOffY + 'px';
     posPicKaydet();
+
+    picker.addEventListener('mousedown', posDragBasla);
+    picker.addEventListener('touchstart', posDragBasla, { passive: false });
+    _posPickerAktif = true;
   };
-  const picker = document.getElementById('pos-picker');
-  picker.addEventListener('mousedown', posDragBasla);
-  picker.addEventListener('touchstart', posDragBasla, { passive: false });
 }
 
 function posPicKapat() {
   const wrap = document.getElementById('pos-picker-wrap');
   if (wrap) wrap.style.display = 'none';
-  const pos  = document.getElementById('ornek-thumbnail-position');
+  const pos = document.getElementById('ornek-thumbnail-position');
   if (pos) pos.value = '50% 50%';
   const picker = document.getElementById('pos-picker');
-  if (picker) {
+  if (picker && _posPickerAktif) {
     picker.removeEventListener('mousedown', posDragBasla);
     picker.removeEventListener('touchstart', posDragBasla);
   }
+  _posPickerAktif = false;
 }
 
 function posDragBasla(e) {
@@ -292,9 +314,7 @@ function ornekDuzenle(id) {
     const kaldir = document.getElementById('ornek-thumb-kaldir');
     if (o.thumbnail && prev) {
       if (kaldir) kaldir.style.display = 'inline-block';
-      posPicAc('../' + o.thumbnail);
-      const posInput = document.getElementById('ornek-thumbnail-position');
-      if (posInput && o.thumbnail_position) posInput.value = o.thumbnail_position;
+      posPicAc('../' + o.thumbnail, o.thumbnail_position || '50% 50%');
     }
     const btn = document.getElementById('ornek-kaydet-btn');
     const iptal = document.getElementById('ornek-iptal-btn');
