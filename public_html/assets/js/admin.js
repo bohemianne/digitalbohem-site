@@ -157,17 +157,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.id !== 'ornek-thumbnail') return;
     const file = e.target.files[0];
     const prev = document.getElementById('ornek-thumb-preview');
+    const kaldir = document.getElementById('ornek-thumb-kaldir');
     if (!prev) return;
     if (file) {
       const url = URL.createObjectURL(file);
       prev.innerHTML = `<img src="${url}" style="max-width:200px;max-height:120px;border-radius:8px;border:1px solid #e5e7eb;">`;
+      if (kaldir) kaldir.style.display = 'inline-block';
     } else {
       prev.innerHTML = '';
+      if (kaldir) kaldir.style.display = 'none';
     }
   });
 });
 
+function thumbnailKaldir() {
+  const input = document.getElementById('ornek-thumbnail');
+  const prev  = document.getElementById('ornek-thumb-preview');
+  const kaldir = document.getElementById('ornek-thumb-kaldir');
+  if (input) input.value = '';
+  if (prev) prev.innerHTML = '';
+  if (kaldir) kaldir.style.display = 'none';
+}
+
 async function addOrnek() {
+  const btn = document.querySelector('[onclick="addOrnek()"]');
   const kategori  = document.getElementById('ornek-kategori').value;
   const baslik    = document.getElementById('ornek-baslik').value.trim();
   const canva_url = document.getElementById('ornek-canva-url').value.trim();
@@ -175,14 +188,25 @@ async function addOrnek() {
   const thumbFile = document.getElementById('ornek-thumbnail')?.files[0];
   if (!baslik) { alert('Başlık gerekli!'); return; }
 
+  if (btn) { btn.disabled = true; btn.textContent = 'Ekleniyor...'; }
+
   let thumbnail = '';
   if (thumbFile) {
-    const fd = new FormData();
-    fd.append('thumbnail', thumbFile);
-    const upRes = await fetch('../api/thumbnail-upload.php', { method: 'POST', body: fd });
-    const upJson = await upRes.json();
-    if (upJson.success) thumbnail = upJson.path;
-    else { alert('Resim yüklenemedi: ' + upJson.mesaj); return; }
+    try {
+      const fd = new FormData();
+      fd.append('thumbnail', thumbFile);
+      const upRes = await fetch('../api/thumbnail-upload.php', { method: 'POST', body: fd });
+      const upJson = await upRes.json();
+      if (upJson.success) {
+        thumbnail = upJson.path;
+      } else {
+        const devam = confirm('Resim yüklenemedi: ' + upJson.mesaj + '\n\nResim olmadan eklemek ister misiniz?');
+        if (!devam) { if (btn) { btn.disabled = false; btn.textContent = 'Ekle'; } return; }
+      }
+    } catch (err) {
+      const devam = confirm('Resim yüklenirken bağlantı hatası oluştu.\n\nResim olmadan eklemek ister misiniz?');
+      if (!devam) { if (btn) { btn.disabled = false; btn.textContent = 'Ekle'; } return; }
+    }
   }
 
   await fetch('../api/data.php?table=ornekler', {
@@ -193,8 +217,8 @@ async function addOrnek() {
   document.getElementById('ornek-baslik').value = '';
   document.getElementById('ornek-canva-url').value = '';
   document.getElementById('ornek-aciklama').value = '';
-  if (document.getElementById('ornek-thumbnail')) document.getElementById('ornek-thumbnail').value = '';
-  if (document.getElementById('ornek-thumb-preview')) document.getElementById('ornek-thumb-preview').innerHTML = '';
+  thumbnailKaldir();
+  if (btn) { btn.disabled = false; btn.textContent = 'Ekle'; }
   loadOrnekler();
 }
 
