@@ -1,17 +1,19 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 02.07.2026 15:15
+## Son Oturum — 02.07.2026 15:13
 
 **Son commit'ler:**
 ```
-[bu oturum] feat: sosyal medya otomasyon sistemi — API + admin paneli + ajan + crontab
+a735090 feat: sosyal medya otomasyon sistemi
 cf24d64 chore: handoff.md güncelle — WhatsApp butonu ve main.js notu
 611096b feat: WhatsApp kayan buton tüm sayfalarda + mobil menü main.js'e taşındı
+a9b3965 chore: handoff.md güncelle — örnekler sistemi ve bu oturum değişiklikleri
+7bcb90c feat: admin örnekler listesinde sürükle-bırak sıralama
 ```
 
 **Bekleyen değişiklikler:**
 ```
- M handoff.md
+Tüm değişiklikler commit edilmiş.
 ```
 
 ---
