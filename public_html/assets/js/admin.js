@@ -125,36 +125,33 @@ async function loadOrnekler() {
   renderOrnekler(json.data || []);
 }
 
+let _ornekSira = [];
+
 function renderOrnekler(ornekler) {
   const list = document.getElementById('ornek-list');
   if (!list) return;
+  _ornekSira = ornekler;
   if (!ornekler.length) {
     list.innerHTML = '<p style="color:#9ca3af;">Henüz örnek yok.</p>';
     return;
   }
-  const gruplar = {};
-  ornekler.forEach(o => { (gruplar[o.kategori] = gruplar[o.kategori] || []).push(o); });
-  list.innerHTML = Object.entries(KAT_LABEL).map(([key, label]) => {
-    const items = gruplar[key] || [];
-    const rows = items.length === 0
-      ? '<p style="color:#9ca3af; margin:0.5rem 0; font-size:0.88rem;">Henüz örnek eklenmemiş.</p>'
-      : items.map(o => `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.7rem 1rem; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; margin-top:0.5rem; gap:1rem;">
-          <div style="display:flex; align-items:center; gap:0.75rem; flex:1; overflow:hidden;">
-            ${o.thumbnail ? `<img src="../${o.thumbnail}" style="width:60px;height:40px;object-fit:cover;border-radius:5px;border:1px solid #e5e7eb;flex-shrink:0;">` : '<div style="width:60px;height:40px;background:#f3f4f6;border-radius:5px;border:1px dashed #d1d5db;flex-shrink:0;"></div>'}
-            <div style="overflow:hidden;">
-              <strong>${o.baslik}</strong>
-              <p style="margin:0.2rem 0 0; color:#6b7280; font-size:0.85rem;">${o.aciklama || ''}</p>
-              <small style="color:#9ca3af; word-break:break-all;">${o.canva_url || ''}</small>
-            </div>
-          </div>
-          <div style="display:flex; gap:0.4rem; flex-shrink:0;">
-            <button class="btn-admin" onclick="ornekDuzenle('${o.id}')" style="background:#4bbfe3;">Düzenle</button>
-            <button class="btn-admin btn-danger" onclick="removeOrnek('${o.id}')">Sil</button>
-          </div>
-        </div>`).join('');
-    return `<h4 style="color:#6b7280; margin:1.5rem 0 0.5rem; border-bottom:1px solid #e5e7eb; padding-bottom:0.4rem;">${label}</h4>${rows}`;
-  }).join('');
+  list.innerHTML = '<p style="font-size:0.8rem;color:#9ca3af;margin:0 0 0.5rem;">≡ simgesinden tutup sürükleyerek sırayı değiştirebilirsiniz.</p>' +
+    ornekler.map((o, i) => `
+      <div class="ornek-satir" data-id="${o.id}" draggable="true"
+           style="display:flex;align-items:center;padding:0.6rem 0.8rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;margin-top:0.5rem;gap:0.75rem;cursor:default;">
+        <span class="drag-handle" style="font-size:1.2rem;color:#d1d5db;cursor:grab;padding:0 4px;flex-shrink:0;" title="Sıralamak için sürükle">≡</span>
+        ${o.thumbnail ? `<img src="../${o.thumbnail}" style="width:56px;height:38px;object-fit:cover;border-radius:5px;border:1px solid #e5e7eb;flex-shrink:0;">` : '<div style="width:56px;height:38px;background:#f3f4f6;border-radius:5px;border:1px dashed #d1d5db;flex-shrink:0;"></div>'}
+        <div style="flex:1;overflow:hidden;min-width:0;">
+          <strong style="font-size:0.9rem;">${o.baslik}</strong>
+          <p style="margin:0;color:#9ca3af;font-size:0.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${KAT_LABEL[o.kategori] || o.kategori}</p>
+        </div>
+        <div style="display:flex;gap:0.4rem;flex-shrink:0;">
+          <button class="btn-admin" onclick="ornekDuzenle('${o.id}')" style="background:#4bbfe3;padding:0.35rem 0.7rem;font-size:0.8rem;">Düzenle</button>
+          <button class="btn-admin btn-danger" onclick="removeOrnek('${o.id}')" style="padding:0.35rem 0.7rem;font-size:0.8rem;">Sil</button>
+        </div>
+      </div>`).join('');
+
+  siralamaBaslat(list);
 }
 
 // Thumbnail önizleme + position picker
@@ -394,6 +391,45 @@ async function ornekKaydet() {
   ornekDuzenleIptal();
   if (btn) { btn.disabled = false; }
   loadOrnekler();
+}
+
+function siralamaBaslat(list) {
+  let suruklenen = null;
+
+  list.querySelectorAll('.ornek-satir').forEach(satir => {
+    satir.addEventListener('dragstart', e => {
+      suruklenen = satir;
+      setTimeout(() => satir.style.opacity = '0.4', 0);
+    });
+    satir.addEventListener('dragend', () => {
+      satir.style.opacity = '';
+      list.querySelectorAll('.ornek-satir').forEach(s => s.style.borderColor = '');
+      suruklenen = null;
+      siralamayiKaydet(list);
+    });
+    satir.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (!suruklenen || suruklenen === satir) return;
+      const kutu = satir.getBoundingClientRect();
+      const ortasi = kutu.top + kutu.height / 2;
+      if (e.clientY < ortasi) {
+        list.insertBefore(suruklenen, satir);
+      } else {
+        list.insertBefore(suruklenen, satir.nextSibling);
+      }
+    });
+  });
+}
+
+async function siralamayiKaydet(list) {
+  const yeniSira = [...list.querySelectorAll('.ornek-satir')].map(el => el.dataset.id);
+  const sirali = yeniSira.map(id => _ornekSira.find(o => o.id === id)).filter(Boolean);
+  await fetch('../api/data.php?table=ornekler', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save', data: sirali })
+  });
+  _ornekSira = sirali;
 }
 
 async function removeOrnek(id) {
