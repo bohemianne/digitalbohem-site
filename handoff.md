@@ -1,27 +1,21 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 02.07.2026 10:16
+## Son Oturum — 02.07.2026
 
 **Son commit'ler:**
 ```
-50fb2fd Örnekler: thumbnail resim desteği + hızlı galeri
-63107c8 Blog: Elite paket fiyatı ₺1.499→₺1.999 düzelt (3 yazı)
-572970d Blog: 3 yazı ekle, branding ve fiyat hataları düzelt
-f55974d chore: admin panelden Telegram sekmesi kaldırıldı
-bcfae00 fix: yayinla/taslak-yayinla duplicate slug önleme
-```
-
-**Bekleyen değişiklikler:**
-```
- M handoff.md
-?? admin/
-?? public_html.zip
-?? public_html/.htaccess.bk
-?? public_html/borsa/
-?? public_html/digitalbohem_site.zip
+7bcb90c feat: admin örnekler listesinde sürükle-bırak sıralama
+e6a2d2f chore: Canva URL alanını Bağlantı URL olarak yeniden adlandır
+952ac18 feat: Canva embed kodu yapıştırınca otomatik URL'ye çevir
+a998624 feat: fuşya-mavi gradyanlı SVG favicon tüm sayfalara eklendi
+3de1840 fix: PHP 7 uyumlu upload + position picker mevcut pozisyon geri yükleme
+c059183 perf: thumbnail GD sıkıştırma — max 1200px, JPEG %82, PNG→JPEG
+eae5c4a feat: örnekler kart tasarımı image+overlay, admin drag-to-position picker
+ce035ed fix: thumbnail-upload.php ve ornekler/thumbnails deploy'a eklendi
 ```
 
 ---
+
 ## Genel Bakış
 
 Dijital düğün davetiyesi satış sitesi. Türkçe, tek dilli. Üç paket: Temel (₺499), Premium (₺899), Elite (₺1.999).
@@ -58,8 +52,9 @@ SSH key: `~/.ssh/digitalbohem-github`
 ```
 digitalbohem-site/
 ├── index.html              # Ana sayfa
-├── ornekler.html           # Örnek davetiye galerisi
+├── ornekler.html           # Örnek davetiye galerisi (API'den yükler)
 ├── hakkimizda.html         # Hakkımızda sayfası
+├── favicon.svg             # Fuşya-mavi gradyanlı yıldız favicon
 ├── blog/index.html         # Blog listesi sayfası
 ├── form-handler.php        # Sipariş formu → Telegram + e-posta
 ├── sitemap.xml / robots.txt
@@ -70,19 +65,41 @@ digitalbohem-site/
 │   │   ├── index.html      # Admin giriş sayfası (şifre: digital2026)
 │   │   └── panel.html      # Admin paneli
 │   ├── api/
-│   │   ├── data.php        # Genel CRUD API (JSON dosyaları okur/yazar)
+│   │   ├── data.php        # Genel CRUD API + update action (JSON okur/yazar)
 │   │   ├── blog.php        # Blog önerileri + onay API
-│   │   └── telegram.php    # Telegram mesaj gönderici
+│   │   ├── telegram.php    # Telegram mesaj gönderici
+│   │   └── thumbnail-upload.php  # Resim yükle, GD ile sıkıştır (max 1200px, JPEG %82)
 │   ├── assets/
 │   │   ├── css/style.css   # Admin panel stilleri
 │   │   └── js/admin.js     # Admin panel JS
+│   ├── ornekler/
+│   │   └── thumbnails/     # Yüklenen örnek önizleme resimleri (deploy korunur)
 │   └── data/
-│       ├── blog_oneriler.json  # Haftalık blog konu önerileri (ajan yazar)
-│       └── blog_yazilar.json   # Yayımlanan yazıların listesi
+│       ├── blog_oneriler.json
+│       └── blog_yazilar.json
 │
 └── assets/css/
     ├── style.css / form.css / ornekler.css / blog.css / hakkimizda.css
 ```
+
+---
+
+## Örnekler Sistemi
+
+`ornekler-data.json` → API üzerinden okunur, `ornekler.html` sayfasında gösterilir.
+
+**Kart tasarımı:** Tam resim + altta başlık overlay. Tıklayınca "Bağlantı URL"ye gider.
+
+**Her örnekte:**
+- `baslik`, `kategori` (web/video/pdf), `canva_url` (bağlantı URL), `aciklama`
+- `thumbnail` — `ornekler/thumbnails/` altında sıkıştırılmış JPEG
+- `thumbnail_position` — sürükleme ile belirlenen `object-position` değeri (örn: `"40% 20%"`)
+
+**Admin paneli Örnekler sekmesi:**
+- Ekle / Düzenle / Sil
+- Thumbnail yükleyince GD ile sıkıştırılır (PNG→JPEG dahil)
+- Yükledikten sonra 280×210 sürükleme kutusundan pozisyon belirlenir
+- Liste sırasını ≡ tutamacından sürükle-bırak ile değiştir → otomatik kaydolur
 
 ---
 
@@ -107,81 +124,50 @@ Buz mavisi + fuşya pembe + beyaz (Haziran 2026'da güncellendi).
 **URL:** `https://digitalbohem.com.tr/admin/`  
 **Şifre:** `digital2026`
 
-### Sekmeler
-
 | Sekme | Ne yapar |
 |---|---|
-| Davetiyeler | Müşteri listesi, durum takibi (localStorage) |
-| Örnekler | Site galeri örnekleri ekle/sil |
-| Fiyatlar | Paket fiyatlarını güncelle (API'ye kaydeder) |
-| **Blog** | Blog konu önerilerini gör/onayla + yazılmış yazıları önizle |
-| Telegram | Bot token ve chat ID ayarla |
+| Davetiyeler | Müşteri listesi, durum takibi (localStorage — siteye yansımaz) |
+| Örnekler | Galeri ekle/düzenle/sil, sürükle-bırak sıralama |
+| Fiyatlar | Paket fiyatlarını güncelle |
+| Blog | Konu önerilerini gör/onayla + yazıları önizle |
 
 ---
 
 ## Blog Sistemi — Tam Akış
 
-Haftada 2 blog yazısı otomatik üretilir. Akış:
-
 ```
-Pazartesi 09:30  →  blog-oneri-ajan.sh
-                    Claude 2 konu önerir
-                    → ~/.digitalbohem-agents/blog-oneriler-TARIH.md (local yedek)
-                    → https://digitalbohem.com.tr/api/blog.php?action=oneriler-kaydet (canlıya)
-
-Sen              →  Admin paneli → Blog → "Bu Haftanın Konuları"
-                    ✅ Onayla veya ✕ Reddet
-
-Perşembe 19:30   →  blog-yaz-ajan.sh 1   (Konu 1 onaylıysa yazar)
-Cumartesi 10:30  →  blog-yaz-ajan.sh 2   (Konu 2 onaylıysa yazar)
-                    → HTML dosya ~/Masaüstü/digitalbohem-site/blog/ dizinine
-                    → Git commit + push → cPanel deploy
+Pazartesi 09:30  →  blog-oneri-ajan.sh → API'ye konu önerileri gönderir
+Sen              →  Admin → Blog → Onayla/Reddet
+Perşembe 19:30   →  blog-yaz-ajan.sh 1  (Konu 1 onaylıysa)
+Cumartesi 10:30  →  blog-yaz-ajan.sh 2  (Konu 2 onaylıysa)
+                    → blog/ dizinine HTML → git push → cPanel deploy
 ```
-
-### Blog API Endpoint'leri
-
-| Endpoint | Açıklama |
-|---|---|
-| `GET /api/blog.php?action=oneriler` | Bu haftanın öneri konularını getir |
-| `POST /api/blog.php?action=oneriler-kaydet` | Ajan yeni önerileri gönderir |
-| `POST /api/blog.php?action=onayla` `{"konu":1,"karar":"EVET"}` | Konu onayla/reddet |
-| `GET /api/blog.php?action=yazilar` | Yayımlanan yazı listesi |
-| `POST /api/blog.php?action=yazi-kaydet` | Blog yazı ajanı yazıyı kaydeder |
 
 ---
 
 ## Otomasyon Ajanları (Cron)
 
-Tüm ajanlar `~/.digitalbohem-agents/` altında, `bohem` kullanıcısının crontab'ında kayıtlı.
+Tüm ajanlar `~/.digitalbohem-agents/` altında.
 
 | Zaman | Ajan | Görev |
 |---|---|---|
 | Pazartesi 09:07 | `icerik-ajan.sh` | Haftalık içerik planı |
-| Pazartesi 09:30 | `blog-oneri-ajan.sh` | Blog konu önerileri üret → API'ye gönder |
-| Çarşamba 09:13 | `seo-ajan.sh` | SEO & rakip takip raporu |
+| Pazartesi 09:30 | `blog-oneri-ajan.sh` | Blog konu önerileri |
+| Çarşamba 09:13 | `seo-ajan.sh` | SEO & rakip takip |
 | 1. ve 15. günü 09:17 | `trend-ajan.sh` | Trend araştırması |
 | Cuma 09:23 | `teknik-seo-ajan.sh` | Teknik SEO kontrol |
 | Cuma 10:00 | `site-updater.sh` | SEO raporundan site güncellemesi |
-| Perşembe 19:30 | `blog-yaz-ajan.sh 1` | Onaylanan Konu 1'i yaz |
-| Cumartesi 10:30 | `blog-yaz-ajan.sh 2` | Onaylanan Konu 2'yi yaz |
+| Perşembe 19:30 | `blog-yaz-ajan.sh 1` | Konu 1'i yaz |
+| Cumartesi 10:30 | `blog-yaz-ajan.sh 2` | Konu 2'yi yaz |
 
-Log dosyası: `~/.digitalbohem-agents/logs/cron.log`
-
----
-
-## Sipariş Formu
-
-`form-handler.php` iki şey yapar:
-1. **Telegram:** Bot token + chat ID'ye sipariş bildirimi gönderir
-2. **E-posta:** `mail()` ile bildirim
-
-Telegram ayarları `form-handler.php` içinde tanımlı. Değiştirmek için düzenle → push et.
+Log: `~/.digitalbohem-agents/logs/cron.log`
 
 ---
 
 ## Notlar
 
-- `ornekler-data.json` deploy sırasında üzerine yazılmaz (`.cpanel.yml`'de koşullu kopyalama).
-- `data/blog_oneriler.json` ve `data/blog_yazilar.json` deploy sırasında sadece yoksa oluşturulur — canlıdaki veriler korunur.
+- `ornekler-data.json` deploy sırasında üzerine yazılmaz.
+- `ornekler/thumbnails/` deploy sırasında korunur.
+- `data/blog_*.json` deploy sırasında sadece yoksa oluşturulur.
 - `borsa.html` aktif değil, eski test sayfası.
 - GitHub IP (`140.82.121.4`) değişirse `~/.ssh/config`'i güncelle.
