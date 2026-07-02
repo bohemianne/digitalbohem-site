@@ -43,6 +43,17 @@ if ($method === 'POST') {
         $data[] = $input['data'];
         writeJson($table, $data);
         echo json_encode(['success' => true, 'message' => 'Eklendi']);
+    } elseif ($action === 'update') {
+        $data = readJson($table);
+        $id   = $input['data']['id'] ?? '';
+        foreach ($data as &$item) {
+            if (($item['id'] ?? '') === $id) {
+                $item = array_merge($item, $input['data']);
+                break;
+            }
+        }
+        writeJson($table, array_values($data));
+        echo json_encode(['success' => true, 'message' => 'Güncellendi']);
     } elseif ($action === 'delete') {
         $data = readJson($table);
         $id = $input['id'] ?? 0;

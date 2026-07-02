@@ -140,12 +140,18 @@ function renderOrnekler(ornekler) {
       ? '<p style="color:#9ca3af; margin:0.5rem 0; font-size:0.88rem;">Henüz örnek eklenmemiş.</p>'
       : items.map(o => `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:0.7rem 1rem; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; margin-top:0.5rem; gap:1rem;">
-          <div style="flex:1; overflow:hidden;">
-            <strong>${o.baslik}</strong>
-            <p style="margin:0.2rem 0 0; color:#6b7280; font-size:0.85rem;">${o.aciklama || ''}</p>
-            <small style="color:#9ca3af; word-break:break-all;">${o.canva_url || ''}</small>
+          <div style="display:flex; align-items:center; gap:0.75rem; flex:1; overflow:hidden;">
+            ${o.thumbnail ? `<img src="../${o.thumbnail}" style="width:60px;height:40px;object-fit:cover;border-radius:5px;border:1px solid #e5e7eb;flex-shrink:0;">` : '<div style="width:60px;height:40px;background:#f3f4f6;border-radius:5px;border:1px dashed #d1d5db;flex-shrink:0;"></div>'}
+            <div style="overflow:hidden;">
+              <strong>${o.baslik}</strong>
+              <p style="margin:0.2rem 0 0; color:#6b7280; font-size:0.85rem;">${o.aciklama || ''}</p>
+              <small style="color:#9ca3af; word-break:break-all;">${o.canva_url || ''}</small>
+            </div>
           </div>
-          <button class="btn-admin btn-danger" onclick="removeOrnek('${o.id}')">Sil</button>
+          <div style="display:flex; gap:0.4rem; flex-shrink:0;">
+            <button class="btn-admin" onclick="ornekDuzenle('${o.id}')" style="background:#4bbfe3;">Düzenle</button>
+            <button class="btn-admin btn-danger" onclick="removeOrnek('${o.id}')">Sil</button>
+          </div>
         </div>`).join('');
     return `<h4 style="color:#6b7280; margin:1.5rem 0 0.5rem; border-bottom:1px solid #e5e7eb; padding-bottom:0.4rem;">${label}</h4>${rows}`;
   }).join('');
@@ -179,8 +185,48 @@ function thumbnailKaldir() {
   if (kaldir) kaldir.style.display = 'none';
 }
 
-async function addOrnek() {
-  const btn = document.querySelector('[onclick="addOrnek()"]');
+let _ornekDuzenleData = null;
+
+function ornekDuzenle(id) {
+  const res = fetch('../api/data.php?table=ornekler').then(r => r.json()).then(json => {
+    const o = (json.data || []).find(x => x.id === id);
+    if (!o) return;
+    _ornekDuzenleData = o;
+    document.getElementById('ornek-duzenle-id').value = id;
+    document.getElementById('ornek-kategori').value  = o.kategori || 'dugun';
+    document.getElementById('ornek-baslik').value    = o.baslik || '';
+    document.getElementById('ornek-canva-url').value = o.canva_url || '';
+    document.getElementById('ornek-aciklama').value  = o.aciklama || '';
+    const prev  = document.getElementById('ornek-thumb-preview');
+    const kaldir = document.getElementById('ornek-thumb-kaldir');
+    if (o.thumbnail && prev) {
+      prev.innerHTML = `<img src="../${o.thumbnail}" style="max-width:200px;max-height:120px;border-radius:8px;border:1px solid #e5e7eb;">`;
+      if (kaldir) kaldir.style.display = 'inline-block';
+    }
+    const btn = document.getElementById('ornek-kaydet-btn');
+    const iptal = document.getElementById('ornek-iptal-btn');
+    if (btn) btn.textContent = 'Güncelle';
+    if (iptal) iptal.style.display = 'inline-block';
+    document.getElementById('ornek-baslik').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+}
+
+function ornekDuzenleIptal() {
+  _ornekDuzenleData = null;
+  document.getElementById('ornek-duzenle-id').value = '';
+  document.getElementById('ornek-baslik').value    = '';
+  document.getElementById('ornek-canva-url').value = '';
+  document.getElementById('ornek-aciklama').value  = '';
+  thumbnailKaldir();
+  const btn = document.getElementById('ornek-kaydet-btn');
+  const iptal = document.getElementById('ornek-iptal-btn');
+  if (btn) btn.textContent = 'Ekle';
+  if (iptal) iptal.style.display = 'none';
+}
+
+async function ornekKaydet() {
+  const btn       = document.getElementById('ornek-kaydet-btn');
+  const duzenleId = document.getElementById('ornek-duzenle-id').value;
   const kategori  = document.getElementById('ornek-kategori').value;
   const baslik    = document.getElementById('ornek-baslik').value.trim();
   const canva_url = document.getElementById('ornek-canva-url').value.trim();
@@ -188,37 +234,40 @@ async function addOrnek() {
   const thumbFile = document.getElementById('ornek-thumbnail')?.files[0];
   if (!baslik) { alert('Başlık gerekli!'); return; }
 
-  if (btn) { btn.disabled = true; btn.textContent = 'Ekleniyor...'; }
+  if (btn) { btn.disabled = true; btn.textContent = duzenleId ? 'Güncelleniyor...' : 'Ekleniyor...'; }
 
-  let thumbnail = '';
+  let thumbnail = duzenleId ? (_ornekDuzenleData?.thumbnail || '') : '';
   if (thumbFile) {
     try {
       const fd = new FormData();
       fd.append('thumbnail', thumbFile);
-      const upRes = await fetch('../api/thumbnail-upload.php', { method: 'POST', body: fd });
+      const upRes  = await fetch('../api/thumbnail-upload.php', { method: 'POST', body: fd });
       const upJson = await upRes.json();
       if (upJson.success) {
         thumbnail = upJson.path;
       } else {
-        const devam = confirm('Resim yüklenemedi: ' + upJson.mesaj + '\n\nResim olmadan eklemek ister misiniz?');
-        if (!devam) { if (btn) { btn.disabled = false; btn.textContent = 'Ekle'; } return; }
+        const devam = confirm('Resim yüklenemedi: ' + upJson.mesaj + '\n\nResim olmadan devam edilsin mi?');
+        if (!devam) { if (btn) { btn.disabled = false; btn.textContent = duzenleId ? 'Güncelle' : 'Ekle'; } return; }
       }
     } catch (err) {
-      const devam = confirm('Resim yüklenirken bağlantı hatası oluştu.\n\nResim olmadan eklemek ister misiniz?');
-      if (!devam) { if (btn) { btn.disabled = false; btn.textContent = 'Ekle'; } return; }
+      const devam = confirm('Resim yüklenirken bağlantı hatası oluştu.\n\nResim olmadan devam edilsin mi?');
+      if (!devam) { if (btn) { btn.disabled = false; btn.textContent = duzenleId ? 'Güncelle' : 'Ekle'; } return; }
     }
   }
+
+  const action = duzenleId ? 'update' : 'add';
+  const data   = duzenleId
+    ? { id: duzenleId, kategori, baslik, canva_url, aciklama, thumbnail }
+    : { id: 'ornek-' + Date.now(), kategori, baslik, canva_url, aciklama, thumbnail };
 
   await fetch('../api/data.php?table=ornekler', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'add', data: { id: 'ornek-' + Date.now(), kategori, baslik, canva_url, aciklama, thumbnail } })
+    body: JSON.stringify({ action, data })
   });
-  document.getElementById('ornek-baslik').value = '';
-  document.getElementById('ornek-canva-url').value = '';
-  document.getElementById('ornek-aciklama').value = '';
-  thumbnailKaldir();
-  if (btn) { btn.disabled = false; btn.textContent = 'Ekle'; }
+
+  ornekDuzenleIptal();
+  if (btn) { btn.disabled = false; }
   loadOrnekler();
 }
 
