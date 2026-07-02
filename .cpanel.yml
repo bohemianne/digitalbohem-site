@@ -1,6 +1,7 @@
 ---
 deployment:
   tasks:
+    - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/favicon.svg /home/digi7586/public_html/favicon.svg
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/index.html /home/digi7586/public_html/index.html
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/ornekler.html /home/digi7586/public_html/ornekler.html
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/sitemap.xml /home/digi7586/public_html/sitemap.xml
