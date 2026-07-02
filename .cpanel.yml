@@ -22,6 +22,9 @@ deployment:
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/public_html/api/data.php /home/digi7586/public_html/api/data.php
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/public_html/api/telegram.php /home/digi7586/public_html/api/telegram.php
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/public_html/api/blog.php /home/digi7586/public_html/api/blog.php
+    - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/public_html/api/thumbnail-upload.php /home/digi7586/public_html/api/thumbnail-upload.php
+    - /bin/mkdir -p /home/digi7586/public_html/ornekler/thumbnails
+    - /bin/chmod 755 /home/digi7586/public_html/ornekler/thumbnails
     - /bin/mkdir -p /home/digi7586/public_html/assets/js
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/public_html/assets/js/admin.js /home/digi7586/public_html/assets/js/admin.js
     - /bin/sh -c 'test -f /home/digi7586/public_html/data/bloglar.json || (mkdir -p /home/digi7586/public_html/data && echo "[]" > /home/digi7586/public_html/data/bloglar.json && chmod 666 /home/digi7586/public_html/data/bloglar.json)'
