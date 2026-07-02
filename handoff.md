@@ -1,8 +1,30 @@
 # Digital Bohem — Proje Handoff
 
+## Son Oturum — 02.07.2026 10:16
+
+**Son commit'ler:**
+```
+50fb2fd Örnekler: thumbnail resim desteği + hızlı galeri
+63107c8 Blog: Elite paket fiyatı ₺1.499→₺1.999 düzelt (3 yazı)
+572970d Blog: 3 yazı ekle, branding ve fiyat hataları düzelt
+f55974d chore: admin panelden Telegram sekmesi kaldırıldı
+bcfae00 fix: yayinla/taslak-yayinla duplicate slug önleme
+```
+
+**Bekleyen değişiklikler:**
+```
+ M handoff.md
+?? admin/
+?? public_html.zip
+?? public_html/.htaccess.bk
+?? public_html/borsa/
+?? public_html/digitalbohem_site.zip
+```
+
+---
 ## Genel Bakış
 
-Dijital düğün davetiyesi satış sitesi. Türkçe, tek dilli. Üç paket: Temel (₺499), Premium (₺899), Elite (₺1.499).
+Dijital düğün davetiyesi satış sitesi. Türkçe, tek dilli. Üç paket: Temel (₺499), Premium (₺899), Elite (₺1.999).
 
 **Canlı URL:** https://digitalbohem.com.tr  
 **Instagram:** https://instagram.com/digital.davet  
