@@ -11,8 +11,23 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-require_once __DIR__ . '/../../private/telegram_config.php';
-require_once __DIR__ . '/../../private/ayse_config.php';
+$tgConfig   = __DIR__ . '/../../private/telegram_config.php';
+$ayseConfig = __DIR__ . '/../../private/ayse_config.php';
+
+if (!file_exists($tgConfig) || !file_exists($ayseConfig)) {
+    http_response_code(503);
+    echo json_encode(['ok' => false, 'message' => 'Servis yapılandırılıyor, lütfen bekleyin.']);
+    exit;
+}
+
+require_once $tgConfig;
+require_once $ayseConfig;
+
+if (!defined('ANTHROPIC_API_KEY') || ANTHROPIC_API_KEY === 'sk-ant-BURAYA_API_KEY_GIRIN') {
+    http_response_code(503);
+    echo json_encode(['ok' => false, 'message' => 'API yapılandırması eksik.']);
+    exit;
+}
 
 $input  = json_decode(file_get_contents('php://input'), true);
 $action = $input['action'] ?? 'chat';

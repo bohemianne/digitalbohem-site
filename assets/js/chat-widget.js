@@ -3,41 +3,52 @@
 
   const WA_NUMBER = '905307732270';
   const WA_TEXT   = 'Merhaba%2C%20dijital%20davetiye%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum.';
-  const API_BASE  = '/api/chat.php';
 
-  // root'a göre API yolu (blog/ alt dizininden de çalışır)
+  // Sayfa derinliğine göre API yolu (blog/ alt dizininden de çalışır)
   const apiUrl = (function () {
-    const depth = location.pathname.split('/').filter(Boolean).length;
-    const prefix = depth > 1 ? '../'.repeat(depth - 1) : '';
+    const parts = location.pathname.split('/').filter(Boolean);
+    const prefix = parts.length > 1 ? '../'.repeat(parts.length - 1) : '';
     return prefix + 'api/chat.php';
   })();
 
-  let history = JSON.parse(sessionStorage.getItem('ayse_history') || '[]');
+  let history  = JSON.parse(sessionStorage.getItem('ayse_history') || '[]');
   let isTyping = false;
 
   // --- DOM oluştur ---
   function buildWidget() {
-    // Açma butonu
+    // Tanıtım balonu
+    const intro = document.createElement('div');
+    intro.className = 'ayse-intro';
+    intro.style.display = 'none';
+    intro.innerHTML = `
+      <button class="ayse-intro-close" aria-label="Kapat">✕</button>
+      <div class="ayse-intro-name">🌸 Merhaba! Ben Ayşe</div>
+      Bu işletmenin yapay zeka asistanıyım.<br>Size yardımcı olabilir miyim?
+    `;
+
+    // Açma butonu (pill)
     const btn = document.createElement('button');
     btn.className = 'ayse-btn';
     btn.setAttribute('aria-label', 'Ayşe ile sohbet et');
     btn.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-      </svg>
+      <div class="ayse-btn-avatar">🌸</div>
+      <div class="ayse-btn-label">
+        <span class="ayse-btn-name">Ayşe</span>
+        <span class="ayse-btn-sub">Şimdi çevrimiçi</span>
+      </div>
     `;
 
     // Chat penceresi
     const win = document.createElement('div');
     win.className = 'ayse-window';
     win.setAttribute('role', 'dialog');
-    win.setAttribute('aria-label', 'Ayşe - Digital Bohem Asistanı');
+    win.setAttribute('aria-label', 'Ayşe — Digital Bohem Asistanı');
     win.innerHTML = `
       <div class="ayse-header">
-        <div class="ayse-avatar">🌸</div>
+        <div class="ayse-header-avatar">🌸</div>
         <div class="ayse-header-info">
           <div class="ayse-header-name">Ayşe</div>
-          <div class="ayse-header-status">Digital Bohem Asistanı • 7/24</div>
+          <div class="ayse-header-status">Digital Bohem Asistanı · 7/24 aktif</div>
         </div>
         <button class="ayse-close" aria-label="Kapat">✕</button>
       </div>
@@ -53,25 +64,43 @@
       </div>
     `;
 
+    document.body.appendChild(intro);
     document.body.appendChild(btn);
     document.body.appendChild(win);
 
-    const msgs  = win.querySelector('#ayse-msgs');
-    const input = win.querySelector('#ayse-input');
-    const send  = win.querySelector('#ayse-send');
-    const close = win.querySelector('.ayse-close');
+    const msgs     = win.querySelector('#ayse-msgs');
+    const input    = win.querySelector('#ayse-input');
+    const send     = win.querySelector('#ayse-send');
+    const closeBtn = win.querySelector('.ayse-close');
 
-    // Aç/kapat
+    // Tanıtım balonunu otomatik göster (sadece ilk ziyaret)
+    if (!sessionStorage.getItem('ayse_intro_shown')) {
+      setTimeout(() => {
+        intro.style.display = 'block';
+        sessionStorage.setItem('ayse_intro_shown', '1');
+      }, 1800);
+
+      // 12 saniye sonra otomatik kapat
+      setTimeout(() => { intro.style.display = 'none'; }, 13800);
+    }
+
+    // Tanıtım X butonu
+    intro.querySelector('.ayse-intro-close').addEventListener('click', () => {
+      intro.style.display = 'none';
+    });
+
+    // Chat açma
     btn.addEventListener('click', () => {
+      intro.style.display = 'none';
       win.classList.toggle('open');
       if (win.classList.contains('open')) {
         if (history.length === 0) showGreeting(msgs);
         else renderHistory(msgs);
-        input.focus();
+        setTimeout(() => input.focus(), 50);
       }
     });
 
-    close.addEventListener('click', () => win.classList.remove('open'));
+    closeBtn.addEventListener('click', () => win.classList.remove('open'));
 
     // Gönder
     send.addEventListener('click', () => submitMessage(msgs, input, send));
@@ -91,9 +120,9 @@
 
   // --- İlk karşılama ---
   function showGreeting(msgs) {
-    const greeting = 'Merhaba! Ben Ayşe, Digital Bohem\'in sanal asistanıyım. Size nasıl yardımcı olabilirim?';
-    addBotMessage(msgs, greeting);
-    history.push({ role: 'assistant', content: greeting });
+    const text = 'Merhaba! 🌸 Ben Ayşe, Digital Bohem\'in yapay zeka asistanıyım. Size nasıl yardımcı olabilirim?';
+    addBotMessage(msgs, text);
+    history.push({ role: 'assistant', content: text });
     saveHistory();
   }
 
@@ -101,11 +130,8 @@
   function renderHistory(msgs) {
     msgs.innerHTML = '';
     history.forEach((m) => {
-      if (m.role === 'user') {
-        addUserMessage(msgs, m.content, false);
-      } else {
-        addBotMessage(msgs, m.content, false);
-      }
+      if (m.role === 'user') addUserMessage(msgs, m.content, false);
+      else addBotMessage(msgs, m.content, false);
     });
     scrollBottom(msgs);
   }
@@ -127,10 +153,10 @@
     const typing = showTyping(msgs);
 
     try {
-      const res = await fetch(apiUrl, {
-        method: 'POST',
+      const res  = await fetch(apiUrl, {
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'chat', messages: history }),
+        body:    JSON.stringify({ action: 'chat', messages: history }),
       });
       const data = await res.json();
 
@@ -142,10 +168,7 @@
         addBotMessage(msgs, data.message);
         history.push({ role: 'assistant', content: data.message });
         saveHistory();
-
-        if (data.whatsapp) {
-          showWhatsAppButton(msgs);
-        }
+        if (data.whatsapp) showWhatsAppButton(msgs);
       } else {
         addBotMessage(msgs, 'Bir hata oluştu, lütfen tekrar deneyin.');
       }
@@ -172,7 +195,7 @@
     btn.addEventListener('click', () => {
       sendSummaryToTelegram();
       window.open('https://wa.me/' + WA_NUMBER + '?text=' + WA_TEXT, '_blank');
-      btn.textContent = '✓ WhatsApp\'a yönlendiriliyorsunuz...';
+      btn.innerHTML = '✓ WhatsApp\'a yönlendiriliyorsunuz...';
       btn.style.background = '#128c7e';
       btn.disabled = true;
     });
@@ -186,14 +209,14 @@
     if (history.length === 0) return;
     try {
       await fetch(apiUrl, {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'summary', messages: history }),
+        body:    JSON.stringify({ action: 'summary', messages: history }),
       });
     } catch { /* sessizce geç */ }
   }
 
-  // --- Mesaj DOM yardımcıları ---
+  // --- Yardımcılar ---
   function addBotMessage(msgs, text, scroll = true) {
     const el = document.createElement('div');
     el.className = 'ayse-msg bot';
@@ -221,15 +244,12 @@
     return el;
   }
 
-  function scrollBottom(msgs) {
-    msgs.scrollTop = msgs.scrollHeight;
-  }
+  function scrollBottom(msgs) { msgs.scrollTop = msgs.scrollHeight; }
 
   function saveHistory() {
     sessionStorage.setItem('ayse_history', JSON.stringify(history));
   }
 
-  // Sayfa yüklenince başlat
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', buildWidget);
   } else {
