@@ -16,11 +16,7 @@ $ayseConfig = __DIR__ . '/../../private/ayse_config.php';
 
 if (!file_exists($tgConfig) || !file_exists($ayseConfig)) {
     http_response_code(503);
-    echo json_encode([
-        'ok'      => false,
-        'message' => 'Servis yapılandırılıyor, lütfen bekleyin.',
-        '_debug'  => ['tg' => $tgConfig, 'tg_ok' => file_exists($tgConfig), 'ayse' => $ayseConfig, 'ayse_ok' => file_exists($ayseConfig)]
-    ]);
+    echo json_encode(['ok' => false, 'message' => 'Servis yapılandırılıyor, lütfen bekleyin.']);
     exit;
 }
 
