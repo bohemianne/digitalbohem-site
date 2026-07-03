@@ -208,9 +208,10 @@
     scrollBottom(msgs);
   }
 
-  // --- Telegram özet gönder ---
+  // --- Telegram özet gönder (WhatsApp yönlendirmesinde) ---
   async function sendSummaryToTelegram() {
     if (history.length === 0) return;
+    sessionStorage.setItem('ayse_summary_sent', '1');
     try {
       await fetch(apiUrl, {
         method:  'POST',
@@ -219,6 +220,18 @@
       });
     } catch { /* sessizce geç */ }
   }
+
+  // --- Sekme kapanınca özet gönder (sendBeacon — iptal edilmez) ---
+  window.addEventListener('pagehide', () => {
+    // Gerçek sohbet yoksa (sadece karşılama mesajı) veya özet zaten gönderildiyse atla
+    const userMessages = history.filter(m => m.role === 'user');
+    if (userMessages.length === 0) return;
+    if (sessionStorage.getItem('ayse_summary_sent')) return;
+
+    sessionStorage.setItem('ayse_summary_sent', '1');
+    const payload = JSON.stringify({ action: 'summary', messages: history, source: 'tab_closed' });
+    navigator.sendBeacon(apiUrl, new Blob([payload], { type: 'application/json' }));
+  });
 
   // --- Yardımcılar ---
   function addBotMessage(msgs, text, scroll = true) {

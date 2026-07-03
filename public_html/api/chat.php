@@ -32,6 +32,7 @@ if (!defined('ANTHROPIC_API_KEY') || ANTHROPIC_API_KEY === 'sk-ant-BURAYA_API_KE
 $input  = json_decode(file_get_contents('php://input'), true);
 $action = $input['action'] ?? 'chat';
 $msgs   = $input['messages'] ?? [];
+$source = $input['source'] ?? 'whatsapp';
 
 $systemPrompt = <<<'PROMPT'
 Sen Digital Bohem'in sanal müşteri hizmetleri asistanı Ayşe'sin.
@@ -95,7 +96,7 @@ if ($action === 'summary') {
          . "⏰ $now\n\n"
          . $summaryText . "\n\n"
          . "──────────────────────\n"
-         . "📱 Müşteri WhatsApp'a yönlendirildi";
+         . ($source === 'tab_closed' ? "🚪 Müşteri sohbeti tamamlamadan sayfadan ayrıldı" : "📱 Müşteri WhatsApp'a yönlendirildi");
 
     sendTelegram($msg);
     echo json_encode(['ok' => true]);
