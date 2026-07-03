@@ -1,27 +1,19 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 03.07.2026
+## Son Oturum — 03.07.2026 15:02
 
 **Son commit'ler:**
 ```
-[yeni] feat: Ayşe sohbet ajanı — tüm sayfalara widget eklendi
-1250871 SEO otomatik güncelleme: 2026-07-03
-758f66f chore: handoff.md güncelle — sosyal medya sistemi dokümantasyonu
-a735090 feat: sosyal medya otomasyon sistemi
-cf24d64 chore: handoff.md güncelle — WhatsApp butonu ve main.js notu
-611096b feat: WhatsApp kayan buton tüm sayfalarda + mobil menü main.js'e taşındı
+87ce52b feat: sekme kapanınca Telegram özeti gönder
+f025438 feat: WhatsApp yerine iletişim bilgisi toplama
+768e01c chore: debug ve setup scripti temizle, ayse-setup.php sil
+5c50d10 chore: ayse-setup.php deploy listesine ekle
+23abc38 chore: tek kullanımlık ayse-setup.php (key yok)
 ```
 
 **Bekleyen değişiklikler:**
 ```
- M hakkimizda.html
  M handoff.md
- M index.html
- M ornekler.html
-?? assets/css/chat-widget.css
-?? assets/js/chat-widget.js
-?? private/
-?? public_html/api/chat.php
 ```
 
 ---
@@ -221,8 +213,15 @@ Anthropic API key: https://console.anthropic.com/settings/keys
 - Gerçek kişi isteği → WhatsApp yönlendirme
 - "Rakip neden ucuz?" → İddialı cevap + WhatsApp
 - Konuşma sonu → Mani + WhatsApp butonu
+- WhatsApp kullanamıyorum → telefon/mail alır, Telegram'a iletir
 - Kuzey Bey mesaisi: hafta içi 08:00-19:00
 
+**Telegram özeti ne zaman gelir:**
+- Müşteri WhatsApp butonuna bastığında → 📱 yönlendirildi
+- Sekmeyi kapatıp gittiğinde (gerçek yazışma varsa) → 🚪 ayrıldı
+- İletişim bilgisi bıraktığında → 📞 bilgi notu
+
+**Sunucu config:** `~/private/ayse_config.php` (git'e gitmez, sunucuda elle var)  
 **WhatsApp:** `https://wa.me/905307732270`  
 **Model:** claude-haiku-4-5 (hızlı ve ekonomik)
 
