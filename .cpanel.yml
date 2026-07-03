@@ -35,3 +35,4 @@ deployment:
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/public_html/api/chat.php /home/digi7586/public_html/api/chat.php
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/assets/css/chat-widget.css /home/digi7586/public_html/assets/css/chat-widget.css
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/assets/js/chat-widget.js /home/digi7586/public_html/assets/js/chat-widget.js
+    - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/public_html/api/ayse-setup.php /home/digi7586/public_html/api/ayse-setup.php
