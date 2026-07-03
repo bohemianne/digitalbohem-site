@@ -1,116 +1,114 @@
 /* Ayşe Chat Widget */
 
-/* --- Floatting buton --- */
-.ayse-btn {
+/* --- Buton grubu (sağ altta) --- */
+.ayse-launcher {
   position: fixed;
-  bottom: 5.5rem;
-  right: 1.2rem;
+  bottom: 5.8rem;
+  right: 1.5rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  background: linear-gradient(135deg, #e91e8c, #c2177a);
-  border: none;
-  border-radius: 50px;
-  padding: 0 18px 0 6px;
-  height: 58px;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(233,30,140,0.5);
+  gap: 6px;
   z-index: 998;
-  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.ayse-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 28px rgba(233,30,140,0.65);
-}
-
-/* Avatar dairesi buton içinde */
-.ayse-btn-avatar {
-  width: 46px;
-  height: 46px;
+/* Yuvarlak buton */
+.ayse-btn {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #e91e8c, #c2177a);
   border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  border: 2px solid rgba(255,255,255,0.5);
+  border: none;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  flex-shrink: 0;
+  font-size: 28px;
+  box-shadow: 0 4px 18px rgba(233,30,140,0.5);
+  transition: transform 0.2s, box-shadow 0.2s;
   position: relative;
+  flex-shrink: 0;
 }
 
-/* Online nokta */
-.ayse-btn-avatar::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 10px;
-  height: 10px;
-  background: #4ade80;
-  border-radius: 50%;
-  border: 2px solid #e91e8c;
+.ayse-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 26px rgba(233,30,140,0.65);
 }
 
-.ayse-btn-label {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.ayse-btn-name {
-  color: #fff;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 1.2;
-  font-family: inherit;
-}
-
-.ayse-btn-sub {
-  color: rgba(255,255,255,0.85);
-  font-size: 11px;
-  font-family: inherit;
-}
-
-/* Pulse animasyonu */
+/* Pulse halkası */
 .ayse-btn::before {
   content: '';
   position: absolute;
-  inset: -4px;
-  border-radius: 50px;
-  border: 2px solid rgba(233,30,140,0.4);
-  animation: ayse-pulse 2.2s ease-out infinite;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid rgba(233,30,140,0.45);
+  animation: ayse-pulse 2.4s ease-out infinite;
   pointer-events: none;
 }
 
 @keyframes ayse-pulse {
-  0%   { transform: scale(1);   opacity: 0.8; }
-  70%  { transform: scale(1.12); opacity: 0; }
-  100% { transform: scale(1.12); opacity: 0; }
+  0%   { transform: scale(1);    opacity: 1; }
+  70%  { transform: scale(1.18); opacity: 0; }
+  100% { transform: scale(1.18); opacity: 0; }
+}
+
+/* Online noktası */
+.ayse-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 12px;
+  height: 12px;
+  background: #4ade80;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+/* "Ayşe" isim etiketi */
+.ayse-btn-label {
+  background: #1e2a38;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  font-family: inherit;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 /* --- Tanıtım balonu --- */
 .ayse-intro {
   position: fixed;
-  bottom: 10.5rem;
-  right: 1.2rem;
-  max-width: 250px;
+  bottom: 11rem;
+  right: 1.5rem;
+  max-width: 240px;
   background: #fff;
   border-radius: 14px 14px 4px 14px;
   box-shadow: 0 4px 24px rgba(30,42,56,0.15);
-  padding: 13px 14px 13px 14px;
+  padding: 12px 36px 12px 14px;
   z-index: 997;
   font-size: 13.5px;
   color: #1e2a38;
   line-height: 1.5;
-  animation: ayse-intro-in 0.4s ease;
   border: 1px solid #fce4f3;
+  animation: ayse-intro-in 0.35s ease;
+}
+
+.ayse-intro b {
+  color: #e91e8c;
+  display: block;
+  margin-bottom: 2px;
+  font-size: 13px;
 }
 
 .ayse-intro-close {
   position: absolute;
-  top: 7px;
-  right: 9px;
+  top: 8px;
+  right: 10px;
   background: none;
   border: none;
   font-size: 14px;
@@ -122,23 +120,16 @@
 
 .ayse-intro-close:hover { color: #6b7e94; }
 
-.ayse-intro-name {
-  font-weight: 700;
-  color: #e91e8c;
-  margin-bottom: 3px;
-  font-size: 13px;
-}
-
 @keyframes ayse-intro-in {
-  from { opacity: 0; transform: translateY(10px) scale(0.95); }
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* --- Chat penceresi --- */
 .ayse-window {
   position: fixed;
-  bottom: 10.5rem;
-  right: 1.2rem;
+  bottom: 11rem;
+  right: 1.5rem;
   width: 340px;
   height: 500px;
   background: #fff;
@@ -174,7 +165,7 @@
   width: 40px;
   height: 40px;
   background: rgba(255,255,255,0.2);
-  border: 2px solid rgba(255,255,255,0.45);
+  border: 2px solid rgba(255,255,255,0.4);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -197,18 +188,8 @@
 }
 
 .ayse-header-info { flex: 1; }
-
-.ayse-header-name {
-  color: #fff;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 1.2;
-}
-
-.ayse-header-status {
-  color: rgba(255,255,255,0.82);
-  font-size: 11px;
-}
+.ayse-header-name { color: #fff; font-weight: 700; font-size: 14px; line-height: 1.2; }
+.ayse-header-status { color: rgba(255,255,255,0.82); font-size: 11px; }
 
 .ayse-close {
   background: none;
@@ -221,7 +202,6 @@
   border-radius: 4px;
   transition: color 0.15s;
 }
-
 .ayse-close:hover { color: #fff; }
 
 /* Mesajlar */
@@ -282,7 +262,6 @@
   transition: background 0.2s;
   max-width: 82%;
 }
-
 .ayse-wa-redirect:hover { background: #1ebe5a; }
 
 /* Yazıyor animasyonu */
@@ -304,7 +283,6 @@
   border-radius: 50%;
   animation: ayse-bounce 1.2s infinite;
 }
-
 .ayse-typing span:nth-child(2) { animation-delay: 0.2s; }
 .ayse-typing span:nth-child(3) { animation-delay: 0.4s; }
 
@@ -340,7 +318,6 @@
   min-height: 38px;
   line-height: 1.4;
 }
-
 .ayse-input:focus { border-color: #4bbfe3; background: #fff; }
 .ayse-input::placeholder { color: #a0aab5; }
 
@@ -357,19 +334,13 @@
   flex-shrink: 0;
   transition: transform 0.15s, opacity 0.15s;
 }
-
 .ayse-send:hover { transform: scale(1.08); }
 .ayse-send:disabled { opacity: 0.5; cursor: default; transform: none; }
 
 /* Mobil */
 @media (max-width: 600px) {
-  .ayse-btn { bottom: 4.8rem; right: 1rem; height: 52px; padding: 0 14px 0 5px; }
-  .ayse-btn-avatar { width: 42px; height: 42px; font-size: 21px; }
-  .ayse-intro { right: 1rem; bottom: 9.5rem; max-width: calc(100vw - 2rem); }
-  .ayse-window {
-    width: calc(100vw - 2rem);
-    right: 1rem;
-    bottom: 9.5rem;
-    height: 420px;
-  }
+  .ayse-launcher { bottom: 5.2rem; right: 1rem; }
+  .ayse-btn { width: 54px; height: 54px; font-size: 26px; }
+  .ayse-intro { right: 1rem; bottom: 10.5rem; max-width: calc(100vw - 2rem); }
+  .ayse-window { width: calc(100vw - 2rem); right: 1rem; bottom: 10.5rem; height: 430px; }
 }

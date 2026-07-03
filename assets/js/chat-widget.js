@@ -26,17 +26,21 @@
       Bu işletmenin yapay zeka asistanıyım.<br>Size yardımcı olabilir miyim?
     `;
 
-    // Açma butonu (pill)
+    // Buton grubu (yuvarlak + isim etiketi)
+    const launcher = document.createElement('div');
+    launcher.className = 'ayse-launcher';
+
     const btn = document.createElement('button');
     btn.className = 'ayse-btn';
     btn.setAttribute('aria-label', 'Ayşe ile sohbet et');
-    btn.innerHTML = `
-      <div class="ayse-btn-avatar">🌸</div>
-      <div class="ayse-btn-label">
-        <span class="ayse-btn-name">Ayşe</span>
-        <span class="ayse-btn-sub">Şimdi çevrimiçi</span>
-      </div>
-    `;
+    btn.textContent = '🌸';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'ayse-btn-label';
+    lbl.textContent = '✨ Ayşe — Asistan';
+
+    launcher.appendChild(btn);
+    launcher.appendChild(lbl);
 
     // Chat penceresi
     const win = document.createElement('div');
@@ -65,7 +69,7 @@
     `;
 
     document.body.appendChild(intro);
-    document.body.appendChild(btn);
+    document.body.appendChild(launcher);
     document.body.appendChild(win);
 
     const msgs     = win.querySelector('#ayse-msgs');
