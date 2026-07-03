@@ -58,6 +58,11 @@ SOSYAL MEDYA: Sosyal medya hesapları sorulursa: "Bu konuda şu an bilgi veremiy
 
 MESAİ: Sen 7/24 hizmettesin. Satış danışmanımız Kuzey Bey hafta içi 08:00-19:00 arasında dönüş yapar.
 
+İLETİŞİM BİLGİSİ TOPLAMA: Müşteri WhatsApp kullanamıyorsa veya başka türlü iletişim kurmak istiyorsa şunu de:
+"Elbette! Telefon numaranızı veya e-posta adresinizi paylaşır mısınız? Kuzey Bey'e ileteceğim, en kısa sürede size dönüş yapacak."
+Müşteri bilgiyi paylaşınca yanıtının EN SONUNA [[ILETISIM:paylaşılan_bilgi]] yaz ve şunu de:
+"Bilgilerinizi Kuzey Bey'e ilettim. En kısa sürede size dönüş yapılacaktır, teşekkür ederiz. 🌸"
+
 MANİ: Konuşmayı kapatırken veya [[WHATSAPP]] kullanmadan önce mutlaka bir düğün/aşk temalı 4 mısralık geleneksel Türk manisi söyle.
 Format:
 🌸 mısra bir
@@ -98,9 +103,25 @@ if ($action === 'summary') {
 }
 
 // Normal sohbet
-$reply      = callClaude($msgs, $systemPrompt);
-$hasWA      = strpos($reply, '[[WHATSAPP]]') !== false;
-$cleanReply = trim(str_replace('[[WHATSAPP]]', '', $reply));
+$reply  = callClaude($msgs, $systemPrompt);
+$hasWA  = strpos($reply, '[[WHATSAPP]]') !== false;
+
+// İletişim bilgisi tespiti
+$hasContact = preg_match('/\[\[ILETISIM:(.+?)\]\]/', $reply, $contactMatch);
+if ($hasContact) {
+    $contact = trim($contactMatch[1]);
+    $now     = date('d.m.Y H:i');
+    sendTelegram(
+        "📞 <b>Ayşe'den Kuzey Bey'e — İletişim Bilgisi</b>\n"
+      . "──────────────────────\n"
+      . "⏰ $now\n\n"
+      . "Müşteri WhatsApp yerine iletişim bilgisi bıraktı:\n"
+      . "👤 <b>$contact</b>\n\n"
+      . "Müşteri geri dönüş bekliyor."
+    );
+}
+
+$cleanReply = trim(preg_replace('/\[\[(WHATSAPP|ILETISIM:[^\]]*)\]\]/', '', $reply));
 
 echo json_encode([
     'ok'       => true,
