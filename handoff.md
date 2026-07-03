@@ -1,23 +1,27 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 03.07.2026 10:02
+## Son Oturum — 03.07.2026
 
 **Son commit'ler:**
 ```
+[yeni] feat: Ayşe sohbet ajanı — tüm sayfalara widget eklendi
+1250871 SEO otomatik güncelleme: 2026-07-03
 758f66f chore: handoff.md güncelle — sosyal medya sistemi dokümantasyonu
 a735090 feat: sosyal medya otomasyon sistemi
 cf24d64 chore: handoff.md güncelle — WhatsApp butonu ve main.js notu
 611096b feat: WhatsApp kayan buton tüm sayfalarda + mobil menü main.js'e taşındı
-a9b3965 chore: handoff.md güncelle — örnekler sistemi ve bu oturum değişiklikleri
 ```
 
 **Bekleyen değişiklikler:**
 ```
- M borsa.html
  M hakkimizda.html
  M handoff.md
  M index.html
  M ornekler.html
+?? assets/css/chat-widget.css
+?? assets/js/chat-widget.js
+?? private/
+?? public_html/api/chat.php
 ```
 
 ---
@@ -187,6 +191,40 @@ Sen  →  Admin → Sosyal Medya → İçerikleri gör
 **JSON dosyası:** `/public_html/data/sosyal_posts.json` (son 30 gün görünür)
 
 Log: `~/.digitalbohem-agents/logs/cron.log`
+
+---
+
+## Ayşe Sohbet Ajanı
+
+**Açıklama:** Tüm sayfalarda sağ altta fuşya chat butonu. Müşteriler Ayşe ile sohbet eder, gerektiğinde Kuzey Bey'in WhatsApp'ına yönlendirilir. Her yönlendirmede Telegram'a özet gelir.
+
+**Dosyalar:**
+- `assets/css/chat-widget.css` — Widget stilleri
+- `assets/js/chat-widget.js` — Frontend mantığı (sessionStorage'da geçmiş)
+- `public_html/api/chat.php` — Backend: Claude API + Telegram özet
+
+**Kurulum — SUNUCUDA YAPILACAK:**
+```
+# SSH ile sunucuya bağlan, sonra:
+mkdir -p ~/private
+nano ~/private/ayse_config.php
+```
+İçeriği:
+```php
+<?php
+define('ANTHROPIC_API_KEY', 'sk-ant-...');
+```
+Anthropic API key: https://console.anthropic.com/settings/keys
+
+**Davranış:**
+- İndirim isteği → WhatsApp yönlendirme
+- Gerçek kişi isteği → WhatsApp yönlendirme
+- "Rakip neden ucuz?" → İddialı cevap + WhatsApp
+- Konuşma sonu → Mani + WhatsApp butonu
+- Kuzey Bey mesaisi: hafta içi 08:00-19:00
+
+**WhatsApp:** `https://wa.me/905307732270`  
+**Model:** claude-haiku-4-5 (hızlı ve ekonomik)
 
 ---
 

@@ -1,0 +1,238 @@
+(function () {
+  'use strict';
+
+  const WA_NUMBER = '905307732270';
+  const WA_TEXT   = 'Merhaba%2C%20dijital%20davetiye%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum.';
+  const API_BASE  = '/api/chat.php';
+
+  // root'a göre API yolu (blog/ alt dizininden de çalışır)
+  const apiUrl = (function () {
+    const depth = location.pathname.split('/').filter(Boolean).length;
+    const prefix = depth > 1 ? '../'.repeat(depth - 1) : '';
+    return prefix + 'api/chat.php';
+  })();
+
+  let history = JSON.parse(sessionStorage.getItem('ayse_history') || '[]');
+  let isTyping = false;
+
+  // --- DOM oluştur ---
+  function buildWidget() {
+    // Açma butonu
+    const btn = document.createElement('button');
+    btn.className = 'ayse-btn';
+    btn.setAttribute('aria-label', 'Ayşe ile sohbet et');
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+    `;
+
+    // Chat penceresi
+    const win = document.createElement('div');
+    win.className = 'ayse-window';
+    win.setAttribute('role', 'dialog');
+    win.setAttribute('aria-label', 'Ayşe - Digital Bohem Asistanı');
+    win.innerHTML = `
+      <div class="ayse-header">
+        <div class="ayse-avatar">🌸</div>
+        <div class="ayse-header-info">
+          <div class="ayse-header-name">Ayşe</div>
+          <div class="ayse-header-status">Digital Bohem Asistanı • 7/24</div>
+        </div>
+        <button class="ayse-close" aria-label="Kapat">✕</button>
+      </div>
+      <div class="ayse-messages" id="ayse-msgs"></div>
+      <div class="ayse-input-row">
+        <textarea class="ayse-input" id="ayse-input" placeholder="Mesajınızı yazın..." rows="1"></textarea>
+        <button class="ayse-send" id="ayse-send" aria-label="Gönder">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    `;
+
+    document.body.appendChild(btn);
+    document.body.appendChild(win);
+
+    const msgs  = win.querySelector('#ayse-msgs');
+    const input = win.querySelector('#ayse-input');
+    const send  = win.querySelector('#ayse-send');
+    const close = win.querySelector('.ayse-close');
+
+    // Aç/kapat
+    btn.addEventListener('click', () => {
+      win.classList.toggle('open');
+      if (win.classList.contains('open')) {
+        if (history.length === 0) showGreeting(msgs);
+        else renderHistory(msgs);
+        input.focus();
+      }
+    });
+
+    close.addEventListener('click', () => win.classList.remove('open'));
+
+    // Gönder
+    send.addEventListener('click', () => submitMessage(msgs, input, send));
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submitMessage(msgs, input, send);
+      }
+    });
+
+    // Textarea otomatik büyüme
+    input.addEventListener('input', () => {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 80) + 'px';
+    });
+  }
+
+  // --- İlk karşılama ---
+  function showGreeting(msgs) {
+    const greeting = 'Merhaba! Ben Ayşe, Digital Bohem\'in sanal asistanıyım. Size nasıl yardımcı olabilirim?';
+    addBotMessage(msgs, greeting);
+    history.push({ role: 'assistant', content: greeting });
+    saveHistory();
+  }
+
+  // --- Geçmişi yeniden çiz ---
+  function renderHistory(msgs) {
+    msgs.innerHTML = '';
+    history.forEach((m) => {
+      if (m.role === 'user') {
+        addUserMessage(msgs, m.content, false);
+      } else {
+        addBotMessage(msgs, m.content, false);
+      }
+    });
+    scrollBottom(msgs);
+  }
+
+  // --- Mesaj gönder ---
+  async function submitMessage(msgs, input, send) {
+    const text = input.value.trim();
+    if (!text || isTyping) return;
+
+    addUserMessage(msgs, text);
+    history.push({ role: 'user', content: text });
+    saveHistory();
+
+    input.value = '';
+    input.style.height = 'auto';
+    send.disabled = true;
+    isTyping = true;
+
+    const typing = showTyping(msgs);
+
+    try {
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'chat', messages: history }),
+      });
+      const data = await res.json();
+
+      typing.remove();
+      isTyping = false;
+      send.disabled = false;
+
+      if (data.ok) {
+        addBotMessage(msgs, data.message);
+        history.push({ role: 'assistant', content: data.message });
+        saveHistory();
+
+        if (data.whatsapp) {
+          showWhatsAppButton(msgs);
+        }
+      } else {
+        addBotMessage(msgs, 'Bir hata oluştu, lütfen tekrar deneyin.');
+      }
+    } catch {
+      typing.remove();
+      isTyping = false;
+      send.disabled = false;
+      addBotMessage(msgs, 'Bağlantı hatası oluştu, lütfen tekrar deneyin.');
+    }
+  }
+
+  // --- WhatsApp yönlendirme butonu ---
+  function showWhatsAppButton(msgs) {
+    const btn = document.createElement('button');
+    btn.className = 'ayse-wa-redirect';
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="white">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.564 4.14 1.534 5.876L.054 23.447a.75.75 0 0 0 .916.944l5.752-1.506A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.714 9.714 0 0 1-4.964-1.362l-.355-.211-3.685.965.982-3.585-.232-.369A9.718 9.718 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/>
+      </svg>
+      Kuzey Bey ile WhatsApp'ta devam et
+    `;
+
+    btn.addEventListener('click', () => {
+      sendSummaryToTelegram();
+      window.open('https://wa.me/' + WA_NUMBER + '?text=' + WA_TEXT, '_blank');
+      btn.textContent = '✓ WhatsApp\'a yönlendiriliyorsunuz...';
+      btn.style.background = '#128c7e';
+      btn.disabled = true;
+    });
+
+    msgs.appendChild(btn);
+    scrollBottom(msgs);
+  }
+
+  // --- Telegram özet gönder ---
+  async function sendSummaryToTelegram() {
+    if (history.length === 0) return;
+    try {
+      await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'summary', messages: history }),
+      });
+    } catch { /* sessizce geç */ }
+  }
+
+  // --- Mesaj DOM yardımcıları ---
+  function addBotMessage(msgs, text, scroll = true) {
+    const el = document.createElement('div');
+    el.className = 'ayse-msg bot';
+    el.textContent = text;
+    msgs.appendChild(el);
+    if (scroll) scrollBottom(msgs);
+    return el;
+  }
+
+  function addUserMessage(msgs, text, scroll = true) {
+    const el = document.createElement('div');
+    el.className = 'ayse-msg user';
+    el.textContent = text;
+    msgs.appendChild(el);
+    if (scroll) scrollBottom(msgs);
+    return el;
+  }
+
+  function showTyping(msgs) {
+    const el = document.createElement('div');
+    el.className = 'ayse-typing';
+    el.innerHTML = '<span></span><span></span><span></span>';
+    msgs.appendChild(el);
+    scrollBottom(msgs);
+    return el;
+  }
+
+  function scrollBottom(msgs) {
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function saveHistory() {
+    sessionStorage.setItem('ayse_history', JSON.stringify(history));
+  }
+
+  // Sayfa yüklenince başlat
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildWidget);
+  } else {
+    buildWidget();
+  }
+})();
