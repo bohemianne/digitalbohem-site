@@ -1,20 +1,38 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 03.07.2026 15:02
+## Son Oturum — 06.07.2026 (akşam)
 
 **Son commit'ler:**
 ```
-87ce52b feat: sekme kapanınca Telegram özeti gönder
-f025438 feat: WhatsApp yerine iletişim bilgisi toplama
-768e01c chore: debug ve setup scripti temizle, ayse-setup.php sil
-5c50d10 chore: ayse-setup.php deploy listesine ekle
-23abc38 chore: tek kullanımlık ayse-setup.php (key yok)
+af35c35 webhook URL input tipini text yap (url tipi tarayıcı validasyonu engelliyordu)
+ba97ad1 Make.com webhook entegrasyonu ve sosyal medya paneli iyileştirmeleri
 ```
 
-**Bekleyen değişiklikler:**
-```
- M handoff.md
-```
+**Yapılanlar:**
+- Make.com webhook entegrasyonu tamamlandı (sosyal.php + admin.js + panel.html)
+- Admin paneli Sosyal Medya sekmesine Make.com webhook URL ayar kutusu eklendi
+- Her platforma "📋 Kopyala" butonu eklendi (clipboard'a kopyalar)
+- "Yayınlandı" butonuna basılınca Make.com'a otomatik POST atıyor
+
+**Yarın yapılacak — Make.com kurulumu yarım kaldı:**
+- Make.com'da senaryo oluşturuldu, webhook modülü eklendi, URL admin panele kaydedildi ✓
+- Veri akışı test edildi (webhook veri aldı) ✓
+- **Kaldığı yer:** Router modülü eklenecek, Facebook bağlanacak
+- **Sorun:** Eski Facebook hesabı çıkıyor, yeni (site için) Facebook hesabı bağlanacak
+- Kullanıcı yarın önce ihtiyaç duyulan hesap adlarını ve URL'leri toplayacak
+
+**Hangi hesaplar bağlanacak (Make.com'a):**
+- Facebook Pages → Digital Bohem sayfası (site için açılacak yeni hesapla)
+- LinkedIn → şirket sayfası
+- Pinterest → iş hesabı
+- Instagram → Instagram Business (Facebook sayfasına bağlı olması gerekiyor)
+- YouTube → Shorts için senaryo hazır ama API karmaşık, şimdilik elle yüklenecek
+
+**Make.com senaryosu için gerekli bilgiler:**
+- Facebook Page ID veya sayfa adı
+- LinkedIn Şirket sayfası URL'si
+- Pinterest hesap adı
+- Instagram Business hesabı (Facebook sayfasına bağlı olmalı)
 
 ---
 ## Genel Bakış
@@ -171,16 +189,22 @@ Tüm ajanlar `~/.digitalbohem-agents/` altında.
 Salı 10:00 + Cuma 10:30  →  sosyal-medya-ajan.sh çalışır
    → Claude WebSearch ile güncel trend arar
    → Facebook, LinkedIn, Pinterest, Instagram, YouTube için içerik yazar
-   → sosyal.php API'sine kaydeder
+   → sosyal.php API'sine kaydeder (durum: "bekliyor")
 Sen  →  Admin → Sosyal Medya → İçerikleri gör
-   → Facebook/LinkedIn/Pinterest: metni kopyala, kendin paylaş
-   → Instagram: önerilen görsel türü + caption hazır
-   → YouTube: 30-60sn Shorts senaryosu hazır
-   → "Yayınlandı" butonuna bas → arşive taşınır
+   → "📋 Kopyala" butonu ile içeriği panoya al
+   → "✓ Yayınlandı" butonuna bas → Make.com webhook tetiklenir → otomatik paylaşır
+   → YouTube: senaryo hazır, elle yüklenecek
 ```
 
+**Make.com entegrasyonu:**
+- Webhook URL → `sosyal.php` ile admin panelden kaydedilir (`/data/sosyal_webhook.json`)
+- "Yayınlandı" tıklanınca → `sosyal.php` webhook'a POST atar (platform, icerik, baslik, hashtag alanlarıyla)
+- Make.com senaryosu → webhook → Router → platform modülleri (kurulum yarım)
+
 **API endpoint:** `https://digitalbohem.com.tr/api/sosyal.php`  
-**JSON dosyası:** `/public_html/data/sosyal_posts.json` (son 30 gün görünür)
+**JSON dosyaları:**
+- `/public_html/data/sosyal_posts.json` (son 30 gün görünür)
+- `/public_html/data/sosyal_webhook.json` (Make.com webhook URL)
 
 Log: `~/.digitalbohem-agents/logs/cron.log`
 
