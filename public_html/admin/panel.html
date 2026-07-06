@@ -176,7 +176,18 @@
     <!-- Sosyal Medya Section -->
     <div id="sec-sosyal" class="admin-section hidden">
       <h3>Sosyal Medya Yönetimi</h3>
-      <p style="color:#6b7280; font-size:0.9rem; margin-bottom:1.5rem;">Ajan her Salı ve Cuma 5 platform için içerik üretir. Onayladıklarınızı Facebook, LinkedIn ve Pinterest'e siz paylaşırsınız; Instagram ve YouTube için görsel+senaryo hazır olur.</p>
+      <p style="color:#6b7280; font-size:0.9rem; margin-bottom:1.5rem;">Ajan her Salı ve Cuma 5 platform için içerik üretir. Make.com bağlıysa "Yayınlandı" butonuna basınca otomatik paylaşır; değilse "Kopyala" butonu ile içeriği panoya alıp elle paylaşırsınız.</p>
+
+      <!-- Make.com Webhook Ayarı -->
+      <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:1rem 1.2rem; margin-bottom:1.5rem;">
+        <strong style="font-size:0.9rem; color:#0369a1;">Make.com Webhook Ayarı</strong>
+        <p style="font-size:0.82rem; color:#6b7280; margin:0.4rem 0 0.75rem;">Make.com'dan kopyaladığın webhook URL'ini buraya gir. Bir kez kaydedince "Yayınlandı" her tıklandığında Make.com'a otomatik gönderilir.</p>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <input type="url" id="make-webhook-url" placeholder="https://hook.eu2.make.com/xxxx..." style="flex:1; min-width:200px; padding:0.5rem 0.8rem; border:1px solid #bae6fd; border-radius:8px; font-size:0.85rem;">
+          <button onclick="webhookKaydet()" style="padding:0.5rem 1.2rem; background:#0ea5e9; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem; white-space:nowrap;">Kaydet</button>
+        </div>
+        <span id="webhook-msg" style="font-size:0.8rem; color:#10b981; margin-top:0.4rem; display:block; min-height:1.2em;"></span>
+      </div>
 
       <!-- Sekme başlıkları -->
       <div style="display:flex; border-bottom:2px solid #e5e7eb; margin-bottom:1.5rem;">

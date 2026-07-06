@@ -21,7 +21,7 @@ function showSection(id) {
   event.target.classList.add('active');
   if (id === 'blog') loadBloglar();
   if (id === 'ornekler') loadOrnekler();
-  if (id === 'sosyal') loadSosyal();
+  if (id === 'sosyal') { loadSosyal(); loadWebhookUrl(); }
 }
 
 // ===== DAVETIYE CRUD =====
@@ -762,6 +762,35 @@ function closeOnizleme() {
 // ===== SOSYAL MEDYA =====
 const SOSYAL_API = '../api/sosyal.php';
 
+let _sosyalPosts = {};
+
+async function loadWebhookUrl() {
+  try {
+    const res  = await fetch(SOSYAL_API + '?action=webhook-al');
+    const json = await res.json();
+    const el   = document.getElementById('make-webhook-url');
+    if (el && json.url) el.value = json.url;
+  } catch(e) {}
+}
+
+async function webhookKaydet() {
+  const url = (document.getElementById('make-webhook-url')?.value || '').trim();
+  const msg = document.getElementById('webhook-msg');
+  try {
+    await fetch(SOSYAL_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'webhook-kaydet', url })
+    });
+    msg.style.color = '#10b981';
+    msg.textContent = url ? 'Webhook URL kaydedildi.' : 'Webhook URL silindi.';
+    setTimeout(() => msg.textContent = '', 3000);
+  } catch(e) {
+    msg.style.color = '#ef4444';
+    msg.textContent = 'Kayıt hatası!';
+  }
+}
+
 const PLATFORM_LABEL = {
   facebook: { ad: 'Facebook', renk: '#1877f2', emoji: '📘' },
   linkedin: { ad: 'LinkedIn', renk: '#0a66c2', emoji: '💼' },
@@ -793,6 +822,9 @@ async function loadSosyal() {
     const json = await res.json();
     if (el) el.textContent = '';
     if (!json.success) { renderSosyalBos(); return; }
+
+    _sosyalPosts = {};
+    (json.posts || []).forEach(p => _sosyalPosts[p.id] = p);
 
     const bekleyenler   = (json.posts || []).filter(p => p.durum === 'bekliyor');
     const yayinlananlar = (json.posts || []).filter(p => p.durum === 'yayinlandi');
@@ -847,14 +879,39 @@ function sosyalKartHtml(p, gosterBtn) {
 
   return `
   <div style="padding:1rem 1.2rem; border-bottom:1px solid #f3f4f6;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:0.4rem;">
       <span style="background:${pl.renk}18; color:${pl.renk}; padding:0.2rem 0.8rem; border-radius:20px; font-size:0.82rem; font-weight:700;">${pl.emoji} ${pl.ad}</span>
-      ${gosterBtn ? `<button onclick="sosyalYayinla('${escHtml(p.id)}')" style="padding:0.3rem 0.9rem; background:#e91e8c; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600;">✓ Yayınlandı</button>` : `<span style="font-size:0.8rem; color:#10b981; font-weight:600;">✓ Yayınlandı</span>`}
+      <div style="display:flex; gap:0.4rem; align-items:center;">
+        <button onclick="sosyalKopyala('${escHtml(p.id)}')" id="kopyala-${escHtml(p.id)}" style="padding:0.3rem 0.7rem; background:#f3f4f6; color:#374151; border:1px solid #e5e7eb; border-radius:6px; cursor:pointer; font-size:0.8rem;">📋 Kopyala</button>
+        ${gosterBtn
+          ? `<button onclick="sosyalYayinla('${escHtml(p.id)}')" style="padding:0.3rem 0.9rem; background:#e91e8c; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600;">✓ Yayınlandı</button>`
+          : `<span style="font-size:0.8rem; color:#10b981; font-weight:600;">✓ Yayınlandı</span>`}
+      </div>
     </div>
     ${ozelIcerik}
     ${resimNotu}
     ${p.hashtag ? `<p style="margin:0.5rem 0 0; font-size:0.82rem; color:#6b7280;">${escHtml(p.hashtag)}</p>` : ''}
   </div>`;
+}
+
+function sosyalKopyala(id) {
+  const p = _sosyalPosts[id];
+  if (!p) return;
+  let metin = '';
+  if (p.platform === 'youtube') {
+    metin = (p.baslik ? 'BAŞLIK: ' + p.baslik + '\n\n' : '') + (p.senaryo || '');
+  } else {
+    metin = p.icerik || '';
+    if (p.baslik)  metin = p.baslik + '\n\n' + metin;
+    if (p.hashtag) metin += '\n\n' + p.hashtag;
+  }
+  navigator.clipboard.writeText(metin).then(() => {
+    const btn = document.getElementById('kopyala-' + id);
+    if (btn) { btn.textContent = '✓ Kopyalandı'; setTimeout(() => btn.textContent = '📋 Kopyala', 2000); }
+  }).catch(() => {
+    const btn = document.getElementById('kopyala-' + id);
+    if (btn) { btn.textContent = 'Hata'; setTimeout(() => btn.textContent = '📋 Kopyala', 2000); }
+  });
 }
 
 function escHtml(str) {
