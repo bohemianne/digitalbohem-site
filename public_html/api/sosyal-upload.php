@@ -68,6 +68,6 @@ imagedestroy($hedefImg);
 
 echo json_encode([
     'success' => true,
-    'url'     => '/uploads/sosyal/' . $dosya_adi,
+    'url'     => 'https://digitalbohem.com.tr/uploads/sosyal/' . $dosya_adi,
 ]);
 ?>
