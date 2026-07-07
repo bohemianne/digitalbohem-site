@@ -183,10 +183,51 @@
         <strong style="font-size:0.9rem; color:#0369a1;">Make.com Webhook Ayarı</strong>
         <p style="font-size:0.82rem; color:#6b7280; margin:0.4rem 0 0.75rem;">Make.com'dan kopyaladığın webhook URL'ini buraya gir. Bir kez kaydedince "Yayınlandı" her tıklandığında Make.com'a otomatik gönderilir.</p>
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-          <input type="text" id="make-webhook-url" placeholder="https://hook.eu2.make.com/xxxx..." style="flex:1; min-width:200px; padding:0.5rem 0.8rem; border:1px solid #bae6fd; border-radius:8px; font-size:0.85rem;">
+          <input type="text" id="make-webhook-url" placeholder="https://hook.us2.make.com/xxxx..." style="flex:1; min-width:200px; padding:0.5rem 0.8rem; border:1px solid #bae6fd; border-radius:8px; font-size:0.85rem;">
           <button onclick="webhookKaydet()" style="padding:0.5rem 1.2rem; background:#0ea5e9; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem; white-space:nowrap;">Kaydet</button>
         </div>
         <span id="webhook-msg" style="font-size:0.8rem; color:#10b981; margin-top:0.4rem; display:block; min-height:1.2em;"></span>
+      </div>
+
+      <!-- Manuel Post Oluştur -->
+      <div style="margin-bottom:1.5rem;">
+        <button onclick="manuelFormToggle()" style="padding:0.5rem 1.2rem; background:#e91e8c; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem;">+ Manuel Post Oluştur</button>
+        <div id="manuel-post-form" style="display:none; margin-top:1rem; background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:1.2rem;">
+          <div style="display:grid; gap:0.8rem;">
+            <div>
+              <label style="font-size:0.85rem; font-weight:600; color:#374151; display:block; margin-bottom:0.3rem;">Platform</label>
+              <select id="mp-platform" style="width:100%; padding:0.5rem 0.8rem; border:1px solid #d1d5db; border-radius:8px; font-size:0.9rem;">
+                <option value="facebook">Facebook</option>
+                <option value="instagram">Instagram</option>
+                <option value="pinterest">Pinterest</option>
+                <option value="youtube">YouTube</option>
+                <option value="tiktok">TikTok</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.85rem; font-weight:600; color:#374151; display:block; margin-bottom:0.3rem;">Başlık <span style="font-weight:400; color:#9ca3af;">(isteğe bağlı)</span></label>
+              <input type="text" id="mp-baslik" placeholder="Pinterest veya YouTube için başlık" style="width:100%; padding:0.5rem 0.8rem; border:1px solid #d1d5db; border-radius:8px; font-size:0.9rem; box-sizing:border-box;">
+            </div>
+            <div>
+              <label style="font-size:0.85rem; font-weight:600; color:#374151; display:block; margin-bottom:0.3rem;">İçerik</label>
+              <textarea id="mp-icerik" rows="5" placeholder="Post içeriğini buraya yaz..." style="width:100%; padding:0.5rem 0.8rem; border:1px solid #d1d5db; border-radius:8px; font-size:0.9rem; resize:vertical; box-sizing:border-box;"></textarea>
+            </div>
+            <div>
+              <label style="font-size:0.85rem; font-weight:600; color:#374151; display:block; margin-bottom:0.3rem;">Hashtag <span style="font-weight:400; color:#9ca3af;">(isteğe bağlı)</span></label>
+              <input type="text" id="mp-hashtag" placeholder="#dijitaldavetiye #düğün" style="width:100%; padding:0.5rem 0.8rem; border:1px solid #d1d5db; border-radius:8px; font-size:0.9rem; box-sizing:border-box;">
+            </div>
+            <div>
+              <label style="font-size:0.85rem; font-weight:600; color:#374151; display:block; margin-bottom:0.3rem;">Görsel <span style="font-weight:400; color:#9ca3af;">(isteğe bağlı)</span></label>
+              <input type="file" id="mp-gorsel" accept="image/jpeg,image/png,image/webp" style="font-size:0.85rem;">
+              <div id="mp-gorsel-onizleme" style="margin-top:0.5rem;"></div>
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+              <button onclick="manuelPostKaydet()" id="mp-kaydet-btn" style="padding:0.5rem 1.4rem; background:#10b981; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.9rem;">Bekleyene Ekle</button>
+              <button onclick="manuelFormToggle()" style="padding:0.5rem 1rem; background:#f3f4f6; color:#374151; border:1px solid #e5e7eb; border-radius:8px; cursor:pointer; font-size:0.9rem;">İptal</button>
+              <span id="mp-msg" style="font-size:0.85rem; color:#10b981;"></span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Sekme başlıkları -->

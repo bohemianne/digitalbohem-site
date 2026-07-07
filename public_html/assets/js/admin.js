@@ -764,6 +764,74 @@ const SOSYAL_API = '../api/sosyal.php';
 
 let _sosyalPosts = {};
 
+function manuelFormToggle() {
+  const form = document.getElementById('manuel-post-form');
+  const acik = form.style.display !== 'none';
+  form.style.display = acik ? 'none' : 'block';
+  if (acik) {
+    document.getElementById('mp-icerik').value = '';
+    document.getElementById('mp-baslik').value = '';
+    document.getElementById('mp-hashtag').value = '';
+    document.getElementById('mp-gorsel').value = '';
+    document.getElementById('mp-gorsel-onizleme').innerHTML = '';
+    document.getElementById('mp-msg').textContent = '';
+  }
+}
+
+async function manuelPostKaydet() {
+  const platform = document.getElementById('mp-platform').value;
+  const icerik   = document.getElementById('mp-icerik').value.trim();
+  const baslik   = document.getElementById('mp-baslik').value.trim();
+  const hashtag  = document.getElementById('mp-hashtag').value.trim();
+  const gorselInput = document.getElementById('mp-gorsel');
+  const msg      = document.getElementById('mp-msg');
+  const btn      = document.getElementById('mp-kaydet-btn');
+
+  if (!icerik) { msg.style.color = '#ef4444'; msg.textContent = 'İçerik boş olamaz.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Kaydediliyor...';
+  msg.textContent = '';
+
+  let gorsel_url = '';
+  if (gorselInput.files[0]) {
+    try {
+      const fd = new FormData();
+      fd.append('gorsel', gorselInput.files[0]);
+      const r = await fetch('../api/sosyal-upload.php', { method: 'POST', body: fd });
+      const j = await r.json();
+      if (j.success) gorsel_url = j.url;
+    } catch(e) {}
+  }
+
+  const id = 'manuel-' + Date.now() + '-' + platform;
+  const post = {
+    id, platform, icerik, baslik, hashtag, gorsel_url,
+    tarih: new Date().toISOString().split('T')[0],
+    post_no: 0,
+    durum: 'bekliyor',
+    resim_onerisi: ''
+  };
+
+  try {
+    await fetch(SOSYAL_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'kaydet', posts: [post] })
+    });
+    msg.style.color = '#10b981';
+    msg.textContent = 'Eklendi!';
+    setTimeout(() => manuelFormToggle(), 1000);
+    loadSosyal();
+  } catch(e) {
+    msg.style.color = '#ef4444';
+    msg.textContent = 'Bağlantı hatası.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Bekleyene Ekle';
+  }
+}
+
 async function loadWebhookUrl() {
   try {
     const res  = await fetch(SOSYAL_API + '?action=webhook-al');
