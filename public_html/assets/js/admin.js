@@ -793,7 +793,6 @@ async function webhookKaydet() {
 
 const PLATFORM_LABEL = {
   facebook: { ad: 'Facebook', renk: '#1877f2', emoji: '📘' },
-  linkedin: { ad: 'LinkedIn', renk: '#0a66c2', emoji: '💼' },
   pinterest: { ad: 'Pinterest', renk: '#e60023', emoji: '📌' },
   instagram: { ad: 'Instagram', renk: '#c13584', emoji: '📸' },
   youtube: { ad: 'YouTube', renk: '#ff0000', emoji: '🎬' }
@@ -875,21 +874,29 @@ function sosyalKartHtml(p, gosterBtn) {
   const ozelIcerik = p.platform === 'youtube'
     ? `<div style="margin-top:0.75rem;"><strong style="font-size:0.85rem; color:#6b7280;">Başlık:</strong><p style="margin:0.25rem 0 0.75rem; font-size:0.9rem;">${p.baslik || ''}</p><strong style="font-size:0.85rem; color:#6b7280;">Senaryo:</strong><pre style="white-space:pre-wrap; font-family:inherit; font-size:0.88rem; color:#374151; margin:0.25rem 0 0;">${escHtml(p.senaryo || '')}</pre></div>`
     : `<pre style="white-space:pre-wrap; font-family:inherit; font-size:0.88rem; color:#374151; margin:0.5rem 0 0;">${escHtml(p.icerik || '')}</pre>`;
-  const resimNotu = p.resim_onerisi ? `<p style="margin:0.5rem 0 0; font-size:0.82rem; background:#fef9c3; padding:0.4rem 0.8rem; border-radius:6px; color:#92400e;">Görsel: ${escHtml(p.resim_onerisi)}</p>` : '';
+  const resimNotu = p.resim_onerisi ? `<p style="margin:0.5rem 0 0; font-size:0.82rem; background:#fef9c3; padding:0.4rem 0.8rem; border-radius:6px; color:#92400e;">Görsel önerisi: ${escHtml(p.resim_onerisi)}</p>` : '';
+  const gorselOnizleme = p.gorsel_url
+    ? `<div style="margin-top:0.6rem;"><img src="${escHtml(p.gorsel_url)}" style="max-width:180px; max-height:120px; border-radius:6px; border:1px solid #e5e7eb; object-fit:cover;"></div>`
+    : '';
+  const gorselLabel = p.gorsel_url ? '🖼 Görseli Değiştir' : '🖼 Görsel Ekle';
 
   return `
   <div style="padding:1rem 1.2rem; border-bottom:1px solid #f3f4f6;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:0.4rem;">
       <span style="background:${pl.renk}18; color:${pl.renk}; padding:0.2rem 0.8rem; border-radius:20px; font-size:0.82rem; font-weight:700;">${pl.emoji} ${pl.ad}</span>
-      <div style="display:flex; gap:0.4rem; align-items:center;">
+      <div style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
         <button onclick="sosyalKopyala('${escHtml(p.id)}')" id="kopyala-${escHtml(p.id)}" style="padding:0.3rem 0.7rem; background:#f3f4f6; color:#374151; border:1px solid #e5e7eb; border-radius:6px; cursor:pointer; font-size:0.8rem;">📋 Kopyala</button>
+        <button onclick="document.getElementById('gorsel-input-${escHtml(p.id)}').click()" style="padding:0.3rem 0.7rem; background:#f3f4f6; color:#374151; border:1px solid #e5e7eb; border-radius:6px; cursor:pointer; font-size:0.8rem;">${gorselLabel}</button>
+        <input type="file" id="gorsel-input-${escHtml(p.id)}" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="sosyalGorselYukle('${escHtml(p.id)}', this)">
         ${gosterBtn
           ? `<button onclick="sosyalYayinla('${escHtml(p.id)}')" style="padding:0.3rem 0.9rem; background:#e91e8c; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600;">✓ Yayınlandı</button>`
-          : `<span style="font-size:0.8rem; color:#10b981; font-weight:600;">✓ Yayınlandı</span>`}
+          : `<span style="font-size:0.8rem; color:#10b981; font-weight:600;">✓ Yayınlandı</span>
+             <button onclick="sosyalTekrarYayinla('${escHtml(p.id)}')" style="padding:0.3rem 0.7rem; background:#f3f4f6; color:#374151; border:1px solid #e5e7eb; border-radius:6px; cursor:pointer; font-size:0.8rem;">↺ Tekrar Gönder</button>`}
       </div>
     </div>
     ${ozelIcerik}
     ${resimNotu}
+    ${gorselOnizleme}
     ${p.hashtag ? `<p style="margin:0.5rem 0 0; font-size:0.82rem; color:#6b7280;">${escHtml(p.hashtag)}</p>` : ''}
   </div>`;
 }
@@ -927,6 +934,45 @@ async function sosyalYayinla(id) {
     });
     loadSosyal();
   } catch(e) { alert('Bağlantı hatası.'); }
+}
+
+async function sosyalTekrarYayinla(id) {
+  try {
+    await fetch(SOSYAL_API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'tekrar-yayinla', id })
+    });
+    alert('Make.com\'a gönderildi.');
+  } catch(e) { alert('Bağlantı hatası.'); }
+}
+
+async function sosyalGorselYukle(id, input) {
+  const dosya = input.files[0];
+  if (!dosya) return;
+  const formData = new FormData();
+  formData.append('gorsel', dosya);
+  const btn = input.previousElementSibling;
+  const eskiLabel = btn.textContent;
+  btn.textContent = 'Yükleniyor...';
+  btn.disabled = true;
+  try {
+    const res  = await fetch('../api/sosyal-upload.php', { method: 'POST', body: formData });
+    const json = await res.json();
+    if (!json.success) { alert('Yükleme hatası: ' + json.mesaj); return; }
+    await fetch(SOSYAL_API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'gorsel-ekle', id, gorsel_url: json.url })
+    });
+    loadSosyal();
+  } catch(e) {
+    alert('Bağlantı hatası.');
+  } finally {
+    btn.textContent = eskiLabel;
+    btn.disabled = false;
+    input.value = '';
+  }
 }
 
 // ===== PASSWORD =====

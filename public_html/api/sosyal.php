@@ -97,6 +97,26 @@ if ($method === 'POST') {
         file_put_contents($WEBHOOK_FILE, json_encode(['url' => $url], JSON_UNESCAPED_UNICODE));
         echo json_encode(['success' => true]);
 
+    } elseif ($action === 'gorsel-ekle') {
+        $posts = oku();
+        $id  = $input['id'] ?? '';
+        $url = $input['gorsel_url'] ?? '';
+        foreach ($posts as &$p) {
+            if ($p['id'] === $id) { $p['gorsel_url'] = $url; break; }
+        }
+        yaz($posts);
+        echo json_encode(['success' => true]);
+
+    } elseif ($action === 'tekrar-yayinla') {
+        $posts = oku();
+        $id    = $input['id'] ?? '';
+        $hedef = null;
+        foreach ($posts as $p) {
+            if ($p['id'] === $id) { $hedef = $p; break; }
+        }
+        if ($hedef) webhookGonder($hedef);
+        echo json_encode(['success' => !!$hedef]);
+
     } else {
         echo json_encode(['success' => false, 'mesaj' => 'Bilinmeyen aksiyon']);
     }
