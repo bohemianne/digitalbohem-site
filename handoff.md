@@ -4,25 +4,51 @@
 
 **Son commit'ler:**
 ```
-b2ef56d Hizmet farkı ve Elite paket açıklamaları güncellendi
-e327762 Hero ve fark bölümü: kişisel hizmet mesajını öne çık
-bd19bde cpanel.yml: blog-resim-upload.php deploy adımı eklendi
-97cfdc2 Admin panel: Sosyal Medya sekmesini kaldır
-9ac50eb Blog: draft onay/reddet akışı + editörde resim yükleme
+cafdb66 Örnekler: MP4/PDF önizleme modalı eklendi, indirme koruması var
+d3f7068 Fix: mobil menü class adı open→active olarak düzeltildi
+ce5e315 handoff: 08.07.2026 oturum özeti güncellendi
 ```
-
-**Bu oturumda yapılanlar:**
-- Sosyal medya cron'ları kaldırıldı (Make.com'a taşınacak)
-- Admin panelden Sosyal Medya sekmesi tamamen silindi
-- Blog taslak akışı güncellendi: "Yeniden Yaz" butonu + editörde resim yükleme
-- `blog-resim-upload.php` eklendi, `.cpanel.yml`'e deploy adımı yazıldı
-- `blog.php`'ye `taslak-reddet` endpoint eklendi
-- `blog-yaz-ajan.sh` YENIDEN_YAZ konularını da işliyor
-- Ana sayfaya "Polaris vs Diğer Platformlar" karşılaştırma bölümü eklendi
-- Hero metni ve Elite paket açıklaması güncellendi
 
 ---
 
+## DEVAM EDECEK: Örnekler MP4/PDF Önizleme — Fazlar
+
+### Neden kaldı?
+Kod bitti ve deploy edildi. Ama Canva'dan dosya export etme + sıkıştırma + cPanel'e yükleme adımları yapılamadı.
+
+### FAZ 1 — Dosyaları hazırla (SEN yapacaksın, Claude yok)
+1. Canva'dan MP4 export et (animasyonlu davetiyeler için)
+2. Canva'dan PDF export et (tek sayfa davetiyeler için)
+3. Terminalde sıkıştır:
+   ```bash
+   # MP4 sıkıştırma:
+   ffmpeg -i gelen.mp4 -crf 28 -preset fast ornekler/media/ornek-animasyon.mp4
+   # PDF sıkıştırma:
+   gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -o ornekler/media/ornek-tek-sayfa.pdf gelen.pdf
+   ```
+4. cPanel File Manager → `/public_html/ornekler/media/` klasörüne yükle
+   (Deploy yaparsan klasör zaten oluşur, sadece dosyaları içine at)
+
+### FAZ 2 — ornekler-data.json güncelle (Claude ile)
+Dosyalar yüklenince Claude ile otur, her örneğe `preview_file` yolunu ekle:
+```json
+"preview_file": "ornekler/media/ornek-animasyon.mp4"
+```
+Boş bırakılırsa "Önizle" butonu çıkmaz — güvenli.
+
+### FAZ 3 — Test et (Claude ile)
+- Mobilden ve masaüstünden önizleme modal'ını test et
+- İndirme butonunun gizlendiğini doğrula
+- PDF toolbar'ının gizlendiğini kontrol et
+
+### Mevcut kod durumu (cafdb66)
+- `ornekler.html` — modal HTML + JS eklendi ✅
+- `assets/css/ornekler.css` — modal + önizle buton stilleri ✅
+- `.cpanel.yml` — `ornekler/media/` klasörü deploy'da oluşturuluyor ✅
+- `ornekler-data.json` — `preview_file` alanı eklendi (değerler boş) ✅
+- Koruma: video `controlsList="nodownload"`, PDF iframe `#toolbar=0` + overlay ✅
+
+---
 ## Genel Bakış
 
 Dijital düğün davetiyesi satış sitesi. Türkçe, tek dilli. Üç paket: Temel (₺499), Premium (₺899), Elite (₺1.999).
