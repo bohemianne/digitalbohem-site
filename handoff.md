@@ -1,43 +1,33 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 06.07.2026 (akşam)
+## Son Oturum — 08.07.2026
 
 **Son commit'ler:**
 ```
-af35c35 webhook URL input tipini text yap (url tipi tarayıcı validasyonu engelliyordu)
-ba97ad1 Make.com webhook entegrasyonu ve sosyal medya paneli iyileştirmeleri
+b2ef56d Hizmet farkı ve Elite paket açıklamaları güncellendi
+e327762 Hero ve fark bölümü: kişisel hizmet mesajını öne çık
+bd19bde cpanel.yml: blog-resim-upload.php deploy adımı eklendi
+97cfdc2 Admin panel: Sosyal Medya sekmesini kaldır
+9ac50eb Blog: draft onay/reddet akışı + editörde resim yükleme
 ```
 
-**Yapılanlar:**
-- Make.com webhook entegrasyonu tamamlandı (sosyal.php + admin.js + panel.html)
-- Admin paneli Sosyal Medya sekmesine Make.com webhook URL ayar kutusu eklendi
-- Her platforma "📋 Kopyala" butonu eklendi (clipboard'a kopyalar)
-- "Yayınlandı" butonuna basılınca Make.com'a otomatik POST atıyor
-
-**Yarın yapılacak — Make.com kurulumu yarım kaldı:**
-- Make.com'da senaryo oluşturuldu, webhook modülü eklendi, URL admin panele kaydedildi ✓
-- Veri akışı test edildi (webhook veri aldı) ✓
-- **Kaldığı yer:** Router modülü eklenecek, Facebook bağlanacak
-- **Sorun:** Eski Facebook hesabı çıkıyor, yeni (site için) Facebook hesabı bağlanacak
-- Kullanıcı yarın önce ihtiyaç duyulan hesap adlarını ve URL'leri toplayacak
-
-**Hangi hesaplar bağlanacak (Make.com'a):**
-- Facebook Pages → Digital Bohem sayfası (site için açılacak yeni hesapla)
-- LinkedIn → şirket sayfası
-- Pinterest → iş hesabı
-- Instagram → Instagram Business (Facebook sayfasına bağlı olması gerekiyor)
-- YouTube → Shorts için senaryo hazır ama API karmaşık, şimdilik elle yüklenecek
-
-**Make.com senaryosu için gerekli bilgiler:**
-- Facebook Page ID veya sayfa adı
-- LinkedIn Şirket sayfası URL'si
-- Pinterest hesap adı
-- Instagram Business hesabı (Facebook sayfasına bağlı olmalı)
+**Bu oturumda yapılanlar:**
+- Sosyal medya cron'ları kaldırıldı (Make.com'a taşınacak)
+- Admin panelden Sosyal Medya sekmesi tamamen silindi
+- Blog taslak akışı güncellendi: "Yeniden Yaz" butonu + editörde resim yükleme
+- `blog-resim-upload.php` eklendi, `.cpanel.yml`'e deploy adımı yazıldı
+- `blog.php`'ye `taslak-reddet` endpoint eklendi
+- `blog-yaz-ajan.sh` YENIDEN_YAZ konularını da işliyor
+- Ana sayfaya "Polaris vs Diğer Platformlar" karşılaştırma bölümü eklendi
+- Hero metni ve Elite paket açıklaması güncellendi
 
 ---
+
 ## Genel Bakış
 
 Dijital düğün davetiyesi satış sitesi. Türkçe, tek dilli. Üç paket: Temel (₺499), Premium (₺899), Elite (₺1.999).
+
+**Hizmet modeli:** Self-service değil, kişisel hizmet. Müşteri bilgi verir veya dış örnek gösterir, tasarımcı sıfırdan tasarlar, 24 saat içinde teslim. Elite pakette 12 ay boyunca tüm bakım (güncelleme, ekleme) tarafımızdan yapılır.
 
 **Canlı URL:** https://digitalbohem.com.tr  
 **Instagram:** https://instagram.com/digital.davet  
@@ -73,29 +63,32 @@ digitalbohem-site/
 ├── index.html              # Ana sayfa
 ├── ornekler.html           # Örnek davetiye galerisi (API'den yükler)
 ├── hakkimizda.html         # Hakkımızda sayfası
-├── favicon.svg             # Fuşya-mavi gradyanlı yıldız favicon
+├── favicon.svg
 ├── blog/index.html         # Blog listesi sayfası
-├── form-handler.php        # Sipariş formu → Telegram + e-posta
-├── assets/js/main.js      # Mobil menü + WhatsApp kayan buton (tüm sayfalarda)
 ├── sitemap.xml / robots.txt
-├── .cpanel.yml             # Deploy görevleri
+├── assets/js/main.js       # Mobil menü + WhatsApp kayan buton
 │
 ├── public_html/            # ← Sunucuya deploy edilen asıl dosyalar
 │   ├── admin/
-│   │   ├── index.html      # Admin giriş sayfası (şifre: digital2026)
+│   │   ├── index.html      # Admin giriş (şifre: digital2026)
 │   │   └── panel.html      # Admin paneli
 │   ├── api/
-│   │   ├── data.php        # Genel CRUD API + update action (JSON okur/yazar)
-│   │   ├── blog.php        # Blog önerileri + onay API
+│   │   ├── data.php        # Genel CRUD API (JSON okur/yazar)
+│   │   ├── blog.php        # Blog önerileri + onay + taslak API
+│   │   ├── blog-resim-upload.php  # Blog editörü için resim yükleme (blog/resimler/)
 │   │   ├── telegram.php    # Telegram mesaj gönderici
-│   │   └── thumbnail-upload.php  # Resim yükle, GD ile sıkıştır (max 1200px, JPEG %82)
+│   │   ├── thumbnail-upload.php   # Örnek thumbnail yükleme
+│   │   └── chat.php        # Ayşe sohbet ajanı backend
 │   ├── assets/
-│   │   ├── css/style.css   # Admin panel stilleri
+│   │   ├── css/style.css   # Admin + genel stiller
 │   │   └── js/admin.js     # Admin panel JS
-│   ├── ornekler/
-│   │   └── thumbnails/     # Yüklenen örnek önizleme resimleri (deploy korunur)
+│   ├── ornekler/thumbnails/  # Yüklenen thumbnail'ler (deploy korunur)
+│   ├── blog/
+│   │   ├── taslaklar/      # Onay bekleyen taslaklar (sunucuda)
+│   │   └── resimler/       # Blog editöründen yüklenen resimler
 │   └── data/
 │       ├── blog_oneriler.json
+│       ├── blog_taslaklar.json
 │       └── blog_yazilar.json
 │
 └── assets/css/
@@ -108,24 +101,20 @@ digitalbohem-site/
 
 `ornekler-data.json` → API üzerinden okunur, `ornekler.html` sayfasında gösterilir.
 
-**Kart tasarımı:** Tam resim + altta başlık overlay. Tıklayınca "Bağlantı URL"ye gider.
-
 **Her örnekte:**
 - `baslik`, `kategori` (web/video/pdf), `canva_url` (bağlantı URL), `aciklama`
 - `thumbnail` — `ornekler/thumbnails/` altında sıkıştırılmış JPEG
-- `thumbnail_position` — sürükleme ile belirlenen `object-position` değeri (örn: `"40% 20%"`)
+- `thumbnail_position` — sürükleme ile belirlenen `object-position` değeri
 
 **Admin paneli Örnekler sekmesi:**
 - Ekle / Düzenle / Sil
-- Thumbnail yükleyince GD ile sıkıştırılır (PNG→JPEG dahil)
-- Yükledikten sonra 280×210 sürükleme kutusundan pozisyon belirlenir
-- Liste sırasını ≡ tutamacından sürükle-bırak ile değiştir → otomatik kaydolur
+- Thumbnail yükleyince GD ile sıkıştırılır (max 1200px, JPEG %82)
+- 280×210 sürükleme kutusundan pozisyon belirlenir
+- ≡ tutamacından sürükle-bırak ile sıralama
 
 ---
 
 ## Renk Teması
-
-Buz mavisi + fuşya pembe + beyaz (Haziran 2026'da güncellendi).
 
 | Değişken | Değer | Kullanım |
 |---|---|---|
@@ -146,115 +135,105 @@ Buz mavisi + fuşya pembe + beyaz (Haziran 2026'da güncellendi).
 
 | Sekme | Ne yapar |
 |---|---|
-| Davetiyeler | Müşteri listesi, durum takibi (localStorage — siteye yansımaz) |
+| Davetiyeler | Müşteri listesi, durum takibi (localStorage) |
 | Örnekler | Galeri ekle/düzenle/sil, sürükle-bırak sıralama |
 | Fiyatlar | Paket fiyatlarını güncelle |
-| Blog | Konu önerilerini gör/onayla + yazıları önizle |
-| Sosyal Medya | Ajan tarafından üretilen içerikleri gör, "Yayınlandı" ile işaretle |
+| Blog | Konu öner/onayla + taslak gör/düzenle/yayınla/reddet |
 
 ---
 
 ## Blog Sistemi — Tam Akış
 
 ```
-Pazartesi 09:30  →  blog-oneri-ajan.sh → API'ye konu önerileri gönderir
-Sen              →  Admin → Blog → Onayla/Reddet
-Perşembe 19:30   →  blog-yaz-ajan.sh 1  (Konu 1 onaylıysa)
-Cumartesi 10:30  →  blog-yaz-ajan.sh 2  (Konu 2 onaylıysa)
-                    → blog/ dizinine HTML → git push → cPanel deploy
+Pazartesi 09:30  →  blog-oneri-ajan.sh → API'ye 2 konu önerisi gönderir
+Sen              →  Admin → Blog → "Bu Haftanın Konuları" → Onayla/Reddet
+Perşembe 19:30   →  blog-yaz-ajan.sh 1  (EVET veya YENIDEN_YAZ ise yazar)
+Cumartesi 10:30  →  blog-yaz-ajan.sh 2  (EVET veya YENIDEN_YAZ ise yazar)
+                    → taslak-kaydet API → sunucuda blog/taslaklar/ altına kaydeder
+Sen              →  Admin → Blog → "Taslaklar" sekmesi
+                    → Önizle / Düzenle (metin + resim ekle) / Yayınla / Yeniden Yaz
+"Yayınla"        →  taslak-yayinla API → blog/ altına taşır, blog/index.html'e kart ekler
+"Yeniden Yaz"    →  taslak-reddet API → taslak silinir, konu YENIDEN_YAZ işaretlenir
+                    → Perşembe/Cumartesi ajanı tekrar yazar
 ```
+
+**Blog editöründe resim ekleme:**
+Admin → Blog → Taslaklar → Düzenle → araç çubuğunda "🖼 Resim Ekle" → dosya seç → `blog-resim-upload.php`'ye yüklenir → yazının içine yerleştirilir.
 
 ---
 
 ## Otomasyon Ajanları (Cron)
 
-Tüm ajanlar `~/.digitalbohem-agents/` altında.
+Tüm ajanlar `~/.digitalbohem-agents/` altında. Log: `~/.digitalbohem-agents/logs/cron.log`
 
 | Zaman | Ajan | Görev |
 |---|---|---|
 | Pazartesi 09:07 | `icerik-ajan.sh` | Haftalık içerik planı |
-| Pazartesi 09:30 | `blog-oneri-ajan.sh` | Blog konu önerileri |
-| Çarşamba 09:13 | `seo-ajan.sh` | SEO & rakip takip |
+| Pazartesi 09:30 | `blog-oneri-ajan.sh` | Blog konu önerileri → API'ye gönderir |
+| Çarşamba 09:13 | `seo-ajan.sh` | SEO & rakip takip raporu |
 | 1. ve 15. günü 09:17 | `trend-ajan.sh` | Trend araştırması |
 | Cuma 09:23 | `teknik-seo-ajan.sh` | Teknik SEO kontrol |
 | Cuma 10:00 | `site-updater.sh` | SEO raporundan site güncellemesi |
-| Perşembe 19:30 | `blog-yaz-ajan.sh 1` | Konu 1'i yaz |
-| Cumartesi 10:30 | `blog-yaz-ajan.sh 2` | Konu 2'yi yaz |
-| **Salı 10:00** | `sosyal-medya-ajan.sh` | 5 platform için sosyal içerik üret |
-| **Cuma 10:30** | `sosyal-medya-ajan.sh` | 5 platform için sosyal içerik üret |
+| Perşembe 19:30 | `blog-yaz-ajan.sh 1` | Konu 1'i yaz (EVET veya YENIDEN_YAZ) |
+| Cumartesi 10:30 | `blog-yaz-ajan.sh 2` | Konu 2'yi yaz (EVET veya YENIDEN_YAZ) |
+| Ayın 1'i 10:00 | `site-saglik-ajan.sh` | Site sağlık kontrolü |
 
-## Sosyal Medya Akışı
+**Not:** Sosyal medya ajanı (Salı + Cuma) kaldırıldı. Sosyal medya içerikleri Make.com üzerinden ayrı yönetilecek.
 
-```
-Salı 10:00 + Cuma 10:30  →  sosyal-medya-ajan.sh çalışır
-   → Claude WebSearch ile güncel trend arar
-   → Facebook, LinkedIn, Pinterest, Instagram, YouTube için içerik yazar
-   → sosyal.php API'sine kaydeder (durum: "bekliyor")
-Sen  →  Admin → Sosyal Medya → İçerikleri gör
-   → "📋 Kopyala" butonu ile içeriği panoya al
-   → "✓ Yayınlandı" butonuna bas → Make.com webhook tetiklenir → otomatik paylaşır
-   → YouTube: senaryo hazır, elle yüklenecek
-```
+---
 
-**Make.com entegrasyonu:**
-- Webhook URL → `sosyal.php` ile admin panelden kaydedilir (`/data/sosyal_webhook.json`)
-- "Yayınlandı" tıklanınca → `sosyal.php` webhook'a POST atar (platform, icerik, baslik, hashtag alanlarıyla)
-- Make.com senaryosu → webhook → Router → platform modülleri (kurulum yarım)
+## Sosyal Medya (Make.com)
 
-**API endpoint:** `https://digitalbohem.com.tr/api/sosyal.php`  
-**JSON dosyaları:**
-- `/public_html/data/sosyal_posts.json` (son 30 gün görünür)
-- `/public_html/data/sosyal_webhook.json` (Make.com webhook URL)
-
-Log: `~/.digitalbohem-agents/logs/cron.log`
+Sosyal medya içerikleri artık Make.com ile Claude MCP kullanılarak üretilecek ve yayınlanacak. Admin paneldeki Sosyal Medya sekmesi kaldırıldı.
 
 ---
 
 ## Ayşe Sohbet Ajanı
 
-**Açıklama:** Tüm sayfalarda sağ altta fuşya chat butonu. Müşteriler Ayşe ile sohbet eder, gerektiğinde Kuzey Bey'in WhatsApp'ına yönlendirilir. Her yönlendirmede Telegram'a özet gelir.
+Tüm sayfalarda sağ altta fuşya chat butonu. Müşteriler Ayşe ile sohbet eder, gerektiğinde WhatsApp'a yönlendirilir. Her yönlendirmede Telegram'a özet gelir.
 
 **Dosyalar:**
 - `assets/css/chat-widget.css` — Widget stilleri
-- `assets/js/chat-widget.js` — Frontend mantığı (sessionStorage'da geçmiş)
+- `assets/js/chat-widget.js` — Frontend (sessionStorage'da geçmiş)
 - `public_html/api/chat.php` — Backend: Claude API + Telegram özet
 
 **Kurulum — SUNUCUDA YAPILACAK:**
-```
-# SSH ile sunucuya bağlan, sonra:
+```bash
 mkdir -p ~/private
 nano ~/private/ayse_config.php
 ```
-İçeriği:
+İçerik:
 ```php
 <?php
 define('ANTHROPIC_API_KEY', 'sk-ant-...');
 ```
-Anthropic API key: https://console.anthropic.com/settings/keys
 
 **Davranış:**
 - İndirim isteği → WhatsApp yönlendirme
 - Gerçek kişi isteği → WhatsApp yönlendirme
-- "Rakip neden ucuz?" → İddialı cevap + WhatsApp
-- Konuşma sonu → Mani + WhatsApp butonu
+- Konuşma sonu → WhatsApp butonu
 - WhatsApp kullanamıyorum → telefon/mail alır, Telegram'a iletir
-- Kuzey Bey mesaisi: hafta içi 08:00-19:00
+- Kuzey Bey mesaisi: hafta içi 08:00–19:00
 
-**Telegram özeti ne zaman gelir:**
-- Müşteri WhatsApp butonuna bastığında → 📱 yönlendirildi
-- Sekmeyi kapatıp gittiğinde (gerçek yazışma varsa) → 🚪 ayrıldı
-- İletişim bilgisi bıraktığında → 📞 bilgi notu
-
-**Sunucu config:** `~/private/ayse_config.php` (git'e gitmez, sunucuda elle var)  
+**Model:** claude-haiku-4-5 (hızlı ve ekonomik)  
 **WhatsApp:** `https://wa.me/905307732270`  
-**Model:** claude-haiku-4-5 (hızlı ve ekonomik)
+**Sunucu config:** `~/private/ayse_config.php` (git'e gitmez)
 
 ---
 
-## Notlar
+## Deploy Korumaları
 
 - `ornekler-data.json` deploy sırasında üzerine yazılmaz.
 - `ornekler/thumbnails/` deploy sırasında korunur.
 - `data/blog_*.json` deploy sırasında sadece yoksa oluşturulur.
 - `borsa.html` aktif değil, eski test sayfası.
 - GitHub IP (`140.82.121.4`) değişirse `~/.ssh/config`'i güncelle.
+
+---
+
+## Rakip Notlar (08.07.2026)
+
+En güçlü rakip: **edijitaldavetiye.com** (TR #15.663, Kütahya/Tavşanlı, Mobirise CMS).  
+Fiyatları: Standart ₺599.90 / Plus ₺999.90 / Pro ₺1.999.90 — self-service, şablon doldurma modeli.  
+Fark: Polaris kişisel hizmet, 24 saat teslim, dış örnek kabul, Elite'te 12 ay bakım.  
+SEO raporu: `~/.digitalbohem-agents/logs/seo-2026-07-08.md`
