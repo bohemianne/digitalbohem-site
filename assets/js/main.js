@@ -4,10 +4,10 @@ const mobileMenu = document.getElementById('mobile-menu');
 const closeMenu  = document.querySelector('.close-menu');
 
 if (menuToggle && mobileMenu) {
-  menuToggle.addEventListener('click', () => mobileMenu.classList.add('open'));
-  if (closeMenu) closeMenu.addEventListener('click', e => { e.preventDefault(); mobileMenu.classList.remove('open'); });
+  menuToggle.addEventListener('click', () => mobileMenu.classList.add('active'));
+  if (closeMenu) closeMenu.addEventListener('click', e => { e.preventDefault(); mobileMenu.classList.remove('active'); });
   document.addEventListener('click', e => {
-    if (!mobileMenu.contains(e.target) && e.target !== menuToggle) mobileMenu.classList.remove('open');
+    if (!mobileMenu.contains(e.target) && e.target !== menuToggle) mobileMenu.classList.remove('active');
   });
 }
 
