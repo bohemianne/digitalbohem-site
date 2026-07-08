@@ -1,52 +1,60 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 08.07.2026
+## Son Oturum — 08.07.2026 23:26
 
 **Son commit'ler:**
 ```
+db3ea85 handoff: MP4/PDF önizleme fazları belgelendi
 cafdb66 Örnekler: MP4/PDF önizleme modalı eklendi, indirme koruması var
 d3f7068 Fix: mobil menü class adı open→active olarak düzeltildi
 ce5e315 handoff: 08.07.2026 oturum özeti güncellendi
+b2ef56d Hizmet farkı ve Elite paket açıklamaları güncellendi
+```
+
+**Bekleyen değişiklikler:**
+```
+ M handoff.md
 ```
 
 ---
-
 ## DEVAM EDECEK: Örnekler MP4/PDF Önizleme — Fazlar
 
-### Neden kaldı?
-Kod bitti ve deploy edildi. Ama Canva'dan dosya export etme + sıkıştırma + cPanel'e yükleme adımları yapılamadı.
+### FAZ 1 — Dosyaları sıkıştır ve yükle ← BURADASIN
+**ffmpeg kuruldu ✅** — yarın Canva'dan indirince Claude sıkıştırmayı tekrar anlatacak.
 
-### FAZ 1 — Dosyaları hazırla (SEN yapacaksın, Claude yok)
-1. Canva'dan MP4 export et (animasyonlu davetiyeler için)
-2. Canva'dan PDF export et (tek sayfa davetiyeler için)
-3. Terminalde sıkıştır:
-   ```bash
-   # MP4 sıkıştırma:
-   ffmpeg -i gelen.mp4 -crf 28 -preset fast ornekler/media/ornek-animasyon.mp4
-   # PDF sıkıştırma:
-   gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -o ornekler/media/ornek-tek-sayfa.pdf gelen.pdf
-   ```
-4. cPanel File Manager → `/public_html/ornekler/media/` klasörüne yükle
-   (Deploy yaparsan klasör zaten oluşur, sadece dosyaları içine at)
+Adımlar:
+1. Canva'dan MP4 indir (animasyonlu davetiyeler) → Masaüstüne at
+2. Canva'dan PDF indir (tek sayfa davetiyeler) → Masaüstüne at
+3. Claude ile otur → `ls ~/Masaüstü/` çıktısını paylaş → sıkıştırma komutlarını hazır yazar
+4. Sıkıştırılmış dosyalar `ornekler/media/` klasörüne gidecek
+5. cPanel'den önce Deploy et (klasör oluşsun), sonra File Manager ile dosyaları yükle
+
+Sıkıştırma özeti (Claude hatırlatır ama not olarak):
+```bash
+# MP4:
+ffmpeg -i ~/Masaüstü/DOSYA.mp4 -crf 28 -preset fast ~/Masaüstü/digitalbohem-site/ornekler/media/DOSYA.mp4
+# PDF:
+gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -o ~/Masaüstü/digitalbohem-site/ornekler/media/DOSYA.pdf ~/Masaüstü/DOSYA.pdf
+```
 
 ### FAZ 2 — ornekler-data.json güncelle (Claude ile)
-Dosyalar yüklenince Claude ile otur, her örneğe `preview_file` yolunu ekle:
+Dosyalar yüklenince her örneğe `preview_file` yolunu ekle:
 ```json
-"preview_file": "ornekler/media/ornek-animasyon.mp4"
+"preview_file": "ornekler/media/DOSYAADI.mp4"
 ```
 Boş bırakılırsa "Önizle" butonu çıkmaz — güvenli.
 
 ### FAZ 3 — Test et (Claude ile)
-- Mobilden ve masaüstünden önizleme modal'ını test et
+- Mobilden ve masaüstünden önizleme modalını test et
 - İndirme butonunun gizlendiğini doğrula
-- PDF toolbar'ının gizlendiğini kontrol et
+- PDF toolbar gizlenme kontrolü
 
-### Mevcut kod durumu (cafdb66)
-- `ornekler.html` — modal HTML + JS eklendi ✅
-- `assets/css/ornekler.css` — modal + önizle buton stilleri ✅
-- `.cpanel.yml` — `ornekler/media/` klasörü deploy'da oluşturuluyor ✅
-- `ornekler-data.json` — `preview_file` alanı eklendi (değerler boş) ✅
-- Koruma: video `controlsList="nodownload"`, PDF iframe `#toolbar=0` + overlay ✅
+### Mevcut kod durumu (cafdb66) — tümü deploy edildi ✅
+- `ornekler.html` — modal HTML + JS
+- `assets/css/ornekler.css` — modal + önizle buton stilleri
+- `.cpanel.yml` — `ornekler/media/` klasörü deploy'da oluşuyor
+- `ornekler-data.json` — `preview_file` alanı var (değerler boş, buton çıkmaz)
+- Koruma: video `controlsList="nodownload"`, PDF iframe `#toolbar=0` + overlay
 
 ---
 ## Genel Bakış
