@@ -644,10 +644,11 @@ async function loadTaslaklar() {
           <h4 style="margin:0 0 0.25rem; color:#1f2937; font-size:0.95rem;">${t.baslik}</h4>
           <small style="color:#9ca3af;">${t.tarih} · Onay bekliyor · <code>${t.slug}.html</code></small>
         </div>
-        <div style="display:flex; gap:0.5rem;">
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
           <button class="btn-admin" onclick="onizleTaslak('${t.slug}','${t.baslik.replace(/'/g,"\\'")}') " style="background:#3b82f6; padding:0.4rem 0.9rem;">Önizle</button>
           <button class="btn-admin" onclick="taslakDuzenle('${t.slug}','${t.baslik.replace(/'/g,"\\'")}') " style="background:#f59e0b; padding:0.4rem 0.9rem;">Düzenle</button>
           <button class="btn-admin" onclick="taslakYayinla('${t.slug}')" style="background:#10b981; padding:0.4rem 0.9rem;">✓ Yayınla</button>
+          <button class="btn-admin" onclick="taslakReddet('${t.slug}')" style="background:#f97316; padding:0.4rem 0.9rem;">↩ Yeniden Yaz</button>
           <button class="btn-admin" onclick="taslakSil('${t.slug}')" style="background:#ef4444; padding:0.4rem 0.9rem;">Sil</button>
         </div>
       </div>`).join('');
@@ -691,6 +692,30 @@ function closeDuzenle() {
   _duzenleFullHtml = '';
 }
 
+async function editorResimEkle() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/jpeg,image/png,image/webp';
+  input.onchange = async () => {
+    const dosya = input.files[0];
+    if (!dosya) return;
+    const btn = document.querySelector('[onclick="editorResimEkle()"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Yükleniyor...'; }
+    try {
+      const fd = new FormData();
+      fd.append('resim', dosya);
+      const res  = await fetch('../api/blog-resim-upload.php', { method: 'POST', body: fd });
+      const json = await res.json();
+      if (!json.success) { alert('Resim yüklenemedi: ' + json.mesaj); return; }
+      const icerik = document.getElementById('duzenle-icerik');
+      icerik.focus();
+      document.execCommand('insertHTML', false, `<figure style="margin:1.5rem 0;text-align:center;"><img src="${json.url}" alt="" style="max-width:100%;border-radius:8px;"></figure>`);
+    } catch(e) { alert('Bağlantı hatası.'); }
+    finally { if (btn) { btn.disabled = false; btn.textContent = '🖼 Resim Ekle'; } }
+  };
+  input.click();
+}
+
 async function taslakKaydet() {
   const editedIcerik = document.getElementById('duzenle-icerik').innerHTML;
   if (!editedIcerik.trim()) { alert('İçerik boş olamaz.'); return; }
@@ -724,6 +749,21 @@ async function taslakYayinla(slug) {
     const json = await res.json();
     if (json.success) { alert('Yazı yayınlandı!'); loadTaslaklar(); }
     else alert('Hata: ' + json.mesaj);
+  } catch(e) { alert('Bağlantı hatası.'); }
+}
+
+async function taslakReddet(slug) {
+  if (!confirm('Bu taslağı reddet ve yeni bir versiyon yaz?\n\nAjan bir sonraki çalışmasında aynı konuyu yeniden yazacak.')) return;
+  try {
+    const res  = await fetch(BLOG_API + '?action=taslak-reddet', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ slug })
+    });
+    const json = await res.json();
+    if (json.success) {
+      alert('Taslak reddedildi. Perşembe veya Cumartesi günü yeni versiyon yazılıp onayına sunulacak.');
+      loadTaslaklar();
+    } else alert('Hata: ' + json.mesaj);
   } catch(e) { alert('Bağlantı hatası.'); }
 }
 

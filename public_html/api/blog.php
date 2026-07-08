@@ -240,6 +240,39 @@ if ($action === 'taslak-guncelle' && $method === 'POST') {
     exit;
 }
 
+// ── POST: taslak-reddet — taslağı siler, konuyu yeniden yazılmak üzere işaretler ──
+if ($action === 'taslak-reddet' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $slug  = preg_replace('/[^a-z0-9\-]/', '', $input['slug'] ?? '');
+    if (!$slug) { echo json_encode(['success' => false, 'mesaj' => 'slug zorunlu.']); exit; }
+
+    $DRAFT_DIR = __DIR__ . '/../blog/taslaklar';
+    $file = "$DRAFT_DIR/$slug.html";
+    if (file_exists($file)) unlink($file);
+
+    $taslaklar_f = $DATA_DIR . 'blog_taslaklar.json';
+    $taslaklar = readJson($taslaklar_f) ?? [];
+    $konu_no = 0;
+    foreach ($taslaklar as $t) {
+        if ($t['slug'] === $slug) { $konu_no = (int)$t['konu_no']; break; }
+    }
+    $taslaklar = array_values(array_filter($taslaklar, fn($t) => $t['slug'] !== $slug));
+    writeJson($taslaklar_f, $taslaklar);
+
+    if ($konu_no > 0) {
+        $data = readJson($ONERILER_F);
+        if ($data) {
+            foreach ($data['konular'] as &$k) {
+                if ($k['no'] === $konu_no) { $k['onay'] = 'YENIDEN_YAZ'; break; }
+            }
+            writeJson($ONERILER_F, $data);
+        }
+    }
+
+    echo json_encode(['success' => true, 'mesaj' => 'Taslak reddedildi, yeniden yazılacak.', 'konu_no' => $konu_no]);
+    exit;
+}
+
 // ── POST: taslak-sil ─────────────────────────────────────────────────────────
 if ($action === 'taslak-sil' && $method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
