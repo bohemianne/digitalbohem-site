@@ -151,9 +151,36 @@
 <!-- Hero Section -->
 <section class="hero">
   <div class="hero-content">
-    <h1>Dijital Düğün Davetiyeniz</h1>
-    <p>Modern, şık ve çevre dostu davetiyeler. Hayalinizdeki düğünü dijital dünyaya taşıyın.</p>
+    <h1>Dijital Düğün Davetiyenizi Biz Tasarlıyoruz</h1>
+    <p>Siz anlatın, 24 saat içinde teslim edelim. Şablon değil, sizin hikayenize özel tasarım.</p>
     <a href="ornekler.html" class="btn-gold">Örnekleri İncele</a>
+  </div>
+</section>
+
+<!-- Fark Bölümü -->
+<section class="fark-bolumu">
+  <div class="fark-icerik">
+    <div class="fark-kol fark-diger">
+      <h3>Diğer Platformlar</h3>
+      <ul>
+        <li><span class="fark-x">✕</span> Hazır şablonu kendiniz doldurursunuz</li>
+        <li><span class="fark-x">✕</span> Tasarım bilgisi ve zaman gerektirir</li>
+        <li><span class="fark-x">✕</span> Sonuç herkese benzer</li>
+        <li><span class="fark-x">✕</span> ₺599'dan başlıyor</li>
+        <li><span class="fark-x">✕</span> 6–12 ay sonra kapanır</li>
+      </ul>
+    </div>
+    <div class="fark-vs">VS</div>
+    <div class="fark-kol fark-polaris">
+      <h3>Polaris</h3>
+      <ul>
+        <li><span class="fark-c">✓</span> Siz anlatın, biz tasarlayalım</li>
+        <li><span class="fark-c">✓</span> Hiç uğraşmanıza gerek yok</li>
+        <li><span class="fark-c">✓</span> Size özel, kimseye benzemeyen</li>
+        <li><span class="fark-c">✓</span> ₺499'dan başlıyor</li>
+        <li><span class="fark-c">✓</span> Süre sınırı yok</li>
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -418,6 +445,12 @@ document.getElementById('contact-form').addEventListener('submit', function(e) {
     notlar      ? `📝 *Notlar:*        ${notlar}`       : null,
     '──────────────────────',
   ].filter(Boolean).join('\n');
+
+  fetch('https://hook.us2.make.com/y7gtfu6o8h4tpxlyqarpnweozq21gqti', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ paket, adSoyad, telefon, email, dugunTarihi, notlar })
+  }).catch(() => {});
 
   window.open('https://wa.me/905307732270?text=' + encodeURIComponent(mesaj), '_blank');
 });

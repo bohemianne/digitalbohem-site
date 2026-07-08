@@ -176,6 +176,77 @@ body {
   margin-top: 1rem;
 }
 
+/* ===== FARK BÖLÜMÜ ===== */
+.fark-bolumu {
+  padding: 3.5rem 5%;
+  background: #fff;
+  border-bottom: 1px solid var(--ice-pale);
+}
+.fark-icerik {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0;
+  max-width: 860px;
+  margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.fark-kol {
+  flex: 1;
+  padding: 2rem 2.2rem;
+}
+.fark-kol h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+}
+.fark-kol ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.fark-kol ul li {
+  font-size: 0.95rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.fark-diger {
+  background: #f6f7f9;
+  color: var(--text-muted);
+}
+.fark-diger h3 { color: #9ca3af; }
+.fark-polaris {
+  background: linear-gradient(135deg, #fff0f8 0%, #f0faff 100%);
+  color: var(--text);
+}
+.fark-polaris h3 { color: var(--fuchsia); }
+.fark-x { color: #d1d5db; font-weight: 700; flex-shrink: 0; }
+.fark-c { color: var(--fuchsia); font-weight: 700; flex-shrink: 0; }
+.fark-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #fff;
+  background: var(--fuchsia);
+  writing-mode: vertical-rl;
+}
+@media (max-width: 600px) {
+  .fark-icerik { flex-direction: column; border-radius: 12px; }
+  .fark-vs { writing-mode: horizontal-tb; padding: 0.6rem; }
+}
+
 /* ===== PACKAGES ===== */
 .packages {
   padding: 5rem 5%;
