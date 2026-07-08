@@ -15,7 +15,7 @@
     <a href="#" onclick="showSection('ornekler')">🖼️ Örnekler</a>
     <a href="#" onclick="showSection('fiyatlar')">💰 Fiyatlar</a>
     <a href="#" onclick="showSection('blog')">📝 Blog</a>
-    <a href="#" onclick="showSection('sosyal')">📢 Sosyal Medya</a>
+
     <a href="#" onclick="showSection('sifre')">🔑 Şifre Değiştir</a>
     <a href="index.html" style="margin-top:auto; color:#ef4444;">🚪 Çıkış</a>
   </aside>
@@ -175,73 +175,6 @@
     </div>
 
 
-    <!-- Sosyal Medya Section -->
-    <div id="sec-sosyal" class="admin-section hidden">
-      <h3>Sosyal Medya Yönetimi</h3>
-      <p style="color:#6b7280; font-size:0.9rem; margin-bottom:1.5rem;">Ajan her Salı ve Cuma 5 platform için içerik üretir. Make.com bağlıysa "Yayınlandı" butonuna basınca otomatik paylaşır; değilse "Kopyala" butonu ile içeriği panoya alıp elle paylaşırsınız.</p>
-
-      <!-- Make.com Webhook Ayarı -->
-      <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:1rem 1.2rem; margin-bottom:1.5rem;">
-        <strong style="font-size:0.9rem; color:#0369a1;">Make.com Webhook Ayarı</strong>
-        <p style="font-size:0.82rem; color:#6b7280; margin:0.4rem 0 0.75rem;">Make.com'dan kopyaladığın webhook URL'ini buraya gir. Bir kez kaydedince "Yayınlandı" her tıklandığında Make.com'a otomatik gönderilir.</p>
-        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-          <input type="text" id="make-webhook-url" placeholder="https://hook.us2.make.com/xxxx..." style="flex:1; min-width:200px; padding:0.5rem 0.8rem; border:1px solid #bae6fd; border-radius:8px; font-size:0.85rem;">
-          <button onclick="webhookKaydet()" style="padding:0.5rem 1.2rem; background:#0ea5e9; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem; white-space:nowrap;">Kaydet</button>
-        </div>
-        <span id="webhook-msg" style="font-size:0.8rem; color:#10b981; margin-top:0.4rem; display:block; min-height:1.2em;"></span>
-      </div>
-
-      <!-- Manuel Post Oluştur -->
-      <div style="margin-bottom:1.5rem;">
-        <button onclick="manuelFormToggle()" style="padding:0.5rem 1.2rem; background:#e91e8c; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem;">+ Manuel Post Oluştur</button>
-        <div id="manuel-post-form" style="display:none; margin-top:1rem; background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:1.2rem;">
-          <div style="display:grid; gap:0.8rem;">
-            <div>
-              <label style="font-size:0.85rem; font-weight:600; color:#374151; display:block; margin-bottom:0.3rem;">Platform</label>
-              <select id="mp-platform" style="width:100%; padding:0.5rem 0.8rem; border:1px solid #d1d5db; border-radius:8px; font-size:0.9rem;">
-                <option value="facebook">Facebook</option>
-                <option value="instagram">Instagram</option>
-                <option value="pinterest">Pinterest</option>
-                <option value="youtube">YouTube</option>
-                <option value="tiktok">TikTok</option>
-              </select>
-            </div>
-            <div>
-              <label style="font-size:0.85rem; font-weight:600; color:#374151; display:block; margin-bottom:0.3rem;">Başlık <span style="font-weight:400; color:#9ca3af;">(isteğe bağlı)</span></label>
-              <input type="text" id="mp-baslik" placeholder="Pinterest veya YouTube için başlık" style="width:100%; padding:0.5rem 0.8rem; border:1px solid #d1d5db; border-radius:8px; font-size:0.9rem; box-sizing:border-box;">
-            </div>
-            <div>
-              <label style="font-size:0.85rem; font-weight:600; color:#374151; display:block; margin-bottom:0.3rem;">İçerik</label>
-              <textarea id="mp-icerik" rows="5" placeholder="Post içeriğini buraya yaz..." style="width:100%; padding:0.5rem 0.8rem; border:1px solid #d1d5db; border-radius:8px; font-size:0.9rem; resize:vertical; box-sizing:border-box;"></textarea>
-            </div>
-            <div>
-              <label style="font-size:0.85rem; font-weight:600; color:#374151; display:block; margin-bottom:0.3rem;">Hashtag <span style="font-weight:400; color:#9ca3af;">(isteğe bağlı)</span></label>
-              <input type="text" id="mp-hashtag" placeholder="#dijitaldavetiye #düğün" style="width:100%; padding:0.5rem 0.8rem; border:1px solid #d1d5db; border-radius:8px; font-size:0.9rem; box-sizing:border-box;">
-            </div>
-            <div>
-              <label style="font-size:0.85rem; font-weight:600; color:#374151; display:block; margin-bottom:0.3rem;">Görsel <span style="font-weight:400; color:#9ca3af;">(isteğe bağlı)</span></label>
-              <input type="file" id="mp-gorsel" accept="image/jpeg,image/png,image/webp" style="font-size:0.85rem;">
-              <div id="mp-gorsel-onizleme" style="margin-top:0.5rem;"></div>
-            </div>
-            <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
-              <button onclick="manuelPostKaydet()" id="mp-kaydet-btn" style="padding:0.5rem 1.4rem; background:#10b981; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.9rem;">Bekleyene Ekle</button>
-              <button onclick="manuelFormToggle()" style="padding:0.5rem 1rem; background:#f3f4f6; color:#374151; border:1px solid #e5e7eb; border-radius:8px; cursor:pointer; font-size:0.9rem;">İptal</button>
-              <span id="mp-msg" style="font-size:0.85rem; color:#10b981;"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sekme başlıkları -->
-      <div style="display:flex; border-bottom:2px solid #e5e7eb; margin-bottom:1.5rem;">
-        <button id="stab-bekliyor" onclick="sosyalTab('bekliyor')" style="padding:0.6rem 1.2rem; border:none; background:none; cursor:pointer; font-weight:600; color:#e91e8c; border-bottom:2px solid #e91e8c; margin-bottom:-2px;">Bekleyen</button>
-        <button id="stab-yayinlandi" onclick="sosyalTab('yayinlandi')" style="padding:0.6rem 1.2rem; border:none; background:none; cursor:pointer; font-weight:600; color:#6b7280;">Yayınlananlar</button>
-      </div>
-
-      <span id="sosyal-yukleniyor" style="color:#9ca3af; font-size:0.9rem;"></span>
-      <div id="sosyal-tab-bekliyor"><div id="sosyal-bekliyor-list"></div></div>
-      <div id="sosyal-tab-yayinlandi" style="display:none;"><div id="sosyal-yayinlandi-list"></div></div>
-    </div>
 
     <!-- Şifre Section -->
     <div id="sec-sifre" class="admin-section hidden">

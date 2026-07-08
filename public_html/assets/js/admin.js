@@ -21,7 +21,6 @@ function showSection(id) {
   event.target.classList.add('active');
   if (id === 'blog') loadBloglar();
   if (id === 'ornekler') loadOrnekler();
-  if (id === 'sosyal') { loadSosyal(); loadWebhookUrl(); }
 }
 
 // ===== DAVETIYE CRUD =====
