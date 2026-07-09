@@ -237,12 +237,23 @@ document.addEventListener('keydown', function(e) {
 
 // Kart açma — touchend (mobil) ve click (masaüstü) tek noktadan yönetilir.
 // recentTouch flag'i ile touchend'den sonra gelen sentetik click engellenir.
+// touchStartY/X ile kaydırma hareketi tap'tan ayırt edilir.
 var recentTouch = false;
+var touchStartX = 0;
+var touchStartY = 0;
 var ornGrid = document.getElementById('ornekler-grid');
+
+ornGrid.addEventListener('touchstart', function(e) {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
 
 ornGrid.addEventListener('touchend', function(e) {
   var card = e.target.closest('[data-preview]');
   if (!card) return;
+  var dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+  var dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+  if (dx > 10 || dy > 10) return; // kaydırma hareketi — kartı açma
   e.preventDefault();
   recentTouch = true;
   setTimeout(function() { recentTouch = false; }, 600);
