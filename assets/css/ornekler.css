@@ -99,6 +99,10 @@
   transform: scale(1.05);
 }
 
+.ornek-kart-tikla {
+  cursor: pointer;
+}
+
 .ornek-overlay {
   position: absolute;
   bottom: 0; left: 0; right: 0;

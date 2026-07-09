@@ -109,24 +109,33 @@
 
   const KAT_ICON = { web: '🌐', video: '🎬', pdf: '📄' };
 
-  function onizleBtn(o) {
-    if (!o.preview_file) return '';
-    return `<button class="ornek-preview-btn" data-preview="${o.preview_file}" data-baslik="${o.baslik}" onclick="event.preventDefault();event.stopPropagation();acOnizle(this)">▶ Önizle</button>`;
-  }
-
   function renderKart(o) {
+    const pos = o.thumbnail_position || '50% 50%';
+
+    if (o.preview_file) {
+      const extra = `data-preview="${o.preview_file}" data-baslik="${o.baslik}" onclick="acOnizle(this)"`;
+      if (o.thumbnail) {
+        const imgSrc = o.thumbnail.startsWith('http') ? o.thumbnail : '/' + o.thumbnail;
+        return `<div class="ornek-kart ornek-kart-tikla" data-kategori="${o.kategori}" ${extra}>
+          <img src="${imgSrc}" alt="${o.baslik}" class="ornek-thumb" style="object-position:${pos}" loading="lazy">
+          <div class="ornek-overlay"><span>${o.baslik}</span></div>
+        </div>`;
+      }
+      return `<div class="ornek-kart ornek-kart-bos ornek-kart-tikla" data-kategori="${o.kategori}" ${extra}>
+        <span style="font-size:2.5rem;">${KAT_ICON[o.kategori] || '🖼️'}</span>
+        <div class="ornek-overlay"><span>${o.baslik}</span></div>
+      </div>`;
+    }
+
     const href = o.canva_url || '#';
-    const pos  = o.thumbnail_position || '50% 50%';
     if (o.thumbnail) {
       const imgSrc = o.thumbnail.startsWith('http') ? o.thumbnail : '/' + o.thumbnail;
       return `<a href="${href}" target="_blank" rel="noopener" class="ornek-kart" data-kategori="${o.kategori}">
-        ${onizleBtn(o)}
         <img src="${imgSrc}" alt="${o.baslik}" class="ornek-thumb" style="object-position:${pos}" loading="lazy">
         <div class="ornek-overlay"><span>${o.baslik}</span></div>
       </a>`;
     }
     return `<a href="${href}" target="_blank" rel="noopener" class="ornek-kart ornek-kart-bos" data-kategori="${o.kategori}">
-      ${onizleBtn(o)}
       <span style="font-size:2.5rem;">${KAT_ICON[o.kategori] || '🖼️'}</span>
       <div class="ornek-overlay"><span>${o.baslik}</span></div>
     </a>`;
