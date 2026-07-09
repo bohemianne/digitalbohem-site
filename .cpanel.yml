@@ -47,3 +47,4 @@ deployment:
     - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/assets/css/ornekler.css /home/digi7586/public_html/assets/css/ornekler.css
     - /bin/mkdir -p /home/digi7586/public_html/ornekler/media
     - /bin/chmod 755 /home/digi7586/public_html/ornekler/media
+    - /bin/cp -f /home/digi7586/repositories/digitalbohem-site/public_html/api/cleanup.php /home/digi7586/public_html/api/cleanup.php
