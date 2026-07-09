@@ -324,6 +324,15 @@ function ornekDuzenle(id) {
       if (kaldir) kaldir.style.display = 'inline-block';
       posPicAc('../' + o.thumbnail, o.thumbnail_position || '50% 50%');
     }
+    const mediaMevcut = document.getElementById('ornek-media-mevcut');
+    if (mediaMevcut) {
+      if (o.preview_file) {
+        mediaMevcut.style.display = 'block';
+        mediaMevcut.textContent = 'Mevcut: ' + o.preview_file.split('/').pop() + ' — yeni dosya seçerseniz değişir';
+      } else {
+        mediaMevcut.style.display = 'none';
+      }
+    }
     const btn = document.getElementById('ornek-kaydet-btn');
     const iptal = document.getElementById('ornek-iptal-btn');
     if (btn) btn.textContent = 'Güncelle';
@@ -338,6 +347,10 @@ function ornekDuzenleIptal() {
   document.getElementById('ornek-baslik').value    = '';
   document.getElementById('ornek-canva-url').value = '';
   document.getElementById('ornek-aciklama').value  = '';
+  const mediaInput = document.getElementById('ornek-media');
+  if (mediaInput) mediaInput.value = '';
+  const mediaMevcut = document.getElementById('ornek-media-mevcut');
+  if (mediaMevcut) mediaMevcut.style.display = 'none';
   thumbnailKaldir();
   const btn = document.getElementById('ornek-kaydet-btn');
   const iptal = document.getElementById('ornek-iptal-btn');
@@ -353,6 +366,7 @@ async function ornekKaydet() {
   const canva_url = document.getElementById('ornek-canva-url').value.trim();
   const aciklama  = document.getElementById('ornek-aciklama').value.trim();
   const thumbFile = document.getElementById('ornek-thumbnail')?.files[0];
+  const mediaFile = document.getElementById('ornek-media')?.files[0];
   if (!baslik) { alert('Başlık gerekli!'); return; }
 
   if (btn) { btn.disabled = true; btn.textContent = duzenleId ? 'Güncelleniyor...' : 'Ekleniyor...'; }
@@ -376,11 +390,31 @@ async function ornekKaydet() {
     }
   }
 
+  let preview_file = duzenleId ? (_ornekDuzenleData?.preview_file || '') : '';
+  if (mediaFile) {
+    try {
+      if (btn) btn.textContent = 'Dosya yükleniyor...';
+      const fd = new FormData();
+      fd.append('media', mediaFile);
+      const upRes  = await fetch('../api/media-upload.php', { method: 'POST', body: fd });
+      const upJson = await upRes.json();
+      if (upJson.success) {
+        preview_file = upJson.path;
+      } else {
+        const devam = confirm('Dosya yüklenemedi: ' + upJson.mesaj + '\n\nDosya olmadan devam edilsin mi?');
+        if (!devam) { if (btn) { btn.disabled = false; btn.textContent = duzenleId ? 'Güncelle' : 'Ekle'; } return; }
+      }
+    } catch (err) {
+      const devam = confirm('Dosya yüklenirken bağlantı hatası oluştu.\n\nDevam edilsin mi?');
+      if (!devam) { if (btn) { btn.disabled = false; btn.textContent = duzenleId ? 'Güncelle' : 'Ekle'; } return; }
+    }
+  }
+
   const thumbnail_position = document.getElementById('ornek-thumbnail-position')?.value || (duzenleId ? (_ornekDuzenleData?.thumbnail_position || '50% 50%') : '50% 50%');
   const action = duzenleId ? 'update' : 'add';
   const data   = duzenleId
-    ? { id: duzenleId, kategori, baslik, canva_url, aciklama, thumbnail, thumbnail_position }
-    : { id: 'ornek-' + Date.now(), kategori, baslik, canva_url, aciklama, thumbnail, thumbnail_position };
+    ? { id: duzenleId, kategori, baslik, canva_url, aciklama, thumbnail, thumbnail_position, preview_file }
+    : { id: 'ornek-' + Date.now(), kategori, baslik, canva_url, aciklama, thumbnail, thumbnail_position, preview_file };
 
   await fetch('../api/data.php?table=ornekler', {
     method: 'POST',

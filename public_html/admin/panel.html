@@ -67,6 +67,11 @@
           <input type="text" id="ornek-aciklama" placeholder="Krem tonlarında zarif animasyonlu düğün davetiyesi" style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
         </div>
         <div style="grid-column:1/-1;">
+          <label style="font-size:0.8rem; color:#6b7280; display:block; margin-bottom:0.25rem;">Önizleme Dosyası (MP4/PDF) <span style="color:#9ca3af;">— resme tıklayınca açılacak video veya PDF</span></label>
+          <input type="file" id="ornek-media" accept="video/mp4,application/pdf" style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; background:#fafafa;">
+          <div id="ornek-media-mevcut" style="display:none; margin-top:0.4rem; font-size:0.8rem; color:#6b7280;"></div>
+        </div>
+        <div style="grid-column:1/-1;">
           <label style="font-size:0.8rem; color:#6b7280; display:block; margin-bottom:0.25rem;">Önizleme Resmi (PNG/JPG) <span style="color:#9ca3af;">— Canva'dan export edin</span></label>
           <input type="file" id="ornek-thumbnail" accept="image/png,image/jpeg,image/webp" style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; background:#fafafa;">
           <div id="ornek-thumb-preview" style="margin-top:0.5rem;"></div>
