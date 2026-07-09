@@ -150,7 +150,20 @@
       grid.innerHTML = '<div class="ornekler-bos">Yakında örnekler eklenecek.</div>';
       return;
     }
-    grid.innerHTML = liste.map(renderKart).join('');
+
+    const canvaOrnekler  = liste.filter(o => !o.preview_file);
+    const onizleOrnekler = liste.filter(o =>  o.preview_file);
+
+    let html = canvaOrnekler.map(renderKart).join('');
+
+    if (onizleOrnekler.length && canvaOrnekler.length) {
+      html += `<div class="ornekler-ayrac">
+        <span>Canva bağlantısı açılmıyorsa aşağıdaki örnekleri doğrudan izleyebilirsiniz</span>
+      </div>`;
+    }
+
+    html += onizleOrnekler.map(renderKart).join('');
+    grid.innerHTML = html;
   }
 
   document.querySelectorAll('.filter-btn').forEach(btn => {

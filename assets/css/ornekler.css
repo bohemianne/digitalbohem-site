@@ -103,6 +103,18 @@
   cursor: pointer;
 }
 
+.ornekler-ayrac {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 1.2rem 1rem;
+  margin: 0.5rem 0;
+  background: var(--ice-pale);
+  border-radius: 10px;
+  border: 1px dashed var(--ice);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
 .ornek-overlay {
   position: absolute;
   bottom: 0; left: 0; right: 0;
