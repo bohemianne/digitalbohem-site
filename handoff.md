@@ -1,19 +1,20 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 08.07.2026 23:26
+## Son Oturum — 09.07.2026 16:06
 
 **Son commit'ler:**
 ```
-db3ea85 handoff: MP4/PDF önizleme fazları belgelendi
-cafdb66 Örnekler: MP4/PDF önizleme modalı eklendi, indirme koruması var
-d3f7068 Fix: mobil menü class adı open→active olarak düzeltildi
-ce5e315 handoff: 08.07.2026 oturum özeti güncellendi
-b2ef56d Hizmet farkı ve Elite paket açıklamaları güncellendi
+5d855ad Tek seferlik temizlik scripti ekle — eski media dosyaları ve test dosyaları silinecek
+a72347a Deploy: media-upload.php cpanel.yml'e eklendi, URL alanı açıklaması netleştirildi
+35019cb Admin: thumbnail PDF desteği kaldırıldı (sunucuda GS yok), PNG/JPG yeterli
+8b4b505 Admin: thumbnail PDF desteği, düzenlerken küçük resim önizlemesi eklendi
+60a9b4c Örnekler: resim önizleme desteği eklendi (JPG/PNG modalda tam boy açılır)
 ```
 
 **Bekleyen değişiklikler:**
 ```
  M handoff.md
+ M ornekler-data.json
 ```
 
 ---

@@ -1,10 +1,70 @@
 [
   {
+    "id": "ornek-1782987405924",
+    "kategori": "web",
+    "baslik": "Floral Web Site Özelleştirilebilir",
+    "canva_url": "https://digitalbohemdemo1.my.canva.site/ay-e",
+    "preview_file": "",
+    "aciklama": "Düğün detaylarını içeren, harita konum bilgisi, fotoğraf, RSVP, karekod bilgilerini kişiye özel oluşturduğumuz web siteye ekliyoruz. 1 yıl boyunca ücretsiz web site bakımı hizmeti",
+    "thumbnail": "ornekler/thumbnails/ornek-1782987405-4ff1a2b0.jpg",
+    "thumbnail_position": "0% 0%"
+  },
+  {
+    "id": "ornek-1782988982375",
+    "kategori": "web",
+    "baslik": "Düğün Website Siyah Örnek",
+    "canva_url": "https://digitalbohemdemo1.my.canva.site/black-simple-light-wedding-website-kopyas",
+    "preview_file": "",
+    "aciklama": "Siyah düğün web site örneği. İsteğe göre kişiselleştirilir",
+    "thumbnail": "ornekler/thumbnails/ornek-1782988982-1e8bb796.jpg",
+    "thumbnail_position": "0% 0%"
+  },
+  {
+    "id": "ornek-1782851824",
+    "baslik": "Aysel & Ahmet",
+    "kategori": "video",
+    "canva_url": "https://www.canva.com/design/DAHN78ZKVRo/6qQrESTlMYzZ3PMGAWQ4hA/view?embed",
+    "preview_file": "",
+    "aciklama": "Krem tonlarında zarif animasyonlu düğün davetiyesi",
+    "thumbnail": "ornekler/thumbnails/ornek-1782982477-6173c59d.jpg",
+    "thumbnail_position": "0% 50%"
+  },
+  {
+    "id": "ornek-1782908039234",
+    "kategori": "video",
+    "baslik": "Ayşe & Cemal",
+    "canva_url": "https://www.canva.com/design/DAHOIz1cQ34/mo55YT96F7KykB24iZQDzw/view?embed",
+    "preview_file": "",
+    "aciklama": "Soft Mektup",
+    "thumbnail": "ornekler/thumbnails/ornek-1782982526-c035bd9b.jpg",
+    "thumbnail_position": "0% 50%"
+  },
+  {
+    "id": "ornek-1782979701766",
+    "kategori": "pdf",
+    "baslik": "Floral Tek Sayfa Karekodlu Dijital Davetiye",
+    "canva_url": "https://www.canva.com/design/DAHN8ruSwGk/e9r9AMGnAVqFvspizxusug/view?embed",
+    "preview_file": "",
+    "aciklama": "Floral tek sayfa karekodlu düğün davetiyesi örneği",
+    "thumbnail": "ornekler/thumbnails/ornek-1782982547-80bea3c3.jpg",
+    "thumbnail_position": "0% 50%"
+  },
+  {
+    "id": "ornek-1783342333646",
+    "kategori": "pdf",
+    "baslik": "Kolaj",
+    "canva_url": "https://www.canva.com/design/DAHOmPOoXBA/FMpPAL5GIQGPIcrrtS1iyg/view",
+    "preview_file": "",
+    "aciklama": "Bej modern kolaj tek sayfa",
+    "thumbnail": "ornekler/thumbnails/ornek-1783342333-d9b4f16d.jpg",
+    "thumbnail_position": "0% 50%"
+  },
+  {
     "id": "ornek-v01",
     "baslik": "Animasyonlu Düğün Davetiyesi - 1",
     "kategori": "video",
     "canva_url": "",
-    "preview_file": "ornekler/media/video-01.mp4",
+    "preview_file": "ornekler/media/video-31.mp4",
     "aciklama": "Dijital animasyonlu düğün davetiyesi. QR kodlu, tek sayfa, anında paylaşılabilir."
   },
   {
@@ -12,7 +72,7 @@
     "baslik": "Animasyonlu Düğün Davetiyesi - 2",
     "kategori": "video",
     "canva_url": "",
-    "preview_file": "ornekler/media/video-02.mp4",
+    "preview_file": "ornekler/media/video-32.mp4",
     "aciklama": "Şık animasyonlu dijital davetiye. Mobil uyumlu, WhatsApp ile kolayca paylaşılır."
   },
   {
@@ -20,7 +80,7 @@
     "baslik": "Animasyonlu Düğün Davetiyesi - 3",
     "kategori": "video",
     "canva_url": "",
-    "preview_file": "ornekler/media/video-03.mp4",
+    "preview_file": "ornekler/media/video-33.mp4",
     "aciklama": "Modern animasyonlu düğün davetiyesi tasarımı. 24 saat içinde teslim."
   },
   {
@@ -28,7 +88,7 @@
     "baslik": "Animasyonlu Düğün Davetiyesi - 4",
     "kategori": "video",
     "canva_url": "",
-    "preview_file": "ornekler/media/video-04.mp4",
+    "preview_file": "ornekler/media/video-34.mp4",
     "aciklama": "Özel tasarım animasyonlu davetiye. İsim ve düğün bilgileri ile kişiselleştirilir."
   },
   {
@@ -36,7 +96,7 @@
     "baslik": "Animasyonlu Düğün Davetiyesi - 5",
     "kategori": "video",
     "canva_url": "",
-    "preview_file": "ornekler/media/video-05.mp4",
+    "preview_file": "ornekler/media/video-35.mp4",
     "aciklama": "Zarif animasyonlu dijital davetiye. Sosyal medya ve WhatsApp için optimize edilmiş."
   },
   {
@@ -44,40 +104,8 @@
     "baslik": "Animasyonlu Düğün Davetiyesi - 6",
     "kategori": "video",
     "canva_url": "",
-    "preview_file": "ornekler/media/video-06.mp4",
+    "preview_file": "ornekler/media/video-36.mp4",
     "aciklama": "Hareketli dijital düğün davetiyesi. Davetlilerinize unutulmaz bir ilk izlenim."
-  },
-  {
-    "id": "ornek-v07",
-    "baslik": "Animasyonlu Düğün Davetiyesi - 7",
-    "kategori": "video",
-    "canva_url": "",
-    "preview_file": "ornekler/media/video-07.mp4",
-    "aciklama": "Dijital animasyonlu davetiye. Kağıt davetiye yerine çevre dostu alternatif."
-  },
-  {
-    "id": "ornek-v08",
-    "baslik": "Animasyonlu Düğün Davetiyesi - 8",
-    "kategori": "video",
-    "canva_url": "",
-    "preview_file": "ornekler/media/video-08.mp4",
-    "aciklama": "Özel animasyonlu davetiye tasarımı. Fotoğraf ve bilgilerinizle hazırlanır."
-  },
-  {
-    "id": "ornek-v09",
-    "baslik": "Animasyonlu Düğün Davetiyesi - 9",
-    "kategori": "video",
-    "canva_url": "",
-    "preview_file": "ornekler/media/video-09.mp4",
-    "aciklama": "Modern ve şık animasyonlu dijital davetiye. 7/24 destek ile teslim."
-  },
-  {
-    "id": "ornek-v10",
-    "baslik": "Animasyonlu Düğün Davetiyesi - 10",
-    "kategori": "video",
-    "canva_url": "",
-    "preview_file": "ornekler/media/video-10.mp4",
-    "aciklama": "Etkileyici animasyonlu davetiye. Misafirleriniz videoyu izleyerek davet edilmiş hisseder."
   },
   {
     "id": "ornek-p01",
