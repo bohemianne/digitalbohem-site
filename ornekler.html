@@ -113,7 +113,7 @@
     const pos = o.thumbnail_position || '50% 50%';
 
     if (o.preview_file) {
-      const extra = `role="button" tabindex="0" data-preview="${o.preview_file}" data-baslik="${o.baslik}" onclick="acOnizle(this)"`;
+      const extra = `role="button" tabindex="0" data-preview="${o.preview_file}" data-baslik="${o.baslik}"`;
       if (o.thumbnail) {
         const imgSrc = o.thumbnail.startsWith('http') ? o.thumbnail : '/' + o.thumbnail;
         return `<div class="ornek-kart ornek-kart-tikla" data-kategori="${o.kategori}" ${extra}>
@@ -235,14 +235,25 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') kapatOnizle();
 });
 
-// iOS Safari: div onclick bazen tetiklenmez, touchend ile güvence altına al
-document.getElementById('ornekler-grid').addEventListener('touchend', function(e) {
-  const card = e.target.closest('[data-preview]');
-  if (card) {
-    e.preventDefault();
-    acOnizle(card);
-  }
+// Kart açma — touchend (mobil) ve click (masaüstü) tek noktadan yönetilir.
+// recentTouch flag'i ile touchend'den sonra gelen sentetik click engellenir.
+var recentTouch = false;
+var ornGrid = document.getElementById('ornekler-grid');
+
+ornGrid.addEventListener('touchend', function(e) {
+  var card = e.target.closest('[data-preview]');
+  if (!card) return;
+  e.preventDefault();
+  recentTouch = true;
+  setTimeout(function() { recentTouch = false; }, 600);
+  acOnizle(card);
 }, { passive: false });
+
+ornGrid.addEventListener('click', function(e) {
+  if (recentTouch) return;
+  var card = e.target.closest('[data-preview]');
+  if (card) acOnizle(card);
+});
 </script>
 <script src="assets/js/chat-widget.js"></script>
 </body>
