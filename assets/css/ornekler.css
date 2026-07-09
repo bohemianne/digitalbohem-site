@@ -230,6 +230,36 @@
   z-index: 5;
 }
 
+/* Mobil modal düzeltmeleri */
+@media (max-width: 600px) {
+  .preview-modal-icerik {
+    width: 98vw;
+    max-height: 92vh;
+    max-height: 92dvh;
+    overflow-y: auto;
+    border-radius: 8px;
+  }
+
+  .preview-video {
+    width: auto;
+    max-width: 100%;
+    max-height: 82vh;
+    max-height: 82dvh;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .preview-resim {
+    max-height: 82vh;
+    max-height: 82dvh;
+  }
+
+  .preview-pdf-wrap {
+    height: 80vh;
+    height: 80dvh;
+  }
+}
+
 /* CTA */
 .ornekler-cta {
   text-align: center;
