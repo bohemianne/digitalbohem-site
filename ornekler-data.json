@@ -1,10 +1,162 @@
 [
   {
-    "id": "ornek-1",
-    "baslik": "Örnek Davetiye 1",
-    "kategori": "web",
-    "canva_url": "https://www.canva.com/design/BURAYA_DESIGN_ID/view",
-    "preview_file": "",
-    "aciklama": "Elegant, minimal düğün web sitesi"
+    "id": "ornek-v01",
+    "baslik": "Animasyonlu Düğün Davetiyesi - 1",
+    "kategori": "video",
+    "canva_url": "",
+    "preview_file": "ornekler/media/video-01.mp4",
+    "aciklama": "Dijital animasyonlu düğün davetiyesi. QR kodlu, tek sayfa, anında paylaşılabilir."
+  },
+  {
+    "id": "ornek-v02",
+    "baslik": "Animasyonlu Düğün Davetiyesi - 2",
+    "kategori": "video",
+    "canva_url": "",
+    "preview_file": "ornekler/media/video-02.mp4",
+    "aciklama": "Şık animasyonlu dijital davetiye. Mobil uyumlu, WhatsApp ile kolayca paylaşılır."
+  },
+  {
+    "id": "ornek-v03",
+    "baslik": "Animasyonlu Düğün Davetiyesi - 3",
+    "kategori": "video",
+    "canva_url": "",
+    "preview_file": "ornekler/media/video-03.mp4",
+    "aciklama": "Modern animasyonlu düğün davetiyesi tasarımı. 24 saat içinde teslim."
+  },
+  {
+    "id": "ornek-v04",
+    "baslik": "Animasyonlu Düğün Davetiyesi - 4",
+    "kategori": "video",
+    "canva_url": "",
+    "preview_file": "ornekler/media/video-04.mp4",
+    "aciklama": "Özel tasarım animasyonlu davetiye. İsim ve düğün bilgileri ile kişiselleştirilir."
+  },
+  {
+    "id": "ornek-v05",
+    "baslik": "Animasyonlu Düğün Davetiyesi - 5",
+    "kategori": "video",
+    "canva_url": "",
+    "preview_file": "ornekler/media/video-05.mp4",
+    "aciklama": "Zarif animasyonlu dijital davetiye. Sosyal medya ve WhatsApp için optimize edilmiş."
+  },
+  {
+    "id": "ornek-v06",
+    "baslik": "Animasyonlu Düğün Davetiyesi - 6",
+    "kategori": "video",
+    "canva_url": "",
+    "preview_file": "ornekler/media/video-06.mp4",
+    "aciklama": "Hareketli dijital düğün davetiyesi. Davetlilerinize unutulmaz bir ilk izlenim."
+  },
+  {
+    "id": "ornek-v07",
+    "baslik": "Animasyonlu Düğün Davetiyesi - 7",
+    "kategori": "video",
+    "canva_url": "",
+    "preview_file": "ornekler/media/video-07.mp4",
+    "aciklama": "Dijital animasyonlu davetiye. Kağıt davetiye yerine çevre dostu alternatif."
+  },
+  {
+    "id": "ornek-v08",
+    "baslik": "Animasyonlu Düğün Davetiyesi - 8",
+    "kategori": "video",
+    "canva_url": "",
+    "preview_file": "ornekler/media/video-08.mp4",
+    "aciklama": "Özel animasyonlu davetiye tasarımı. Fotoğraf ve bilgilerinizle hazırlanır."
+  },
+  {
+    "id": "ornek-v09",
+    "baslik": "Animasyonlu Düğün Davetiyesi - 9",
+    "kategori": "video",
+    "canva_url": "",
+    "preview_file": "ornekler/media/video-09.mp4",
+    "aciklama": "Modern ve şık animasyonlu dijital davetiye. 7/24 destek ile teslim."
+  },
+  {
+    "id": "ornek-v10",
+    "baslik": "Animasyonlu Düğün Davetiyesi - 10",
+    "kategori": "video",
+    "canva_url": "",
+    "preview_file": "ornekler/media/video-10.mp4",
+    "aciklama": "Etkileyici animasyonlu davetiye. Misafirleriniz videoyu izleyerek davet edilmiş hisseder."
+  },
+  {
+    "id": "ornek-p01",
+    "baslik": "Dijital Düğün Davetiyesi - 1",
+    "kategori": "pdf",
+    "canva_url": "",
+    "preview_file": "ornekler/media/pdf-01.pdf",
+    "aciklama": "Tek sayfa dijital davetiye. QR kodlu, anında paylaşılabilir, kağıtsız düğün daveti."
+  },
+  {
+    "id": "ornek-p02",
+    "baslik": "Dijital Düğün Davetiyesi - 2",
+    "kategori": "pdf",
+    "canva_url": "",
+    "preview_file": "ornekler/media/pdf-02.pdf",
+    "aciklama": "Şık dijital davetiye tasarımı. İsim, tarih ve mekan bilgileri ile kişiselleştirilir."
+  },
+  {
+    "id": "ornek-p03",
+    "baslik": "Dijital Düğün Davetiyesi - 3",
+    "kategori": "pdf",
+    "canva_url": "",
+    "preview_file": "ornekler/media/pdf-03.pdf",
+    "aciklama": "Modern tek sayfa davetiye. WhatsApp, Instagram ve e-posta ile kolayca iletilir."
+  },
+  {
+    "id": "ornek-p04",
+    "baslik": "Dijital Düğün Davetiyesi - 4",
+    "kategori": "pdf",
+    "canva_url": "",
+    "preview_file": "ornekler/media/pdf-04.pdf",
+    "aciklama": "Özel tasarım dijital davetiye. 24 saat içinde hazırlanır, anında teslim edilir."
+  },
+  {
+    "id": "ornek-p05",
+    "baslik": "Dijital Düğün Davetiyesi - 5",
+    "kategori": "pdf",
+    "canva_url": "",
+    "preview_file": "ornekler/media/pdf-05.pdf",
+    "aciklama": "Zarif dijital davetiye tasarımı. Düğününüzün renklerine ve stiline göre özelleştirilebilir."
+  },
+  {
+    "id": "ornek-p06",
+    "baslik": "Dijital Düğün Davetiyesi - 6",
+    "kategori": "pdf",
+    "canva_url": "",
+    "preview_file": "ornekler/media/pdf-06.pdf",
+    "aciklama": "Vintage çiçekli dijital davetiye. Romantik ve klasik düğün davetiyesi tasarımı."
+  },
+  {
+    "id": "ornek-p07",
+    "baslik": "Dijital Düğün Davetiyesi - 7",
+    "kategori": "pdf",
+    "canva_url": "",
+    "preview_file": "ornekler/media/pdf-07.pdf",
+    "aciklama": "Minimalist dijital düğün davetiyesi. Sade ve şık tasarım, her zevke uygun."
+  },
+  {
+    "id": "ornek-p08",
+    "baslik": "Dijital Düğün Davetiyesi - 8",
+    "kategori": "pdf",
+    "canva_url": "",
+    "preview_file": "ornekler/media/pdf-08.pdf",
+    "aciklama": "Özel dijital davetiye. Dış örnek göstererek de sipariş verebilirsiniz."
+  },
+  {
+    "id": "ornek-p09",
+    "baslik": "Dijital Düğün Davetiyesi - 9",
+    "kategori": "pdf",
+    "canva_url": "",
+    "preview_file": "ornekler/media/pdf-09.pdf",
+    "aciklama": "Kişisel tasarım dijital davetiye. Çift ismi, tarih, saat ve harita linki eklenir."
+  },
+  {
+    "id": "ornek-p10",
+    "baslik": "Dijital Düğün Davetiyesi - 10",
+    "kategori": "pdf",
+    "canva_url": "",
+    "preview_file": "ornekler/media/pdf-10.pdf",
+    "aciklama": "Dijital tek sayfa davetiye. Kağıt masrafı olmadan yüzlerce kişiye anında gönderin."
   }
 ]

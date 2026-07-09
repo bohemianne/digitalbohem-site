@@ -21,3 +21,6 @@ desktop.ini
 
 # Gizli API anahtarları (sunucuda elle oluşturulur)
 private/ayse_config.php
+
+# Medya dosyaları (cPanel File Manager ile yüklenir, git'e girmez)
+ornekler/media/
