@@ -1,61 +1,39 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 09.07.2026 16:06
+## Son Oturum — 09.07.2026
 
 **Son commit'ler:**
 ```
+bb5de0f Temizlik scripti kaldırıldı — sunucudan da siliniyor
 5d855ad Tek seferlik temizlik scripti ekle — eski media dosyaları ve test dosyaları silinecek
 a72347a Deploy: media-upload.php cpanel.yml'e eklendi, URL alanı açıklaması netleştirildi
 35019cb Admin: thumbnail PDF desteği kaldırıldı (sunucuda GS yok), PNG/JPG yeterli
 8b4b505 Admin: thumbnail PDF desteği, düzenlerken küçük resim önizlemesi eklendi
-60a9b4c Örnekler: resim önizleme desteği eklendi (JPG/PNG modalda tam boy açılır)
-```
-
-**Bekleyen değişiklikler:**
-```
- M handoff.md
- M ornekler-data.json
 ```
 
 ---
-## DEVAM EDECEK: Örnekler MP4/PDF Önizleme — Fazlar
 
-### FAZ 1 — Dosyaları sıkıştır ve yükle ← BURADASIN
-**ffmpeg kuruldu ✅** — yarın Canva'dan indirince Claude sıkıştırmayı tekrar anlatacak.
+## Örnekler Sistemi — Güncel Durum ✅
 
-Adımlar:
-1. Canva'dan MP4 indir (animasyonlu davetiyeler) → Masaüstüne at
-2. Canva'dan PDF indir (tek sayfa davetiyeler) → Masaüstüne at
-3. Claude ile otur → `ls ~/Masaüstü/` çıktısını paylaş → sıkıştırma komutlarını hazır yazar
-4. Sıkıştırılmış dosyalar `ornekler/media/` klasörüne gidecek
-5. cPanel'den önce Deploy et (klasör oluşsun), sonra File Manager ile dosyaları yükle
+**Tamamlanan işler (bu oturumda):**
+- 6 MP4 video + 11 PNG resim + 1 PDF admin panelinden yüklendi, canlıda görünüyor
+- Karta tıklayınca önizleme modalı açılıyor (MP4, PDF, PNG/JPG/WebP destekleniyor)
+- Canva örnekler / önizlemeli örnekler arası ayraç ("Canva bağlantısı açılmıyorsa…")
+- Admin panelinde düzenlerken küçük thumbnail gösterimi eklendi
+- `.htaccess`'e MP4 ve PDF MIME türleri eklendi (video oynatma sorunu çözüldü)
+- Site sağlık kontrolü: tüm sayfalar 200 OK
+- 28 gereksiz dosya sunucudan temizlendi (12 eski video, 14 eski PDF, 2 test dosyası)
 
-Sıkıştırma özeti (Claude hatırlatır ama not olarak):
-```bash
-# MP4:
-ffmpeg -i ~/Masaüstü/DOSYA.mp4 -crf 28 -preset fast ~/Masaüstü/digitalbohem-site/ornekler/media/DOSYA.mp4
-# PDF:
-gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -o ~/Masaüstü/digitalbohem-site/ornekler/media/DOSYA.pdf ~/Masaüstü/DOSYA.pdf
-```
+**Sunucudaki önizleme dosyaları (`ornekler/media/`):**
+- 6 MP4 video (~1–8 MB), 11 PNG resim (84 KB–1.4 MB), 1 PDF
+- En büyük dosya: `media-1783598546-eee8d8a3.mp4` ~7.7 MB (kabul edilebilir)
+- `pdf-02.pdf` hâlâ referanslı — silme!
 
-### FAZ 2 — ornekler-data.json güncelle (Claude ile)
-Dosyalar yüklenince her örneğe `preview_file` yolunu ekle:
-```json
-"preview_file": "ornekler/media/DOSYAADI.mp4"
-```
-Boş bırakılırsa "Önizle" butonu çıkmaz — güvenli.
+**Sunucuda GS (Ghostscript) yok** → PDF → thumbnail dönüşümü yapılamıyor. Thumbnail olarak sadece JPG/PNG/WebP kabul ediliyor.
 
-### FAZ 3 — Test et (Claude ile)
-- Mobilden ve masaüstünden önizleme modalını test et
-- İndirme butonunun gizlendiğini doğrula
-- PDF toolbar gizlenme kontrolü
-
-### Mevcut kod durumu (cafdb66) — tümü deploy edildi ✅
-- `ornekler.html` — modal HTML + JS
-- `assets/css/ornekler.css` — modal + önizle buton stilleri
-- `.cpanel.yml` — `ornekler/media/` klasörü deploy'da oluşuyor
-- `ornekler-data.json` — `preview_file` alanı var (değerler boş, buton çıkmaz)
-- Koruma: video `controlsList="nodownload"`, PDF iframe `#toolbar=0` + overlay
+**Yapılacak (isteğe bağlı):**
+- 7.7 MB'lık videoyu yerel olarak `ffmpeg -crf 28` ile yeniden sıkıştırıp yüklemek mümkün
+- `ornekler-data.json` Admin panelinden yönetiliyor; File Manager ile manuel yükleme gerekmez artık
 
 ---
 ## Genel Bakış
@@ -261,7 +239,7 @@ define('ANTHROPIC_API_KEY', 'sk-ant-...');
 - `ornekler-data.json` deploy sırasında üzerine yazılmaz.
 - `ornekler/thumbnails/` deploy sırasında korunur.
 - `data/blog_*.json` deploy sırasında sadece yoksa oluşturulur.
-- `borsa.html` aktif değil, eski test sayfası.
+- `borsa.html` yerel proje klasöründe var ama deploy listesinde yok, sunucuya gitmiyor.
 - GitHub IP (`140.82.121.4`) değişirse `~/.ssh/config`'i güncelle.
 
 ---
