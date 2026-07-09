@@ -320,9 +320,13 @@ function ornekDuzenle(id) {
     document.getElementById('ornek-aciklama').value  = o.aciklama || '';
     const prev  = document.getElementById('ornek-thumb-preview');
     const kaldir = document.getElementById('ornek-thumb-kaldir');
-    if (o.thumbnail && prev) {
+    const minik = document.getElementById('ornek-thumb-minik');
+    if (o.thumbnail) {
       if (kaldir) kaldir.style.display = 'inline-block';
       posPicAc('../' + o.thumbnail, o.thumbnail_position || '50% 50%');
+      if (minik) { minik.src = '../' + o.thumbnail; minik.style.display = 'block'; }
+    } else {
+      if (minik) minik.style.display = 'none';
     }
     const mediaMevcut = document.getElementById('ornek-media-mevcut');
     if (mediaMevcut) {
@@ -351,6 +355,8 @@ function ornekDuzenleIptal() {
   if (mediaInput) mediaInput.value = '';
   const mediaMevcut = document.getElementById('ornek-media-mevcut');
   if (mediaMevcut) mediaMevcut.style.display = 'none';
+  const minik = document.getElementById('ornek-thumb-minik');
+  if (minik) minik.style.display = 'none';
   thumbnailKaldir();
   const btn = document.getElementById('ornek-kaydet-btn');
   const iptal = document.getElementById('ornek-iptal-btn');

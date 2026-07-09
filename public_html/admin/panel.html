@@ -72,8 +72,11 @@
           <div id="ornek-media-mevcut" style="display:none; margin-top:0.4rem; font-size:0.8rem; color:#6b7280;"></div>
         </div>
         <div style="grid-column:1/-1;">
-          <label style="font-size:0.8rem; color:#6b7280; display:block; margin-bottom:0.25rem;">Önizleme Resmi (PNG/JPG) <span style="color:#9ca3af;">— Canva'dan export edin</span></label>
-          <input type="file" id="ornek-thumbnail" accept="image/png,image/jpeg,image/webp" style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; background:#fafafa;">
+          <label style="font-size:0.8rem; color:#6b7280; display:block; margin-bottom:0.25rem;">Kart Resmi (PNG/JPG/PDF) <span style="color:#9ca3af;">— Canva'dan export edin</span></label>
+          <div style="display:flex; gap:0.75rem; align-items:flex-start;">
+            <input type="file" id="ornek-thumbnail" accept="image/png,image/jpeg,image/webp,application/pdf" style="flex:1; padding:0.5rem; border:1px solid #ddd; border-radius:8px; box-sizing:border-box; background:#fafafa;">
+            <img id="ornek-thumb-minik" src="" alt="" style="display:none; width:72px; height:54px; object-fit:cover; border-radius:6px; border:1px solid #ddd; flex-shrink:0;">
+          </div>
           <div id="ornek-thumb-preview" style="margin-top:0.5rem;"></div>
           <button type="button" id="ornek-thumb-kaldir" onclick="thumbnailKaldir()" style="display:none; margin-top:0.4rem; padding:0.25rem 0.75rem; font-size:0.8rem; background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; border-radius:6px; cursor:pointer;">✕ Resmi kaldır</button>
           <div id="pos-picker-wrap" style="display:none; margin-top:1rem;">
