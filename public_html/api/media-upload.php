@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_FILES['media'])) {
 $f   = $_FILES['media'];
 $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
 
-if (!in_array($ext, ['mp4', 'pdf'])) {
-    echo json_encode(['success' => false, 'mesaj' => 'Sadece MP4 veya PDF yüklenebilir.']);
+if (!in_array($ext, ['mp4', 'pdf', 'jpg', 'jpeg', 'png', 'webp'])) {
+    echo json_encode(['success' => false, 'mesaj' => 'Sadece MP4, PDF veya resim (JPG/PNG/WebP) yüklenebilir.']);
     exit;
 }
 if ($f['size'] > 100 * 1024 * 1024) {

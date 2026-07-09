@@ -192,8 +192,10 @@ const previewIcerik  = document.getElementById('preview-icerik');
 const previewKapat   = document.getElementById('preview-kapat');
 
 function acOnizle(btn) {
-  const dosya  = btn.dataset.preview;
-  const isPdf  = dosya.toLowerCase().endsWith('.pdf');
+  const dosya    = btn.dataset.preview;
+  const ext      = dosya.toLowerCase().split('.').pop();
+  const isPdf    = ext === 'pdf';
+  const isResim  = ['jpg','jpeg','png','webp'].includes(ext);
   const kapatBtn = '<button class="preview-kapat" id="preview-kapat" aria-label="Kapat">×</button>';
 
   if (isPdf) {
@@ -202,6 +204,9 @@ function acOnizle(btn) {
         '<div class="preview-pdf-overlay"></div>' +
         '<iframe src="' + dosya + '#toolbar=0&navpanes=0&scrollbar=0" oncontextmenu="return false"></iframe>' +
       '</div>';
+  } else if (isResim) {
+    previewIcerik.innerHTML = kapatBtn +
+      '<img class="preview-resim" src="' + dosya + '" alt="" oncontextmenu="return false">';
   } else {
     previewIcerik.innerHTML = kapatBtn +
       '<video class="preview-video" controls controlsList="nodownload noremoteplayback" ' +
