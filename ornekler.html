@@ -113,7 +113,7 @@
     const pos = o.thumbnail_position || '50% 50%';
 
     if (o.preview_file) {
-      const extra = `data-preview="${o.preview_file}" data-baslik="${o.baslik}" onclick="acOnizle(this)"`;
+      const extra = `role="button" tabindex="0" data-preview="${o.preview_file}" data-baslik="${o.baslik}" onclick="acOnizle(this)"`;
       if (o.thumbnail) {
         const imgSrc = o.thumbnail.startsWith('http') ? o.thumbnail : '/' + o.thumbnail;
         return `<div class="ornek-kart ornek-kart-tikla" data-kategori="${o.kategori}" ${extra}>
@@ -210,7 +210,7 @@ function acOnizle(btn) {
   } else {
     previewIcerik.innerHTML = kapatBtn +
       '<video class="preview-video" controls controlsList="nodownload noremoteplayback" ' +
-        'disablePictureInPicture oncontextmenu="return false" autoplay>' +
+        'disablePictureInPicture oncontextmenu="return false" autoplay muted playsinline>' +
         '<source src="' + dosya + '">' +
       '</video>';
   }
@@ -234,6 +234,15 @@ previewModal.addEventListener('click', function(e) {
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') kapatOnizle();
 });
+
+// iOS Safari: div onclick bazen tetiklenmez, touchend ile güvence altına al
+document.getElementById('ornekler-grid').addEventListener('touchend', function(e) {
+  const card = e.target.closest('[data-preview]');
+  if (card) {
+    e.preventDefault();
+    acOnizle(card);
+  }
+}, { passive: false });
 </script>
 <script src="assets/js/chat-widget.js"></script>
 </body>
