@@ -1,18 +1,22 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 09.07.2026
+## Son Oturum — 10.07.2026 10:01
 
 **Son commit'ler:**
 ```
-bb5de0f Temizlik scripti kaldırıldı — sunucudan da siliniyor
-5d855ad Tek seferlik temizlik scripti ekle — eski media dosyaları ve test dosyaları silinecek
-a72347a Deploy: media-upload.php cpanel.yml'e eklendi, URL alanı açıklaması netleştirildi
-35019cb Admin: thumbnail PDF desteği kaldırıldı (sunucuda GS yok), PNG/JPG yeterli
-8b4b505 Admin: thumbnail PDF desteği, düzenlerken küçük resim önizlemesi eklendi
+a83c364 fix: kaydırma sırasında kart açılma sorunu giderildi
+d5d5095 fix: çift acOnizle çağrısı engellendi (takılma sorunu)
+8cc3905 fix: mobil modal ekrana sığma sorunu giderildi
+d5861e6 fix: mobil tıklama sorunu giderildi (iOS Safari uyumluluğu)
+40fbd4e Handoff güncellendi — 09.07.2026 oturum özeti
+```
+
+**Bekleyen değişiklikler:**
+```
+ M handoff.md
 ```
 
 ---
-
 ## Örnekler Sistemi — Güncel Durum ✅
 
 **Tamamlanan işler (bu oturumda):**
