@@ -403,7 +403,30 @@ body {
   .package-card { flex: 1 1 280px; }
   .package-card.featured { transform: none; }
   .package-card.featured:hover { transform: translateY(-5px); }
-  .admin-sidebar { width: 200px; }
+
+  /* Admin panel — mobil: dikey yerleşim, menü üstte yatay */
+  .admin-panel { flex-direction: column; min-height: auto; }
+  .admin-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid var(--ice-light);
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .admin-sidebar h2 { width: 100%; margin-bottom: 0.75rem; }
+  .admin-sidebar a { padding: 0.55rem 0.9rem; border-radius: 8px; }
+  .admin-sidebar a:hover, .admin-sidebar a.active { border-left: none; }
+  .admin-sidebar a[href="index.html"] { margin-top: 0 !important; }
+  .admin-main { padding: 1rem; }
+  .admin-section { padding: 1rem; }
+  /* 2 sütunlu formlar tek sütun olsun */
+  .admin-section [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  /* Geniş tablolar sayfayı taşırmasın, kendi içinde yatay kaysın */
+  .admin-table { display: block; overflow-x: auto; white-space: nowrap; }
 }
 
 /* ===== ORNEKLER PAGE ===== */
