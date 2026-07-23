@@ -12,7 +12,11 @@
   <div class="login-box">
     <h2>🔐 Admin Paneli</h2>
     <p>Digital Bohem yönetim sistemine giriş yapın</p>
-    <input type="password" id="admin-pass" placeholder="Şifrenizi girin">
+    <div style="position:relative;">
+      <input type="password" id="admin-pass" placeholder="Şifrenizi girin" style="padding-right:2.8rem;">
+      <button type="button" id="pass-toggle" onclick="togglePass()" aria-label="Şifreyi göster/gizle"
+        style="position:absolute; right:0.7rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1.25rem; line-height:1; padding:0;">👁️</button>
+    </div>
     <div class="error-msg" id="login-error">Hatalı şifre!</div>
     <button class="btn-gold" style="width:100%;" onclick="login()">Giriş Yap</button>
   </div>
@@ -27,6 +31,12 @@ function login() {
   } else {
     document.getElementById('login-error').style.display = 'block';
   }
+}
+function togglePass() {
+  const inp = document.getElementById('admin-pass');
+  const btn = document.getElementById('pass-toggle');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁️'; }
 }
 document.getElementById('admin-pass').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') login();
