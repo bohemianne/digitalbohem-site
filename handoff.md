@@ -1,14 +1,14 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 10.07.2026 10:01
+## Son Oturum — 23.07.2026 17:15
 
 **Son commit'ler:**
 ```
-a83c364 fix: kaydırma sırasında kart açılma sorunu giderildi
-d5d5095 fix: çift acOnizle çağrısı engellendi (takılma sorunu)
-8cc3905 fix: mobil modal ekrana sığma sorunu giderildi
-d5861e6 fix: mobil tıklama sorunu giderildi (iOS Safari uyumluluğu)
-40fbd4e Handoff güncellendi — 09.07.2026 oturum özeti
+fbd483a analytics: tüm kullanıcı sayfalarına Google Analytics (G-E5R1H8BXSH) eklendi
+4c2af32 admin: css'e sürüm etiketi (?v=3) — tarayıcı önbelleği sorununu önler
+982087d admin mobil: CSS kural sırası düzeltildi, hamburger butonu artık görünüyor
+6f29ab4 admin giriş: şifre göster/gizle (göz) butonu eklendi
+f4c0069 admin panel: mobilde açılıp kapanan hamburger menü (drawer)
 ```
 
 **Bekleyen değişiklikler:**
