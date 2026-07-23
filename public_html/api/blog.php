@@ -15,6 +15,56 @@ function writeJson($path, $data) {
     file_put_contents($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
+// ── Sitemap otomatik üretimi — yayınlanan yazılardan baştan üretir ────────────
+function regenerateSitemap() {
+    $base  = 'https://digitalbohem.com.tr';
+    $today = date('Y-m-d');
+    $YAZILAR_F = __DIR__ . '/../data/blog_yazilar.json';
+
+    // Sabit sayfalar: [yol, lastmod, changefreq, priority]
+    $static = [
+        ['/',                               $today,       'weekly',  '1.0'],
+        ['/ornekler.html',                  $today,       'weekly',  '0.9'],
+        ['/hakkimizda.html',                '2026-06-30', 'monthly', '0.7'],
+        ['/blog/',                          $today,       'weekly',  '0.8'],
+        ['/ornekler/dugun-web-sitesi.html', '2026-06-30', 'monthly', '0.7'],
+        ['/ornekler/animasyonlu.html',      '2026-06-30', 'monthly', '0.7'],
+        ['/ornekler/tek-sayfa.html',        '2026-06-30', 'monthly', '0.7'],
+    ];
+
+    $xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+
+    foreach ($static as $s) {
+        $xml .= "  <url>\n";
+        $xml .= "    <loc>{$base}{$s[0]}</loc>\n";
+        $xml .= "    <lastmod>{$s[1]}</lastmod>\n";
+        $xml .= "    <changefreq>{$s[2]}</changefreq>\n";
+        $xml .= "    <priority>{$s[3]}</priority>\n";
+        $xml .= "  </url>\n";
+    }
+
+    // Yayınlanmış blog yazıları
+    $yazilar = readJson($YAZILAR_F) ?? [];
+    foreach ($yazilar as $y) {
+        if (empty($y['slug'])) continue;
+        $lastmod = !empty($y['tarih']) ? $y['tarih'] : $today;
+        // d.m.Y formatındaysa Y-m-d'ye çevir
+        if (preg_match('/^(\d{2})\.(\d{2})\.(\d{4})$/', $lastmod, $m)) {
+            $lastmod = "{$m[3]}-{$m[2]}-{$m[1]}";
+        }
+        $xml .= "  <url>\n";
+        $xml .= "    <loc>{$base}/blog/{$y['slug']}.html</loc>\n";
+        $xml .= "    <lastmod>{$lastmod}</lastmod>\n";
+        $xml .= "    <changefreq>monthly</changefreq>\n";
+        $xml .= "    <priority>0.7</priority>\n";
+        $xml .= "  </url>\n";
+    }
+
+    $xml .= '</urlset>' . "\n";
+    file_put_contents(__DIR__ . '/../sitemap.xml', $xml);
+}
+
 $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -209,6 +259,9 @@ KART;
                   'url' => "https://digitalbohem.com.tr/blog/$slug.html"];
     writeJson($YAZILAR_F, $yazilar);
 
+    // sitemap'i güncelle
+    regenerateSitemap();
+
     // öneri durumunu güncelle
     if ($meta && $meta['konu_no'] > 0) {
         $data = readJson($ONERILER_F);
@@ -361,6 +414,9 @@ KART;
     ];
     writeJson($YAZILAR_F, $yazilar);
 
+    // sitemap'i güncelle
+    regenerateSitemap();
+
     echo json_encode(['success' => true, 'mesaj' => "Yayınlandı: $slug.html"]);
     exit;
 }
@@ -399,7 +455,21 @@ if ($action === 'sil' && $method === 'POST') {
     $yazilar = array_values(array_filter($yazilar, fn($y) => $y['slug'] !== $slug));
     writeJson($YAZILAR_F, $yazilar);
 
+    // sitemap'i güncelle
+    regenerateSitemap();
+
     echo json_encode(['success' => true, 'mesaj' => "$slug.html silindi."]);
+    exit;
+}
+
+// ── POST: sitemap-yenile — sitemap'i elle yeniden üret ───────────────────────
+if ($action === 'sitemap-yenile' && $method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (($input['secret'] ?? '') !== 'polaris2026') {
+        http_response_code(403); echo json_encode(['success' => false, 'mesaj' => 'Yetkisiz.']); exit;
+    }
+    regenerateSitemap();
+    echo json_encode(['success' => true, 'mesaj' => 'Sitemap yeniden üretildi.']);
     exit;
 }
 
