@@ -403,36 +403,6 @@ body {
   .package-card { flex: 1 1 280px; }
   .package-card.featured { transform: none; }
   .package-card.featured:hover { transform: translateY(-5px); }
-
-  /* Admin panel — mobil: açılıp kapanan çekmece menü */
-  #admin-menu-btn { display: flex; }
-  .admin-panel { flex-direction: column; min-height: auto; }
-  .admin-sidebar {
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    width: 240px;
-    max-width: 82vw;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 1100;
-    overflow-y: auto;
-    border-right: 2px solid var(--ice-light);
-    box-shadow: 2px 0 16px rgba(0,0,0,0.15);
-    padding: 1.5rem 0;
-  }
-  body.admin-menu-open .admin-sidebar { transform: translateX(0); }
-  body.admin-menu-open #admin-menu-overlay {
-    display: block;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 1050;
-  }
-  .admin-main { padding: 1rem; padding-top: 3.75rem; }
-  .admin-section { padding: 1rem; }
-  /* 2 sütunlu formlar tek sütun olsun */
-  .admin-section [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
-  /* Geniş tablolar sayfayı taşırmasın, kendi içinde yatay kaysın */
-  .admin-table { display: block; overflow-x: auto; white-space: nowrap; }
 }
 
 /* ===== ORNEKLER PAGE ===== */
@@ -663,6 +633,37 @@ body {
 .btn-danger:hover { background: #ffe0e0; }
 
 .hidden { display: none; }
+
+/* ===== ADMIN PANEL — MOBİL (açılıp kapanan çekmece menü) =====
+   Not: Bu blok tüm admin stillerinden SONRA olmalı ki kurallar doğru sırada kazansın. */
+@media (max-width: 768px) {
+  #admin-menu-btn { display: flex; }
+  .admin-panel { flex-direction: column; min-height: auto; }
+  .admin-sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 240px;
+    max-width: 82vw;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1100;
+    overflow-y: auto;
+    border-right: 2px solid var(--ice-light);
+    box-shadow: 2px 0 16px rgba(0,0,0,0.15);
+    padding: 1.5rem 0;
+  }
+  body.admin-menu-open .admin-sidebar { transform: translateX(0); }
+  body.admin-menu-open #admin-menu-overlay {
+    display: block;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1050;
+  }
+  .admin-main { padding: 1rem; padding-top: 3.75rem; }
+  .admin-section { padding: 1rem; }
+  .admin-section [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  .admin-table { display: block; overflow-x: auto; white-space: nowrap; }
+}
 
 /* WhatsApp Kayan Buton */
 .wa-btn {
