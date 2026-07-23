@@ -8,6 +8,9 @@
 </head>
 <body class="admin-body">
 
+<button id="admin-menu-btn" onclick="toggleAdminMenu()" aria-label="Menüyü aç/kapat">☰</button>
+<div id="admin-menu-overlay" onclick="closeAdminMenu()"></div>
+
 <div class="admin-panel">
   <aside class="admin-sidebar">
     <h2>Digital Bohem</h2>
@@ -200,5 +203,13 @@
 </div>
 
 <script src="../assets/js/admin.js"></script>
+<script>
+  function toggleAdminMenu(){ document.body.classList.toggle('admin-menu-open'); }
+  function closeAdminMenu(){ document.body.classList.remove('admin-menu-open'); }
+  // Menüden bir bölüm seçilince menüyü kapat ki içerik görünsün
+  document.querySelectorAll('.admin-sidebar a').forEach(function(a){
+    a.addEventListener('click', closeAdminMenu);
+  });
+</script>
 </body>
 </html>

@@ -404,24 +404,30 @@ body {
   .package-card.featured { transform: none; }
   .package-card.featured:hover { transform: translateY(-5px); }
 
-  /* Admin panel — mobil: dikey yerleşim, menü üstte yatay */
+  /* Admin panel — mobil: açılıp kapanan çekmece menü */
+  #admin-menu-btn { display: flex; }
   .admin-panel { flex-direction: column; min-height: auto; }
   .admin-sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 2px solid var(--ice-light);
-    padding: 1rem 0.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 0.25rem;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 240px;
+    max-width: 82vw;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1100;
+    overflow-y: auto;
+    border-right: 2px solid var(--ice-light);
+    box-shadow: 2px 0 16px rgba(0,0,0,0.15);
+    padding: 1.5rem 0;
   }
-  .admin-sidebar h2 { width: 100%; margin-bottom: 0.75rem; }
-  .admin-sidebar a { padding: 0.55rem 0.9rem; border-radius: 8px; }
-  .admin-sidebar a:hover, .admin-sidebar a.active { border-left: none; }
-  .admin-sidebar a[href="index.html"] { margin-top: 0 !important; }
-  .admin-main { padding: 1rem; }
+  body.admin-menu-open .admin-sidebar { transform: translateX(0); }
+  body.admin-menu-open #admin-menu-overlay {
+    display: block;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1050;
+  }
+  .admin-main { padding: 1rem; padding-top: 3.75rem; }
   .admin-section { padding: 1rem; }
   /* 2 sütunlu formlar tek sütun olsun */
   .admin-section [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
@@ -549,6 +555,19 @@ body {
 }
 
 .admin-panel { display: flex; min-height: 100vh; }
+/* Mobil menü butonu — masaüstünde gizli, mobilde media query ile açılır */
+#admin-menu-btn {
+  display: none;
+  position: fixed; top: 0.6rem; left: 0.6rem;
+  z-index: 1200;
+  width: 46px; height: 40px;
+  align-items: center; justify-content: center;
+  font-size: 1.5rem; line-height: 1;
+  background: var(--fuchsia); color: #fff;
+  border: none; border-radius: 8px; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+#admin-menu-overlay { display: none; }
 .admin-sidebar {
   width: 250px;
   background: #ffffff;
