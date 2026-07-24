@@ -136,9 +136,36 @@ body {
 .hero p {
   font-size: 1.2rem;
   max-width: 600px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.5rem;
   color: rgba(255,255,255,0.9);
   text-shadow: 0 1px 8px rgba(0,0,0,0.1);
+}
+.hero-types {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto 2rem;
+  max-width: 680px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+.hero-types li {
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: #ffffff;
+  padding: 0.45rem 1rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.hero-types li:hover {
+  background: rgba(255,255,255,0.24);
+  transform: translateY(-2px);
 }
 
 /* ===== BUTTONS ===== */
@@ -398,6 +425,8 @@ body {
   .menu-toggle { display: block; }
   .hero h1 { font-size: 2rem; letter-spacing: 1px; }
   .hero p { font-size: 1rem; }
+  .hero-types { gap: 0.4rem; }
+  .hero-types li { font-size: 0.78rem; padding: 0.35rem 0.75rem; }
   .hero::after { height: 40px; }
   .package-cards { flex-wrap: wrap; }
   .package-card { flex: 1 1 280px; }

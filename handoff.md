@@ -1,19 +1,22 @@
 # Digital Bohem — Proje Handoff
 
-## Son Oturum — 23.07.2026 17:15
+## Son Oturum — 24.07.2026 10:01
 
 **Son commit'ler:**
 ```
+d505afd handoff: son oturum durumu güncellendi
 fbd483a analytics: tüm kullanıcı sayfalarına Google Analytics (G-E5R1H8BXSH) eklendi
 4c2af32 admin: css'e sürüm etiketi (?v=3) — tarayıcı önbelleği sorununu önler
 982087d admin mobil: CSS kural sırası düzeltildi, hamburger butonu artık görünüyor
 6f29ab4 admin giriş: şifre göster/gizle (göz) butonu eklendi
-f4c0069 admin panel: mobilde açılıp kapanan hamburger menü (drawer)
 ```
 
 **Bekleyen değişiklikler:**
 ```
+ M assets/css/style.css
  M handoff.md
+ M index.html
+ M robots.txt
 ```
 
 ---
@@ -36,7 +39,6 @@ f4c0069 admin panel: mobilde açılıp kapanan hamburger menü (drawer)
 **Sunucuda GS (Ghostscript) yok** → PDF → thumbnail dönüşümü yapılamıyor. Thumbnail olarak sadece JPG/PNG/WebP kabul ediliyor.
 
 **Yapılacak (isteğe bağlı):**
-- 7.7 MB'lık videoyu yerel olarak `ffmpeg -crf 28` ile yeniden sıkıştırıp yüklemek mümkün
 - `ornekler-data.json` Admin panelinden yönetiliyor; File Manager ile manuel yükleme gerekmez artık
 
 ---
