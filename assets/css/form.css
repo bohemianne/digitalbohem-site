@@ -20,27 +20,16 @@
 }
 
 .testimonial-track-wrapper {
-  overflow: hidden;
-  /* Kenar soluklaştırma */
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .testimonial-track {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1.25rem;
-  width: max-content;
-  animation: testimonial-scroll 40s linear infinite;
   padding: 0.5rem 0 1rem;
-}
-
-.testimonial-track:hover {
-  animation-play-state: paused;
-}
-
-@keyframes testimonial-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
 }
 
 .testimonial-card {
